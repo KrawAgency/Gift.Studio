@@ -12,7 +12,7 @@
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <script>(function(){var t;try{t=localStorage.getItem('gs-theme')}catch(e){}if(t!=='light'&&t!=='dark')t=(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';document.documentElement.setAttribute('data-theme',t);})();</script>
-<title>Gift Studio v25.4</title>
+<title>Gift Studio v26</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:ital,wght@0,400;0,500;0,600;1,700&display=swap" rel="stylesheet">
@@ -1118,10 +1118,10 @@ const COUPON = {
 const CATS = [
   { id: 'all',    name: { en: 'All',       es: 'Todo' } },
   { id: 'spa',    name: { en: 'Spa',       es: 'Spa' } },
-  { id: 'bali',   name: { en: 'Bali beds', es: 'Camas balinesas' } },
+  { id: 'bali',   name: { en: 'Cabanas',   es: 'Cabañas' } },
+  { id: 'excursions', name: { en: 'Excursions', es: 'Excursiones' } },
   { id: 'dinner', name: { en: 'Dinners',   es: 'Cenas' } },
   { id: 'extras', name: { en: 'Extras',    es: 'Extras' } },
-  { id: 'excursions', name: { en: 'Excursions', es: 'Excursiones' } },
 ];
 
 const HYDRO_REG = 45;
@@ -1629,10 +1629,16 @@ for (const [id, ph, ph2] of [['mani50', 'mani'], ['mani80', 'mani2'], ['pedi50',
 const DURS = [
   ['massage25', 'massage', 'massage80'], ['couples', 'couples80'], ['hydro', 'hydro80'],
   ['neck25', 'neck50'], ['foot25', 'foot50'], ['scalp25', 'scalp50'], ['pedi50', 'pedi80'], ['mani50', 'mani80'],
+  ['x-chichen-deluxe', 'x-chichen'], ['x-primax', 'x-interax', 'x-harmony'],   // v26: variantes de tour
 ];
 const DUR_MIN = { massage25: 25, massage: 50, massage80: 80, couples: 50, couples80: 80, hydro: 50, hydro80: 80,
   neck25: 25, neck50: 50, foot25: 25, foot50: 50, scalp25: 25, scalp50: 50, pedi50: 50, pedi80: 80, mani50: 50, mani80: 80 };
-const DUR_ONLY = ['massage25', 'hydro80', 'neck25', 'foot25', 'scalp25', 'pedi80', 'mani80'];
+const DUR_ONLY = ['massage25', 'hydro80', 'neck25', 'foot25', 'scalp25', 'pedi80', 'mani80', 'x-chichen', 'x-interax', 'x-harmony'];
+// v26 · etiquetas de variantes que no son duración
+const VAR_LBL = { 'x-chichen-deluxe': { en: 'Deluxe', es: 'Deluxe' }, 'x-chichen': { en: 'Classic', es: 'Clásico' },
+  'x-primax': { en: 'Primax', es: 'Primax' }, 'x-interax': { en: 'Interax', es: 'Interax' }, 'x-harmony': { en: 'Harmony', es: 'Harmony' } };
+const VAR_HEAD = { 'x-chichen-deluxe': { en: 'Tour type', es: 'Tipo de tour' }, 'x-primax': { en: 'Program', es: 'Programa' } };
+const varLbl = id => DUR_MIN[id] ? `${DUR_MIN[id]} min` : VAR_LBL[id] ? VAR_LBL[id][S.lang] : itemById(id).name[S.lang];
 for (const id of DUR_ONLY) { const it = ITEMS.find(i => i.id === id); if (it) it.durOnly = true; }
 const durGroup = id => DURS.find(g => g.includes(id));
 const SPA_SUBS = [
@@ -1867,19 +1873,24 @@ function toggleCbd(id, n) {
 function durSwap(from, to) {
   const s = S.cart.sel[from]; if (!s || !s.qty) return null;
   const a = itemById(from), b = itemById(to), s2 = S.cart.sel[to] || { qty: 0, opt: 0, kind: s.kind };
-  if (!a.kinds) return withItem(withItem(S.cart, from, 0), to, s2.qty + s.qty);
+  if (!a.kinds) {
+    let c = withItem(withItem(S.cart, from, 0), to, s2.qty + s.qty);
+    if (a.kid && b.kid) { const k = S.cart.sel[a.kid]; if (k && k.qty) { const k2 = c.sel[b.kid]; c = withItem(withItem(c, a.kid, 0), b.kid, (k2 ? k2.qty : 0) + k.qty); } }   // niños se mueven con el adulto
+    return c;
+  }
   const pk = [...personKinds(b, s2), ...personKinds(a, s)], cb = [...personCbd(b, s2), ...personCbd(a, s)];
   return withItem(withItem(S.cart, from, 0), to, s2.qty + s.qty, { pk, cbd: cb, kind: s2.qty ? s2.kind : s.kind });
 }
 function durHTML(it) {
   const g = durGroup(it.id); if (!g) return '';
   const cur = S.cart.sel[it.id] && S.cart.sel[it.id].qty;
-  return `<h4>${t().duration}</h4><div class="seg-chips">${g.map(id => {
+  const head = VAR_HEAD[g[0]] ? VAR_HEAD[g[0]][S.lang] : t().duration;
+  return `<h4>${head}</h4><div class="seg-chips">${g.map(id => {
     const x = itemById(id), on = id === it.id;
     const pr = S.mode === 'vip' ? promoUnit(x) : couponPrice(x);
     let extra = '';
     if (cur && !on) { const c = durSwap(it.id, id), d = costIn(S.mode, c) - costIn(S.mode, S.cart); extra = d > 0 ? `+${money(d)}` : d < 0 ? `−${money(-d)}` : t().free2; }
-    return `<button class="sc dur" data-dur="${it.id}" data-to="${id}" aria-pressed="${on}">${DUR_MIN[id]} min<span class="vt2">${cur && !on ? extra : money(pr)}</span></button>`;
+    return `<button class="sc dur" data-dur="${it.id}" data-to="${id}" aria-pressed="${on}">${varLbl(id)}<span class="vt2">${cur && !on ? extra : money(pr)}</span></button>`;
   }).join('')}</div>`;
 }
 const UPGRADES = [
@@ -2941,7 +2952,7 @@ function gStep(id, p = {}) {
       { photo: EXC_PHOTO.cultural, title: g.cult, sub: g.cultSub, go: ['excList', { sub: 'cultural' }] },
     ] };
     case 'excList': {
-      const pool = ITEMS.filter(i => i.exc && !i.hidden && i.sub === p.sub);
+      const pool = ITEMS.filter(i => i.exc && !i.hidden && !i.durOnly && i.sub === p.sub);
       const pick = [...pool.filter(i => isTop(i.id)), ...pool.filter(i => !isTop(i.id) && gFits(i.id)), ...pool.filter(i => !isTop(i.id) && !gFits(i.id))].slice(0, 4);
       return { q: g.excListQ, cards: pick.map(i => itemCard(i.id)), more: 'excursions' };
     }
@@ -3280,7 +3291,7 @@ document.addEventListener('click', e => {
     if (S.cart.sel[from] && S.cart.sel[from].qty) {
       const c = durSwap(from, to), over = costIn(S.mode, c) - S.will;
       if (over > 0 && costIn(S.mode, c) > costIn(S.mode, S.cart)) { toast(t().overBudget(money(over))); return; }
-      S.cart = c; render(); toast(t().durChanged(DUR_MIN[to]));
+      S.cart = c; render(); toast(DUR_MIN[to] ? t().durChanged(DUR_MIN[to]) : (S.lang === 'es' ? 'Se cambió a ' : 'Changed to ') + varLbl(to));
     }
     openSheet('item', to, S.sheetPrev); return;
   }
@@ -3362,7 +3373,7 @@ function snapshot() {
     return { id, qty: sl.qty, kinds: it.kinds ? personKinds(it, sl) : undefined, cbd: it.kinds ? personCbd(it, sl) : undefined, manualOpt: sl.manual ? sl.opt : undefined,
       vipUnits: (v.units[id] || []).map(i => `${it.opts[i].pay}/${it.opts[i].b}`), regular: lineReg(it, sl) }; });
   return {
-    app: 'Gift Studio v25.4', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
+    app: 'Gift Studio v26', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
     guestBudget: hasBud() ? S.will : null, vouchers: S.step / VOUCHER, voucherValue: S.step, 
     cert: S.cart.cert, cart: lines, wish: S.wish,
     vip: { guestPays: v.cost, copays: v.pay, budgetUsed: v.used, overflow: v.overflow, left: S.will - v.cost, regularValue: v.value },
