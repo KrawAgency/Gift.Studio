@@ -12,7 +12,7 @@
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <script>(function(){var t;try{t=localStorage.getItem('gs-theme')}catch(e){}if(t!=='light'&&t!=='dark')t=(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';document.documentElement.setAttribute('data-theme',t);})();</script>
-<title>Gift Studio v24.4</title>
+<title>Gift Studio v24.5</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:ital,wght@0,400;0,500;0,600;1,700&display=swap" rel="stylesheet">
@@ -327,6 +327,7 @@ body.is-vendor .wneg{display:flex}
 
 /* ── v9.3 ── */
 .sh-img.main{max-height:min(66vh,calc(100dvh - 330px));background-size:contain;background-repeat:no-repeat;background-color:#111}
+.sh-img.main.ph-massage_b{aspect-ratio:16/9}
 .sh-img.main.ph-massage{aspect-ratio:720/401}
 .sh-img.main.ph-hydro{aspect-ratio:720/401}
 .sh-img.main.ph-bali{aspect-ratio:638/720}
@@ -937,6 +938,7 @@ body.is-vendor .notice.vnote{display:flex}
 .ph-my_snorkel{background-image:url(img/102.webp)}
 .ph-lupita_table{background-image:url(img/104.webp)}
 .ph-lupita_guac{background-image:url(img/105.webp)}
+.ph-massage_b{background-image:url(img/106.webp)}
 .ph-x19{background-image:url(img/41.webp)}
 .ph-x20{background-image:url(img/87.webp)}
 .ph-x20b{background-image:url(img/88.webp)}
@@ -1113,7 +1115,7 @@ const ITEMS = [
     sub:  { en: 'For two, side by side', es: 'Para dos, lado a lado' },
     desc: { en: 'Two 80-minute massages side by side. Choose relax or deep tissue.', es: 'Dos masajes de 80 minutos lado a lado. Elige relajante o tejido profundo.' },
     opts: mkOpts(250, 50) },
-  { id: 'massage80', cat: 'spa', grp: 'massages', photo: 'massage', unit: 1, max: 4, kinds: true, kreg: { relax: 235, deep: 249 },
+  { id: 'massage80', cat: 'spa', grp: 'massages', photo: 'massage_b', unit: 1, max: 4, kinds: true, kreg: { relax: 235, deep: 249 },
     name: { en: 'Massage 80 min', es: 'Masaje de 80 min' },
     sub:  { en: 'For one person', es: 'Para una persona' },
     desc: { en: 'An 80-minute massage. Choose relax or deep tissue.', es: 'Masaje de 80 minutos. Elige relajante o tejido profundo.' },
@@ -1402,8 +1404,8 @@ ITEMS.splice(ITEMS.findIndex(i => i.id === 'hydro'), 0,
     opts: mkOpts(200, 50) });
 ITEMS.splice(ITEMS.findIndex(i => i.id === 'hydro') + 1, 0,
   { ...spaItem('hydro80', 'treatments', 'hydro', 'hydro2', 'Hydrotherapy 80 min', 'Hidroterapia 80 min', 'Sauna, steam room & hydromassage', 'Sauna, vapor e hidromasaje', 89, 50, 25), gallery: ['hydro_circuit', 'hydro_couple', 'hydro_sauna'], photo2: 'hydro_aerial' },
-  spaItem('neck25', 'treatments', 'neck', 'massage', 'Neck, Back & Shoulder 25 min', 'Cuello, espalda y hombros 25 min', 'Focused tension relief', 'Alivio de tensión localizado', 109, 75, 25),
-  spaItem('neck50', 'treatments', 'neck', 'massage', 'Neck, Back & Shoulder 50 min', 'Cuello, espalda y hombros 50 min', 'Focused tension relief', 'Alivio de tensión localizado', 199, 100, 25),
+  spaItem('neck25', 'treatments', 'neck', 'massage_b', 'Neck, Back & Shoulder 25 min', 'Cuello, espalda y hombros 25 min', 'Focused tension relief', 'Alivio de tensión localizado', 109, 75, 25),
+  spaItem('neck50', 'treatments', 'neck', 'massage_b', 'Neck, Back & Shoulder 50 min', 'Cuello, espalda y hombros 50 min', 'Focused tension relief', 'Alivio de tensión localizado', 199, 100, 25),
   spaItem('foot25', 'treatments', 'foot', 'foot', 'Foot Massage 25 min', 'Masaje de pies 25 min', 'Reflexology-style foot massage', 'Masaje de pies tipo reflexología', 95, 50, 25),
   spaItem('foot50', 'treatments', 'foot', 'foot', 'Foot Massage 50 min', 'Masaje de pies 50 min', 'Reflexology-style foot massage', 'Masaje de pies tipo reflexología', 189, 100, 25),
   spaItem('scalp25', 'treatments', 'scalp', 'scalp', 'Scalp Massage 25 min', 'Masaje de cuero cabelludo 25 min', 'Relaxing head massage', 'Masaje relajante de cabeza', 85, 50, 25),
@@ -1453,7 +1455,7 @@ ITEMS.splice(ITEMS.findIndex(i => i.id === 'preferred') + 1, 0,
 // No tienen precio VIP: cuestan lo mismo en los dos lados y aceptan Leisure Cash como pago (igual que las camas).
 // day: 0 domingo … 6 sábado (especial de ese día). unit 2 = precio por pareja.
 const PKGS = [
-  { id: 'pk-monday', day: 1, price: 165, photo: 'massage', noCombine: true,
+  { id: 'pk-monday', day: 1, price: 165, photo: 'massage_b', noCombine: true,
     name: { en: 'Monday Special · Pamper Yourself', es: 'Especial de lunes · Consiéntete' },
     sub: { en: 'Hydrotherapy + 80 min relaxing massage', es: 'Hidroterapia + masaje relajante 80 min' },
     bullets: { en: ['Hydrotherapy · 50 min', 'Relaxing massage with gentle manipulations · 80 min'], es: ['Hidroterapia · 50 min', 'Masaje relajante con manipulaciones suaves · 80 min'] },
@@ -1528,7 +1530,7 @@ const PKGS = [
     sub: { en: 'Ancestral purification ritual', es: 'Ritual ancestral de purificación' },
     bullets: { en: ['Ceremonial sounds', 'Floral aromas, copal smoke and medicinal herbs'], es: ['Sonidos ceremoniales', 'Aromas florales, humo de copal y hierbas medicinales'] },
     desc: { en: 'A ritual that harmonizes body, mind and emotions.', es: 'Un ritual que armoniza cuerpo, mente y emociones.' } },
-  { id: 'pk-rain', rain: true, price: 169, photo: 'massage', hours: '9:00–16:00', noCombine: true,
+  { id: 'pk-rain', rain: true, price: 169, photo: 'massage_b', hours: '9:00–16:00', noCombine: true,
     name: { en: 'Rainy Day · Anti-stress massage 80 min', es: 'Día de lluvia · Masaje antiestrés 80 min' },
     sub: { en: 'Only on rainy days', es: 'Solo en días de lluvia' },
     bullets: { en: ['Anti-stress massage · 80 min'], es: ['Masaje antiestrés · 80 min'] },
@@ -2849,12 +2851,12 @@ function gStep(id, p = {}) {
     ] };
     case 'kind': return { q: g.kindQ, hint: p.people === 2 ? g.kindHint2 : '', cards: [
       { photo: p.people === 2 ? 'couples' : 'massage', title: g.relax, sub: g.relaxSub, go: ['dur', { ...p, kind: 'relax' }] },
-      { photo: 'couples_a', title: g.deep, sub: g.deepSub, go: ['dur', { ...p, kind: 'deep' }] },
+      { photo: p.people === 2 ? 'couples_a' : 'massage_b', title: g.deep, sub: g.deepSub, go: ['dur', { ...p, kind: 'deep' }] },
       { ...itemCard('hotstones', { n: p.people, title: g.stones, sub: g.stonesSub }), photo: 'stones' },
     ] };
     case 'dur': {
       const opts = p.people === 2 ? [[50, 'couples', g.d50], [80, 'couples80', g.d80]] : [[25, 'massage25', g.d25], [50, 'massage', g.d50], [80, 'massage80', g.d80]];
-      return { q: g.durQ, text: true, banner: p.kind === 'deep' ? 'couples_a' : p.people === 2 ? 'couples' : 'massage', cards: opts.map(([m, iid, sub]) => ({ ...itemCard(iid, { kind: p.kind, title: `${m} min`, sub }), photo: null })) };
+      return { q: g.durQ, text: true, banner: p.people === 2 ? (p.kind === 'deep' ? 'couples_a' : 'couples') : (p.kind === 'deep' ? 'massage_b' : 'massage'), cards: opts.map(([m, iid, sub]) => ({ ...itemCard(iid, { kind: p.kind, title: `${m} min`, sub }), photo: null })) };
     }
     case 'spaOther': {
       const pool = ITEMS.filter(i => i.cat === 'spa' && !i.hidden && !i.durOnly && !i.kinds && !i.pkg);
@@ -3303,7 +3305,7 @@ function snapshot() {
     return { id, qty: sl.qty, kinds: it.kinds ? personKinds(it, sl) : undefined, cbd: it.kinds ? personCbd(it, sl) : undefined, manualOpt: sl.manual ? sl.opt : undefined,
       vipUnits: (v.units[id] || []).map(i => `${it.opts[i].pay}/${it.opts[i].b}`), regular: lineReg(it, sl) }; });
   return {
-    app: 'Gift Studio v24.4', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
+    app: 'Gift Studio v24.5', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
     guestBudget: hasBud() ? S.will : null, vouchers: S.step / VOUCHER, voucherValue: S.step, 
     cert: S.cart.cert, cart: lines, wish: S.wish,
     vip: { guestPays: v.cost, copays: v.pay, budgetUsed: v.used, overflow: v.overflow, left: S.will - v.cost, regularValue: v.value },
