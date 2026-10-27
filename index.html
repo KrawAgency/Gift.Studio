@@ -12,7 +12,7 @@
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <script>(function(){var t;try{t=localStorage.getItem('gs-theme')}catch(e){}if(t!=='light'&&t!=='dark')t=(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';document.documentElement.setAttribute('data-theme',t);})();</script>
-<title>Gift Studio v25.2</title>
+<title>Gift Studio v25.3</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:ital,wght@0,400;0,500;0,600;1,700&display=swap" rel="stylesheet">
@@ -966,6 +966,8 @@ body.is-vendor .notice.vnote{display:flex}
 .ph-lupita_table{background-image:url(img/104.webp)}
 .ph-lupita_guac{background-image:url(img/105.webp)}
 .ph-massage_b{background-image:url(img/106.webp)}
+.ph-bali_sea{background-image:url(img/107.webp)}
+.sh-img.main.ph-bali_sea{aspect-ratio:502/365}
 .ph-x19{background-image:url(img/41.webp)}
 .ph-x20{background-image:url(img/87.webp)}
 .ph-x20b{background-image:url(img/88.webp)}
@@ -1160,7 +1162,7 @@ const ITEMS = [
     desc: { en: 'VIP Hydrotherapy Circuit at the spa: sauna, steam room and hydromassage pools with water jets. 50 minutes, per person.', es: 'Circuito VIP de hidroterapia en el spa: sauna, vapor y albercas de hidromasaje con chorros de agua. 50 minutos, por persona.' },
     bullets: { en: ['Sauna Detox · 5 min', 'Steam Room · 5 min', 'Hydromassage · 40 min'], es: ['Sauna detox · 5 min', 'Cuarto de vapor · 5 min', 'Hidromasaje · 40 min'] },
     opts: [ { pay: 0, b: 25 } ] },
-  { id: 'bali-seaside', cat: 'bali', photo: 'bali', max: 3, reg: 80,
+  { id: 'bali-seaside', cat: 'bali', photo: 'bali_sea', max: 3, reg: 80,
     name: { en: 'Bali bed at Seaside', es: 'Cama balinesa en Seaside' },
     sub: { en: 'Includes 1 Paax sparkling wine', es: 'Incluye 1 vino espumoso Paax' }, desc: baliDesc(5), opts: [ { pay: 0, b: 80 } ] },
   { id: 'bali-activities', cat: 'bali', photo: 'bali_act', max: 3, reg: 100,
@@ -1457,7 +1459,7 @@ const CABANA = [
 ];
 const baliIdx = ITEMS.findIndex(i => i.id === 'bali-infinity') + 1;
 ITEMS.splice(baliIdx, 0, ...CABANA.map(([id, n, reg, promo, inc, ppl]) => ({
-  id, cat: 'bali', photo: 'cabana', photo2: 'cabana_map', gallery: ['cabana_ext'], max: 1, reg,
+  id, cat: 'bali', photo: 'cabana', gallery: ['cabana_ext'], max: 1, reg,
   name: { en: `VIP Cabana · ${ppl.en}`, es: `VIP Cabaña · ${ppl.es}` },
   sub: { en: `Includes ${inc.en}`, es: `Incluye ${inc.es}` },
   desc: { en: `Private VIP Cabana by the Seaside area for ${ppl.en}, with ${inc.en}.`, es: `VIP Cabaña privada junto al área Seaside para ${ppl.es}, con ${inc.es}.` },
@@ -3337,7 +3339,7 @@ function snapshot() {
     return { id, qty: sl.qty, kinds: it.kinds ? personKinds(it, sl) : undefined, cbd: it.kinds ? personCbd(it, sl) : undefined, manualOpt: sl.manual ? sl.opt : undefined,
       vipUnits: (v.units[id] || []).map(i => `${it.opts[i].pay}/${it.opts[i].b}`), regular: lineReg(it, sl) }; });
   return {
-    app: 'Gift Studio v25.2', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
+    app: 'Gift Studio v25.3', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
     guestBudget: hasBud() ? S.will : null, vouchers: S.step / VOUCHER, voucherValue: S.step, 
     cert: S.cart.cert, cart: lines, wish: S.wish,
     vip: { guestPays: v.cost, copays: v.pay, budgetUsed: v.used, overflow: v.overflow, left: S.will - v.cost, regularValue: v.value },
