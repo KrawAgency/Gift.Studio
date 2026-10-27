@@ -12,7 +12,7 @@
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <script>(function(){var t;try{t=localStorage.getItem('gs-theme')}catch(e){}if(t!=='light'&&t!=='dark')t=(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';document.documentElement.setAttribute('data-theme',t);})();</script>
-<title>Gift Studio v24.3</title>
+<title>Gift Studio v24.4</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:ital,wght@0,400;0,500;0,600;1,700&display=swap" rel="stylesheet">
@@ -709,6 +709,7 @@ dialog.sheet.settle{transition:transform .22s ease}
 .g-dots i.on{background:var(--orange)}
 .gcards{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .gcards.text{grid-template-columns:1fr}
+.g-banner{aspect-ratio:16/7;border-radius:20px;background-size:cover;background-position:center;background-color:var(--line);margin:4px 0 2px}
 .gcard{display:flex;flex-direction:column;text-align:left;border-radius:20px;background:var(--card);border:1.5px solid var(--line);overflow:hidden;min-height:64px;transition:transform .12s ease,border-color .12s ease}
 .gcard:hover{border-color:var(--orange)}
 .gcard:active{transform:scale(.98)}
@@ -2494,7 +2495,7 @@ function screenTitle() {
 // Hay a dónde regresar: una hoja abierta, el carrito (en celular) o una categoría distinta de "Todo"
 function canBack() { return !!S.sheet || (S.tab === 'cart' && !isWide()) || S.cat !== 'all'; }
 function goBack() {
-  if (S.sheet) { if (S.sheet.kind === 'guide' && gBackStep()) return; if (S.sheetPrev) { openSheet(S.sheetPrev); return; } closeSheet(); return; }
+  if (S.sheet) { if (closeFully) { closeFully = false; closeSheet(); return; } if (S.sheet.kind === 'guide' && gBackStep()) return; if (S.sheetPrev) { openSheet(S.sheetPrev); return; } closeSheet(); return; }
   if (S.tab === 'cart' && !isWide()) { switchTab('catalog'); return; }
   if (S.sub !== 'all') { S.sub = 'all'; render(); return; }
   if (S.cat !== 'all') { S.cat = 'all'; render(); window.scrollTo({ top: 0 }); }
@@ -2714,8 +2715,9 @@ $('sheet').addEventListener('pointermove', e => {
   $('sheet').style.transform = `translateY(${drag.dy}px)`;
 });
 // v24.2 · al soltar, la hoja termina de bajar con la misma duración con la que sube al abrirse (no desaparece de golpe)
+let closeFully = false;
 function slideClose() {
-  const sh = $('sheet');
+  const sh = $('sheet'); closeFully = true;
   sh.style.transition = 'transform .3s cubic-bezier(.4,0,.9,.6)';
   requestAnimationFrame(() => { sh.style.transform = 'translateY(100vh)'; });
   setTimeout(() => { sh.style.transition = ''; backAction(); }, 300);
@@ -2845,14 +2847,14 @@ function gStep(id, p = {}) {
       { photo: 'facial', title: g.otherSpa, sub: g.otherSpaSub, go: ['spaOther'] },
       { photo: 'hydro_circuit', title: g.pkgs, sub: g.pkgsSub, go: ['spaPkg'] },
     ] };
-    case 'kind': return { q: g.kindQ, hint: p.people === 2 ? g.kindHint2 : '', text: true, cards: [
-      { title: g.relax, sub: g.relaxSub, go: ['dur', { ...p, kind: 'relax' }] },
-      { title: g.deep, sub: g.deepSub, go: ['dur', { ...p, kind: 'deep' }] },
-      { ...itemCard('hotstones', { n: p.people, title: g.stones, sub: g.stonesSub }), photo: null },
+    case 'kind': return { q: g.kindQ, hint: p.people === 2 ? g.kindHint2 : '', cards: [
+      { photo: p.people === 2 ? 'couples' : 'massage', title: g.relax, sub: g.relaxSub, go: ['dur', { ...p, kind: 'relax' }] },
+      { photo: 'couples_a', title: g.deep, sub: g.deepSub, go: ['dur', { ...p, kind: 'deep' }] },
+      { ...itemCard('hotstones', { n: p.people, title: g.stones, sub: g.stonesSub }), photo: 'stones' },
     ] };
     case 'dur': {
       const opts = p.people === 2 ? [[50, 'couples', g.d50], [80, 'couples80', g.d80]] : [[25, 'massage25', g.d25], [50, 'massage', g.d50], [80, 'massage80', g.d80]];
-      return { q: g.durQ, text: true, cards: opts.map(([m, iid, sub]) => ({ ...itemCard(iid, { kind: p.kind, title: `${m} min`, sub }), photo: null })) };
+      return { q: g.durQ, text: true, banner: p.kind === 'deep' ? 'couples_a' : p.people === 2 ? 'couples' : 'massage', cards: opts.map(([m, iid, sub]) => ({ ...itemCard(iid, { kind: p.kind, title: `${m} min`, sub }), photo: null })) };
     }
     case 'spaOther': {
       const pool = ITEMS.filter(i => i.cat === 'spa' && !i.hidden && !i.durOnly && !i.kinds && !i.pkg);
@@ -2874,7 +2876,7 @@ function gStep(id, p = {}) {
     case 'pool': return { q: g.poolQ, cards: [
       itemCard('bali-infinity', { sub: g.pInfinity }), itemCard('bali-kids', { sub: g.pKids }), itemCard('bali-activities', { sub: g.pAct }),
     ] };
-    case 'cabana': return { q: g.cabanaQ, text: true, cards: ['cabana6', 'cabana10', 'cabana15'].map(i => ({ ...itemCard(i, { title: itemById(i).name[S.lang].split('·').pop().trim() }), photo: null })) };
+    case 'cabana': return { q: g.cabanaQ, text: true, banner: 'cabana', cards: ['cabana6', 'cabana10', 'cabana15'].map(i => ({ ...itemCard(i, { title: itemById(i).name[S.lang].split('·').pop().trim() }), photo: null })) };
     case 'dinner': return { q: g.dinnerQ, cards: ITEMS.filter(i => i.cat === 'dinner' && !i.hidden).map(i => itemCard(i.id)), more: 'dinner' };
     case 'exc': return { q: g.excQ, cards: [
       { photo: EXC_PHOTO.adventure, title: g.adv, sub: g.advSub, go: ['excList', { sub: 'adventure' }] },
@@ -2973,7 +2975,7 @@ function guideSheet() {
   else if (top.id === 'done') body = gDoneHTML(top.p);
   else {
     const st = gStep(top.id, top.p);
-    body = `<h2>${esc(st.q)}</h2>${st.hint ? `<p class="sub">${esc(st.hint)}</p>` : ''}${gCardsHTML(st)}
+    body = `${st.banner ? `<div class="g-banner ph-${st.banner}"></div>` : ''}<h2>${esc(st.q)}</h2>${st.hint ? `<p class="sub">${esc(st.hint)}</p>` : ''}${gCardsHTML(st)}
       ${st.more ? `<button class="ghost" data-gall="${st.more}">${g.seeAll}</button>` : ''}`;
   }
   return `${sheetTop('')}<div class="g-head"><span class="g-eyebrow">${g.eyebrow}</span>${top.id === 'done' ? '' : gDots()}</div>${body}`;
@@ -3301,7 +3303,7 @@ function snapshot() {
     return { id, qty: sl.qty, kinds: it.kinds ? personKinds(it, sl) : undefined, cbd: it.kinds ? personCbd(it, sl) : undefined, manualOpt: sl.manual ? sl.opt : undefined,
       vipUnits: (v.units[id] || []).map(i => `${it.opts[i].pay}/${it.opts[i].b}`), regular: lineReg(it, sl) }; });
   return {
-    app: 'Gift Studio v24.3', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
+    app: 'Gift Studio v24.4', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
     guestBudget: hasBud() ? S.will : null, vouchers: S.step / VOUCHER, voucherValue: S.step, 
     cert: S.cart.cert, cart: lines, wish: S.wish,
     vip: { guestPays: v.cost, copays: v.pay, budgetUsed: v.used, overflow: v.overflow, left: S.will - v.cost, regularValue: v.value },
