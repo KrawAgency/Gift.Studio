@@ -12,7 +12,7 @@
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <script>(function(){var t;try{t=localStorage.getItem('gs-theme')}catch(e){}if(t!=='light'&&t!=='dark')t=(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';document.documentElement.setAttribute('data-theme',t);})();</script>
-<title>Gift Studio v25.3</title>
+<title>Gift Studio v25.4</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:ital,wght@0,400;0,500;0,600;1,700&display=swap" rel="stylesheet">
@@ -940,6 +940,22 @@ body.is-vendor .notice.vnote{display:flex}
 @media (min-width:1080px){.vip-sw{font-size:15px;min-height:48px;padding-left:16px}}
 .mrow-g{cursor:pointer}
 .money.nobud .mrow-g.slim:active{opacity:.7}
+/* ── v25.4 · barra de abajo pegada al borde (sin flotar), 3 botones ── */
+:root{--nav-h:62px}
+.nav{padding:0;background:var(--card);border-top:1px solid var(--line);box-shadow:0 -6px 18px -14px rgba(0,0,0,.45)}
+.nav-in{max-width:none;border-radius:0;background:transparent;box-shadow:none;padding:4px 10px calc(4px + env(safe-area-inset-bottom,0px));grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.nav button{min-height:52px;border-radius:16px;padding:4px}
+.nav button[aria-current="page"]{background:color-mix(in srgb,var(--orange) 16%,transparent);color:var(--orange)}
+.nav button[aria-current="page"] .badge{background:var(--orange);color:#fff}
+#navStay{color:var(--muted)}
+#navStay.vip-on{color:#A87C1E}
+:root[data-theme="dark"] #navStay.vip-on{color:#E6B95A}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) #navStay.vip-on{color:#E6B95A}}
+.cta-bar{bottom:calc(var(--nav-h) + env(safe-area-inset-bottom,0px))}
+.toast{bottom:calc(var(--nav-h) + 16px + env(safe-area-inset-bottom,0px))}
+.cart-lc{margin:-4px 0 12px}
+.cart-lc .mrow-v{border:1.5px solid var(--line);border-radius:18px;border-top-width:1.5px}
+@media (min-width:1080px){.cart-lc{display:none}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
 
 /* ── Fotos ── */
@@ -1068,8 +1084,7 @@ body.is-vendor .notice.vnote{display:flex}
 <nav class="nav" aria-label="Navigation">
   <div class="nav-in">
     <button data-tab="catalog" id="navCatalog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5L12 4l8 6.5V19a1 1 0 0 1-1 1h-4v-6h-6v6H5a1 1 0 0 1-1-1v-8.5z"/></svg><span class="lbl" data-t="navHome"></span></button>
-    <button data-budget><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg><span class="lbl" data-t="navBudget"></span></button>
-    <button data-cert-open><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 16a6 6 0 0 1 12 0"/><path d="M3 16h18M6 20h12"/><path d="M12 4v3M5 8l2 2M19 8l-2 2"/></svg><span class="lbl" data-t="navStay"></span></button>
+    <button data-cert-open id="navStay"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 16a6 6 0 0 1 12 0"/><path d="M3 16h18M6 20h12"/><path d="M12 4v3M5 8l2 2M19 8l-2 2"/></svg><span class="lbl" data-t="navStay"></span></button>
     <button data-tab="cart" id="navCart"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 3.5h2.6l2.2 11h10.4l2-7.5H6.2"/><circle cx="9.5" cy="19" r="1.6"/><circle cx="16.5" cy="19" r="1.6"/></svg><span class="lbl" data-t="navGift"></span><span class="badge" id="navBadge"></span></button>
   </div>
 </nav>
@@ -2251,6 +2266,7 @@ function renderCatalog() {
   document.body.classList.toggle('mode-vip', S.mode === 'vip');
   document.body.classList.toggle('mode-reg', S.mode === 'reg');
   $('vipSw').setAttribute('aria-checked', String(S.mode === 'vip'));
+  $('navStay').classList.toggle('vip-on', S.mode === 'vip');
   $('modes').innerHTML = `<span class="knob" aria-hidden="true"></span>
     <button data-mode="reg" aria-pressed="${S.mode === 'reg'}">${t().modeReg}</button>
     <button data-mode="vip" aria-pressed="${S.mode === 'vip'}"><span class="star">✦</span>${t().modeVip}</button>`;
@@ -2314,6 +2330,12 @@ function cartItemsHTML(editable) {
       <div class="ci-side">${editable ? `<button class="rm" data-rmcbd aria-label="Remove">${ICON.trash}</button>` : ''}<b style="font-size:15px">×${cbdN}</b></div></div>`);
   }
   return rows.join('');
+}
+function moneyVrow() {   // v25.4 · solo la fila de Leisure Cash (misma mecánica de doble toque)
+  const n = S.step / VOUCHER, v = calcVip(S.cart), usedN = Math.ceil(v.within / VOUCHER);
+  const stack = n ? Array.from({ length: Math.min(n, 8) }, (_, i) => `<span class="vch ph-voucher${i < usedN ? ' used' : ''}" style="--i:${i}"></span>`).join('') : `<span class="vstar" aria-hidden="true">✦</span>`;
+  return `<div class="vrow mrow mrow-v" data-vrow="voucher"><span class="vstack" style="--n:${Math.max(Math.min(n, 8), 1)}">${stack}</span>
+    <span class="vtxt">${n ? `<b>${t().vouchers(n)}</b><small>${t().lc(money(S.step))}</small>` : `<b>${t().vipPricing}</b><small>${t().vipPricingSub}</small>`}</span></div>`;
 }
 function moneyHTML() {
   const bills = hasBud() ? Math.min(10, Math.round(S.will / 50)) : 0;
@@ -2466,6 +2488,7 @@ function renderCart() {
   $('cartView').innerHTML = `
     <div class="cart">
       <h2>${t().picks}</h2>
+      ${S.mode === 'vip' ? `<div class="cart-lc">${moneyVrow()}</div>` : ''}
       <p class="later" style="margin:-6px 0 6px;font-weight:600">${S.mode === 'vip' ? '✦ ' + t().modeVip : t().modeReg}</p>
       ${n ? cartItemsHTML(true) : `<p class="empty">${t().emptyPicks}</p>`}
       ${n ? sumsHTML() : ''}
@@ -3339,7 +3362,7 @@ function snapshot() {
     return { id, qty: sl.qty, kinds: it.kinds ? personKinds(it, sl) : undefined, cbd: it.kinds ? personCbd(it, sl) : undefined, manualOpt: sl.manual ? sl.opt : undefined,
       vipUnits: (v.units[id] || []).map(i => `${it.opts[i].pay}/${it.opts[i].b}`), regular: lineReg(it, sl) }; });
   return {
-    app: 'Gift Studio v25.3', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
+    app: 'Gift Studio v25.4', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
     guestBudget: hasBud() ? S.will : null, vouchers: S.step / VOUCHER, voucherValue: S.step, 
     cert: S.cart.cert, cart: lines, wish: S.wish,
     vip: { guestPays: v.cost, copays: v.pay, budgetUsed: v.used, overflow: v.overflow, left: S.will - v.cost, regularValue: v.value },
