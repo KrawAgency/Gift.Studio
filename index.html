@@ -12,7 +12,7 @@
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <script>(function(){var t;try{t=localStorage.getItem('gs-theme')}catch(e){}if(t!=='light'&&t!=='dark')t=(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';document.documentElement.setAttribute('data-theme',t);})();</script>
-<title>Gift Studio v23.5</title>
+<title>Gift Studio v23.6</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:ital,wght@0,400;0,500;0,600;1,700&display=swap" rel="stylesheet">
@@ -326,6 +326,7 @@ body.is-vendor .wneg{display:flex}
 .gal{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .gal .sh-img{aspect-ratio:4/3;border-radius:16px}
 .gal .sh-img:first-child{grid-column:1 / -1;aspect-ratio:16/9}
+.gal .sh-img:last-child:nth-child(even){grid-column:1 / -1;aspect-ratio:16/9}   /* sin foto huérfana al final */
 
 /* ── v9.3 ── */
 .sh-img.main{max-height:min(66vh,calc(100dvh - 330px));background-size:contain;background-repeat:no-repeat;background-color:#111}
@@ -932,6 +933,10 @@ body.is-vendor .notice.vnote{display:flex}
 .ph-xc_flamingo{background-image:url(img/96.webp)}
 .ph-xc_hacienda{background-image:url(img/97.webp)}
 .ph-xc_caleta{background-image:url(img/98.webp)}
+.ph-xc_voladores{background-image:url(img/99.webp)}
+.ph-isla_playa{background-image:url(img/100.webp)}
+.ph-my_laguna{background-image:url(img/101.webp)}
+.ph-my_snorkel{background-image:url(img/102.webp)}
 .ph-x19{background-image:url(img/41.webp)}
 .ph-x20{background-image:url(img/87.webp)}
 .ph-x20b{background-image:url(img/88.webp)}
@@ -1199,7 +1204,7 @@ const EXC = [
   [36, 'xcaret', 'cultural', 'Xcaret Park', 'adult', 206, 200],
   [37, 'chichen-deluxe', 'cultural', 'Chichen Itza Deluxe', 'adult', 205, 200],
   [37, 'chichen', 'cultural', 'Chichen Itza', 'adult', 156, 156],
-  [39, 'tulum-mayan', 'cultural', 'Tulum + Mayan Adventure', 'adult', 185, 185],
+  [39, 'tulum-mayan', 'cultural', 'Tulum Adventure', 'adult', 185, 185],
   [39, 'tulum-half', 'cultural', 'Tulum Half-Day', 'adult', 150, 145],
   [41, 'shop-cancun', 'cultural', 'Cancun Shopping Tour', 'shared', 120, 0],
   [42, 'shop-playa', 'cultural', 'Playa del Carmen Shopping Tour', 'shared', 120, 0]
@@ -1211,7 +1216,7 @@ const EXC_ES = {
   xelha: 'Parque Xel-Há', isla: 'Isla Mujeres - Velero de lujo', primax: 'Delfines - Primax',
   mayan: 'Aventura Maya', interax: 'Delfines - Interax', turtles: 'Nado con tortugas en Akumal',
   harmony: 'Delfines - Harmony', snorkel: 'Snorkel en Puerto Morelos', xcaret: 'Parque Xcaret',
-  'chichen-deluxe': 'Chichén Itzá Deluxe', chichen: 'Chichén Itzá', 'tulum-mayan': 'Tulum + Aventura Maya',
+  'chichen-deluxe': 'Chichén Itzá Deluxe', chichen: 'Chichén Itzá', 'tulum-mayan': 'Tulum Adventure',
   'tulum-half': 'Tulum medio día', 'shop-cancun': 'Tour de compras en Cancún', 'shop-playa': 'Tour de compras en Playa del Carmen',
 };
 const TICKET = {
@@ -1366,7 +1371,7 @@ for (const [ph, id, sub, nm, tk, reg, promo, kReg, kPromo] of EXC) {
     id: 'x-' + id, cat: 'excursions', sub, photo: 'x' + ph, max: 10, reg, exc: true, kid: 'x-' + id + '-k',
     name: { en: nm, es }, sub_: TICKET[tk], desc: EXC_DESC[id] ? { en: EXC_DESC[id].en, es: EXC_DESC[id].es } : { en: `${nm}.`, es: `${es}.` },
     ...(EXC_DESC[id] && EXC_DESC[id].inc ? { bullets: EXC_DESC[id].inc, bulletsT: { en: 'What’s included · good to know', es: 'Qué incluye · bueno saber' } } : {}),
-    opts: mkOpts(promo, 25), ...(EXC_PHOTO2[id] ? { photo2: EXC_PHOTO2[id] } : {}), ...(id === 'xplor-day' || id === 'xplor-fuego' ? { gallery: ['xp_slide'] } : id === 'xenotes' ? { gallery: ['x21b'] } : id === 'xcaret' ? { gallery: ['xc_flamingo', 'xc_hacienda', 'xc_caleta'] } : id === 'xelha' ? { gallery: ['xh_cliff', 'xh_tube', 'xh_snorkel', 'xh_food', 'xh_hammock'] } : {}), ...(LOGOS[id] ? { logo: LOGOS[id] } : {}),
+    opts: mkOpts(promo, 25), ...(EXC_PHOTO2[id] ? { photo2: EXC_PHOTO2[id] } : {}), ...(id === 'xplor-day' || id === 'xplor-fuego' ? { gallery: ['xp_slide'] } : id === 'xenotes' ? { gallery: ['x21b'] } : id === 'xcaret' ? { gallery: ['xc_flamingo', 'xc_hacienda', 'xc_caleta', 'xc_voladores'] } : id === 'isla' ? { gallery: ['isla_playa'] } : id === 'mayan' ? { gallery: ['my_laguna', 'my_snorkel'] } : id === 'tulum-mayan' ? { gallery: ['x31', 'my_laguna', 'my_snorkel'] } : id === 'xelha' ? { gallery: ['xh_cliff', 'xh_tube', 'xh_snorkel', 'xh_food', 'xh_hammock'] } : {}), ...(LOGOS[id] ? { logo: LOGOS[id] } : {}),
   });
   ITEMS.push({
     id: 'x-' + id + '-k', cat: 'excursions', hidden: true, kidOf: 'x-' + id, photo: 'x' + ph, max: 10, reg: kReg ?? reg,
@@ -3250,7 +3255,7 @@ function snapshot() {
     return { id, qty: sl.qty, kinds: it.kinds ? personKinds(it, sl) : undefined, cbd: it.kinds ? personCbd(it, sl) : undefined, manualOpt: sl.manual ? sl.opt : undefined,
       vipUnits: (v.units[id] || []).map(i => `${it.opts[i].pay}/${it.opts[i].b}`), regular: lineReg(it, sl) }; });
   return {
-    app: 'Gift Studio v23.5', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
+    app: 'Gift Studio v23.6', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
     guestBudget: hasBud() ? S.will : null, vouchers: S.step / VOUCHER, voucherValue: S.step, 
     cert: S.cart.cert, cart: lines, wish: S.wish,
     vip: { guestPays: v.cost, copays: v.pay, budgetUsed: v.used, overflow: v.overflow, left: S.will - v.cost, regularValue: v.value },
