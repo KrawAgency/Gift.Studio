@@ -12,7 +12,7 @@
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <script>(function(){var t;try{t=localStorage.getItem('gs-theme')}catch(e){}if(t!=='light'&&t!=='dark')t=(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';document.documentElement.setAttribute('data-theme',t);})();</script>
-<title>Gift Studio v24.1</title>
+<title>Gift Studio v24.2</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:ital,wght@0,400;0,500;0,600;1,700&display=swap" rel="stylesheet">
@@ -2713,11 +2713,18 @@ $('sheet').addEventListener('pointermove', e => {
   drag.dy = Math.max(0, e.clientY - drag.y);
   $('sheet').style.transform = `translateY(${drag.dy}px)`;
 });
+// v24.2 · al soltar, la hoja termina de bajar con la misma duración con la que sube al abrirse (no desaparece de golpe)
+function slideClose() {
+  const sh = $('sheet');
+  sh.style.transition = 'transform .3s cubic-bezier(.4,0,.9,.6)';
+  requestAnimationFrame(() => { sh.style.transform = 'translateY(100vh)'; });
+  setTimeout(() => { sh.style.transition = ''; backAction(); }, 300);
+}
 function endDrag(e) {
   if (!drag || (e && e.pointerId !== drag.id)) return;
   const far = drag.dy > 90; drag = null;
   $('sheet').classList.remove('dragging'); $('sheet').classList.add('dragged');
-  if (far) { backAction(); return; }
+  if (far) { slideClose(); return; }
   $('sheet').classList.add('settle'); $('sheet').style.transform = '';
 }
 ['pointerup', 'pointercancel'].forEach(ev => $('sheet').addEventListener(ev, endDrag));
@@ -2741,7 +2748,7 @@ function endPull() {
   if (!pull) return;
   const p = pull; pull = null; if (p.start === null) return;
   const sh = $('sheet'); sh.classList.remove('dragging'); sh.classList.add('dragged');
-  if (p.dy > 110) { backAction(); return; }
+  if (p.dy > 110) { slideClose(); return; }
   sh.classList.add('settle'); sh.style.transform = '';
 }
 ['touchend', 'touchcancel'].forEach(ev => $('sheet').addEventListener(ev, endPull));
@@ -3294,7 +3301,7 @@ function snapshot() {
     return { id, qty: sl.qty, kinds: it.kinds ? personKinds(it, sl) : undefined, cbd: it.kinds ? personCbd(it, sl) : undefined, manualOpt: sl.manual ? sl.opt : undefined,
       vipUnits: (v.units[id] || []).map(i => `${it.opts[i].pay}/${it.opts[i].b}`), regular: lineReg(it, sl) }; });
   return {
-    app: 'Gift Studio v24.1', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
+    app: 'Gift Studio v24.2', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
     guestBudget: hasBud() ? S.will : null, vouchers: S.step / VOUCHER, voucherValue: S.step, 
     cert: S.cart.cert, cart: lines, wish: S.wish,
     vip: { guestPays: v.cost, copays: v.pay, budgetUsed: v.used, overflow: v.overflow, left: S.will - v.cost, regularValue: v.value },
