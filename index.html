@@ -12,7 +12,7 @@
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <script>(function(){var t;try{t=localStorage.getItem('gs-theme')}catch(e){}if(t!=='light'&&t!=='dark')t=(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';document.documentElement.setAttribute('data-theme',t);})();</script>
-<title>Gift Studio v26</title>
+<title>Gift Studio v27</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:ital,wght@0,400;0,500;0,600;1,700&display=swap" rel="stylesheet">
@@ -956,6 +956,14 @@ body.is-vendor .notice.vnote{display:flex}
 .cart-lc{margin:-4px 0 12px}
 .cart-lc .mrow-v{border:1.5px solid var(--line);border-radius:18px;border-top-width:1.5px}
 @media (min-width:1080px){.cart-lc{display:none}}
+.zmap{position:relative;aspect-ratio:2000/1248;border-radius:18px;overflow:hidden;background-size:100% 100%;margin-top:6px}
+.zbox{position:absolute;border:3px solid #E6B95A;border-radius:14px;box-shadow:0 0 0 999px rgba(15,18,30,.5)}
+.zbox i{position:absolute;left:50%;top:-14px;transform:translateX(-50%);font-style:normal;font-weight:700;font-size:12px;background:#E6B95A;color:#2A2B40;border-radius:999px;padding:2px 10px;white-space:nowrap}
+.zbox.lbl-b i{top:auto;bottom:-14px}
+.pref-note{display:flex;align-items:center;gap:12px;margin:12px 0 4px;padding:10px 12px;border-radius:14px;background:var(--soft);font-weight:600;font-size:14px}
+.pref-logo{flex-shrink:0;background:#fff;border-radius:10px;padding:5px 9px;line-height:0}
+.pref-logo img{height:30px;width:auto}
+.gal .ph-vall_cat{background-position:50% 22%}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
 
 /* ── Fotos ── */
@@ -984,6 +992,9 @@ body.is-vendor .notice.vnote{display:flex}
 .ph-massage_b{background-image:url(img/106.webp)}
 .ph-bali_sea{background-image:url(img/107.webp)}
 .sh-img.main.ph-bali_sea{aspect-ratio:502/365}
+.ph-bali_map{background-image:url(img/108.webp)}
+.ph-vall_sign{background-image:url(img/109.webp)}
+.ph-vall_cat{background-image:url(img/110.webp)}
 .ph-x19{background-image:url(img/41.webp)}
 .ph-x20{background-image:url(img/87.webp)}
 .ph-x20b{background-image:url(img/88.webp)}
@@ -1133,6 +1144,14 @@ const MASSAGE_KINDS = [
 function mkOpts(promo, step = 50) { const o = []; for (let b = promo; b > 0; b -= step) o.push({ pay: promo - b, b }); o.push({ pay: promo, b: 0 }); return o; }
 const DINNER_NOTE = { en: 'Reservation 24 hours in advance · price per couple · 25% off wine bottles from the list when you order them at your dinner', es: 'Reservación con 24 horas de anticipación · precio por pareja · 25% de descuento en botellas de vino de la carta al ordenarlas en tu cena' };
 // Más vendidos: llevan la etiqueta "Top seller" en el catálogo y en las sugerencias
+// v27 · ubicación de cada cama/cabaña en el mapa (x, y, ancho, alto, en porcentaje del mapa)
+const ZONES = { 'bali-kids': [11, 1, 20, 19], 'bali-seaside': [49, 1, 23, 15], 'bali-activities': [3, 23, 17, 45], 'bali-infinity': [31, 30, 12, 50],
+  'bali-north': [73, 30, 21, 31], 'bali-south': [46, 65, 27, 33], cabana6: [74, 4, 10, 22], cabana10: [74, 4, 10, 22], cabana15: [74, 4, 10, 22] };
+const PREF_LOGO = 'data:image/webp;base64,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';
+function zoneHTML(it) {
+  const z = ZONES[it.id]; if (!z) return '';
+  return `<h4>${S.lang === 'es' ? 'Ubicación' : 'Location'}</h4><div class="zmap ph-bali_map"><span class="zbox${z[1] < 8 ? ' lbl-b' : ''}" style="left:${z[0]}%;top:${z[1]}%;width:${z[2]}%;height:${z[3]}%"><i>${S.lang === 'es' ? 'Aquí' : 'Here'}</i></span></div>`;
+}
 const TOP_SELLERS = ['couples', 'massage', 'hydro', 'dinner', 'bali-kids', 'x-isla'];
 const isTop = id => TOP_SELLERS.includes(id);
 // v18: la etiqueta solo la lleva el más vendido #1 de cada categoría (si todos dicen 'más vendido', ninguno lo es)
@@ -1186,7 +1205,7 @@ const ITEMS = [
   { id: 'bali-kids', cat: 'bali', photo: 'bali_kids', max: 3, reg: 120,
     name: { en: "Bali bed, kids' pool", es: 'Cama balinesa, alberca infantil' },
     sub: { en: 'Includes 1 Pétalo Moscato sparkling wine', es: 'Incluye 1 vino espumoso Pétalo Moscato' }, desc: baliDesc(7), opts: [ { pay: 0, b: 120 } ] },
-  { id: 'bali-north', cat: 'bali', photo: 'bali_beach', max: 3, reg: 120,
+  { id: 'bali-north', cat: 'bali', photo: 'bali_beach', max: 3, reg: 120, prefOnly: true,
     name: { en: 'Bali bed, North Beach', es: 'Cama balinesa, Playa Norte' },
     sub: { en: 'Includes 1 Alessandro Berselli sparkling wine', es: 'Incluye 1 vino espumoso Alessandro Berselli' }, desc: baliDesc(4), opts: [ { pay: 0, b: 120 } ] },
   { id: 'bali-south', cat: 'bali', photo: 'bali_beach', max: 3, reg: 120,
@@ -1278,7 +1297,7 @@ const EXC_RANK = ['isla', 'xelha', 'mayan', 'xcaret', 'chichen-deluxe', 'atvs', 
   'xplor-fuego', 'jungle', 'turtles', 'zip', 'tulum-half', 'interax', 'snorkel', 'jetski', 'harmony', 'shop-cancun', 'shop-playa'];
 const excRank = id => { const i = EXC_RANK.indexOf(id.replace(/^x-/, '')); return i < 0 ? 99 : i; };
 // v21: segunda foto (se ve abajo en la hoja del tour)
-const EXC_PHOTO2 = { snorkel: 'x35b', 'xplor-day': 'x19b', 'xplor-fuego': 'x20b', xelha: 'xh_slides', xenotes: 'x31b', isla: 'x29b', xcaret: 'x36b', 'chichen-deluxe': 'x37b' };
+const EXC_PHOTO2 = { chichen: 'x37b', snorkel: 'x35b', 'xplor-day': 'x19b', 'xplor-fuego': 'x20b', xelha: 'xh_slides', xenotes: 'x31b', isla: 'x29b', xcaret: 'x36b', 'chichen-deluxe': 'x37b' };
 // v23 · Descripciones de excursiones (investigadas en las fichas de Amstar DMC, Xcaret Parks y operadores; oct 2026).
 // desc = 2–3 frases para el huésped · inc = lo que incluye / lo que hay que saber. Los detalles pueden cambiar: confirmar al reservar.
 const EXC_DESC = {
@@ -1385,8 +1404,8 @@ const EXC_DESC = {
            en: ['Deluxe coach with breakfast on board', 'Chichén Itzá entry and bilingual guide', 'Valladolid buffet and cenote swim', 'Unlimited soft drinks, coffee and beer · about 12 h'] },
   },
   chichen: {
-    es: 'Visita guiada a Chichén Itzá, una de las 7 Maravillas del Mundo: la pirámide de Kukulcán, el Juego de Pelota y el Templo de las Mil Columnas. Nado en un cenote, comida buffet y una parada en Valladolid.',
-    en: 'Guided visit to Chichén Itzá, one of the New 7 Wonders: the Kukulcán pyramid, the Great Ball Court and the Temple of a Thousand Columns. Cenote swim, buffet lunch and a stop in Valladolid.',
+    es: 'Visita guiada a Chichén Itzá, una de las 7 Maravillas del Mundo: la pirámide de Kukulcán, el Juego de Pelota y el Templo de las Mil Columnas. Nado en un cenote y comida buffet. (El Deluxe agrega la parada en Valladolid.)',
+    en: 'Guided visit to Chichén Itzá, one of the New 7 Wonders: the Kukulcán pyramid, the Great Ball Court and the Temple of a Thousand Columns. Cenote swim and buffet lunch. (Deluxe adds a stop in Valladolid.)',
     inc: { es: ['Transportación redonda y guía', 'Recorrido guiado y tiempo libre en la zona', 'Cenote y comida buffet', 'Pago aparte: impuesto de la zona arqueológica'],
            en: ['Round-trip transportation and guide', 'Guided tour and free time at the site', 'Cenote and buffet lunch', 'Paid separately: archaeological site tax'] },
   },
@@ -1423,7 +1442,7 @@ for (const [ph, id, sub, nm, tk, reg, promo, kReg, kPromo] of EXC) {
     id: 'x-' + id, cat: 'excursions', sub, photo: 'x' + ph, max: 10, reg, exc: true, kid: 'x-' + id + '-k',
     name: { en: nm, es }, sub_: TICKET[tk], desc: EXC_DESC[id] ? { en: EXC_DESC[id].en, es: EXC_DESC[id].es } : { en: `${nm}.`, es: `${es}.` },
     ...(EXC_DESC[id] && EXC_DESC[id].inc ? { bullets: EXC_DESC[id].inc, bulletsT: { en: 'What’s included · good to know', es: 'Qué incluye · bueno saber' } } : {}),
-    opts: mkOpts(promo, 25), ...(EXC_PHOTO2[id] ? { photo2: EXC_PHOTO2[id] } : {}), ...(id === 'xplor-day' || id === 'xplor-fuego' ? { gallery: ['xp_slide'] } : id === 'xenotes' ? { gallery: ['x21b'] } : id === 'xcaret' ? { gallery: ['xc_flamingo', 'xc_hacienda', 'xc_caleta', 'xc_voladores'] } : id === 'isla' ? { gallery: ['isla_playa', 'x35'] } : id === 'mayan' ? { gallery: ['my_laguna', 'my_snorkel'] } : id === 'tulum-mayan' ? { gallery: ['x31', 'my_laguna', 'my_snorkel'] } : id === 'xelha' ? { gallery: ['xh_cliff', 'xh_tube', 'xh_snorkel', 'xh_food', 'xh_hammock'] } : {}), ...(LOGOS[id] ? { logo: LOGOS[id] } : {}),
+    opts: mkOpts(promo, 25), ...(EXC_PHOTO2[id] ? { photo2: EXC_PHOTO2[id] } : {}), ...(id === 'xplor-day' || id === 'xplor-fuego' ? { gallery: ['xp_slide'] } : id === 'xenotes' ? { gallery: ['x21b'] } : id === 'chichen-deluxe' ? { gallery: ['vall_sign', 'vall_cat'] } : id === 'xcaret' ? { gallery: ['xc_flamingo', 'xc_hacienda', 'xc_caleta', 'xc_voladores'] } : id === 'isla' ? { gallery: ['isla_playa', 'x35'] } : id === 'mayan' ? { gallery: ['my_laguna', 'my_snorkel'] } : id === 'tulum-mayan' ? { gallery: ['x31', 'my_laguna', 'my_snorkel'] } : id === 'xelha' ? { gallery: ['xh_cliff', 'xh_tube', 'xh_snorkel', 'xh_food', 'xh_hammock'] } : {}), ...(LOGOS[id] ? { logo: LOGOS[id] } : {}),
   });
   ITEMS.push({
     id: 'x-' + id + '-k', cat: 'excursions', hidden: true, kidOf: 'x-' + id, photo: 'x' + ph, max: 10, reg: kReg ?? reg,
@@ -1630,14 +1649,17 @@ const DURS = [
   ['massage25', 'massage', 'massage80'], ['couples', 'couples80'], ['hydro', 'hydro80'],
   ['neck25', 'neck50'], ['foot25', 'foot50'], ['scalp25', 'scalp50'], ['pedi50', 'pedi80'], ['mani50', 'mani80'],
   ['x-chichen-deluxe', 'x-chichen'], ['x-primax', 'x-interax', 'x-harmony'],   // v26: variantes de tour
+  ['x-tulum-mayan', 'x-tulum-half'], ['bali-south', 'bali-north'],   // v27
 ];
 const DUR_MIN = { massage25: 25, massage: 50, massage80: 80, couples: 50, couples80: 80, hydro: 50, hydro80: 80,
   neck25: 25, neck50: 50, foot25: 25, foot50: 50, scalp25: 25, scalp50: 50, pedi50: 50, pedi80: 80, mani50: 50, mani80: 80 };
-const DUR_ONLY = ['massage25', 'hydro80', 'neck25', 'foot25', 'scalp25', 'pedi80', 'mani80', 'x-chichen', 'x-interax', 'x-harmony'];
+const DUR_ONLY = ['massage25', 'hydro80', 'neck25', 'foot25', 'scalp25', 'pedi80', 'mani80', 'x-chichen', 'x-interax', 'x-harmony', 'x-tulum-half', 'bali-north'];
 // v26 · etiquetas de variantes que no son duración
 const VAR_LBL = { 'x-chichen-deluxe': { en: 'Deluxe', es: 'Deluxe' }, 'x-chichen': { en: 'Classic', es: 'Clásico' },
+  'x-tulum-mayan': { en: 'Adventure', es: 'Adventure' }, 'x-tulum-half': { en: 'Half day', es: 'Medio día' },
+  'bali-south': { en: 'South Beach', es: 'Playa Sur' }, 'bali-north': { en: 'North Beach · Preferred', es: 'Playa Norte · Preferred' },
   'x-primax': { en: 'Primax', es: 'Primax' }, 'x-interax': { en: 'Interax', es: 'Interax' }, 'x-harmony': { en: 'Harmony', es: 'Harmony' } };
-const VAR_HEAD = { 'x-chichen-deluxe': { en: 'Tour type', es: 'Tipo de tour' }, 'x-primax': { en: 'Program', es: 'Programa' } };
+const VAR_HEAD = { 'x-chichen-deluxe': { en: 'Tour type', es: 'Tipo de tour' }, 'x-tulum-mayan': { en: 'Tour type', es: 'Tipo de tour' }, 'bali-south': { en: 'Beach', es: 'Playa' }, 'x-primax': { en: 'Program', es: 'Programa' } };
 const varLbl = id => DUR_MIN[id] ? `${DUR_MIN[id]} min` : VAR_LBL[id] ? VAR_LBL[id][S.lang] : itemById(id).name[S.lang];
 for (const id of DUR_ONLY) { const it = ITEMS.find(i => i.id === id); if (it) it.durOnly = true; }
 const durGroup = id => DURS.find(g => g.includes(id));
@@ -2634,6 +2656,7 @@ function itemSheet(id) {
     <div class="sh-img main ph-${it.sheetPhoto || it.photo}" style="${off ? 'filter:grayscale(1)' : ''}"><div class="anchor-pill">${pill}</div></div>
     ${it.logo ? `<div class="sh-title"><h2>${it.name[L]}</h2><span class="sh-logo"><img src="${it.logo}" alt=""></span></div>` : `<h2>${it.name[L]}</h2>`}
     <p class="sub">${subOf(it)}</p>
+    ${it.prefOnly ? `<div class="pref-note"><span class="pref-logo"><img src="${PREF_LOGO}" alt="Preferred Club"></span><span>${S.lang === 'es' ? 'Exclusiva para huéspedes Preferred Club' : 'Exclusive to Preferred Club guests'}</span></div>` : ''}
     ${pkgInfoHTML(it)}
     ${durHTML(it)}
     ${kinds}${opts}
@@ -2641,6 +2664,7 @@ function itemSheet(id) {
     <h4>${t().description}</h4>
     <p class="desc">${it.desc[L]}</p>
     ${it.bullets ? `<h4>${it.bulletsT ? it.bulletsT[L] : t().includesT}</h4><ul class="menu">${it.bullets[L].map(x => `<li>${x}</li>`).join('')}</ul>` : ''}
+    ${zoneHTML(it)}
     ${it.gallery ? `<div class="gal">${it.gallery.map(g => `<div class="sh-img ph-${g}"></div>`).join('')}</div>` : ''}
     ${it.menu ? `<h4>${t().menuT}</h4><ul class="menu">${it.menu[L].map(x => `<li>${x}</li>`).join('')}</ul><p class="sub" style="margin:0">${DINNER_NOTE[L]}</p>` : ''}
     ${it.photo2 ? `<div class="sh-img ph-${it.photo2}" style="aspect-ratio:3/2"></div>` : ''}
@@ -3373,7 +3397,7 @@ function snapshot() {
     return { id, qty: sl.qty, kinds: it.kinds ? personKinds(it, sl) : undefined, cbd: it.kinds ? personCbd(it, sl) : undefined, manualOpt: sl.manual ? sl.opt : undefined,
       vipUnits: (v.units[id] || []).map(i => `${it.opts[i].pay}/${it.opts[i].b}`), regular: lineReg(it, sl) }; });
   return {
-    app: 'Gift Studio v26', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
+    app: 'Gift Studio v27', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
     guestBudget: hasBud() ? S.will : null, vouchers: S.step / VOUCHER, voucherValue: S.step, 
     cert: S.cart.cert, cart: lines, wish: S.wish,
     vip: { guestPays: v.cost, copays: v.pay, budgetUsed: v.used, overflow: v.overflow, left: S.will - v.cost, regularValue: v.value },
