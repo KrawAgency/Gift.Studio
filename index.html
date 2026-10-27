@@ -12,7 +12,7 @@
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <script>(function(){var t;try{t=localStorage.getItem('gs-theme')}catch(e){}if(t!=='light'&&t!=='dark')t=(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';document.documentElement.setAttribute('data-theme',t);})();</script>
-<title>Gift Studio v28</title>
+<title>Gift Studio v28.1</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:ital,wght@0,400;0,500;0,600;1,700&display=swap" rel="stylesheet">
@@ -1864,11 +1864,15 @@ let prevOff = {};
 const $ = id => document.getElementById(id);
 // v28 · sin VIP no es un regalo: se llama "Mis planes"; con VIP se vuelve "Mi regalo"
 const PLANS = {
-  en: { title: 'Your plans', navGift: 'My plans', picks: 'My plans', emptyPicks: 'Your plans are empty. Add something from the catalog.', book: 'Book my plans', doneText: 'Your plans are reserved for after the presentation.' },
-  es: { title: 'Tus planes', navGift: 'Mis planes', picks: 'Mis planes', emptyPicks: 'Tus planes están vacíos. Agrega algo del catálogo.', book: 'Reservar mis planes', doneText: 'Tus planes quedan reservados para después de la presentación.' },
+  en: { title: 'Your plans', navGift: 'My plans', picks: 'My plans', emptyPicks: 'Your plans are empty. Add something from the catalog.', book: 'Book my plans', doneText: 'Your plans are reserved for after the presentation.',
+    addGift: 'Add to my plans', update: 'Update my plans', cleared: 'Your plans were cleared', beyondGift: 'Beyond your plans', moveIn: 'Move to my plans', allIn: 'Move all to my plans' },
+  es: { title: 'Tus planes', navGift: 'Mis planes', picks: 'Mis planes', emptyPicks: 'Tus planes están vacíos. Agrega algo del catálogo.', book: 'Reservar mis planes', doneText: 'Tus planes quedan reservados para después de la presentación.',
+    addGift: 'Agregar a mis planes', update: 'Actualizar mis planes', cleared: 'Se vaciaron tus planes', beyondGift: 'Fuera de tus planes', moveIn: 'Pasar a mis planes', allIn: 'Pasar todo a mis planes' },
 };
-const GPLANS = { en: { doneTitle: 'Added to your plans!', seeGift: 'See my plans' }, es: { doneTitle: '¡Agregado a tus planes!', seeGift: 'Ver mis planes' } };
-const SPLANS = { en: { head: 'Your vacation plans', title: 'Your vacation plans offer' }, es: { head: 'Tus planes de vacaciones', title: 'Tu oferta de planes vacacionales' } };
+const GPLANS = { en: { doneTitle: 'Added to your plans!', seeGift: 'See my plans', eyebrow: 'Build your plans', add: 'Add to my plans', totals: (n, p) => `${n} in your plans · Today you pay ${p}` },
+  es: { doneTitle: '¡Agregado a tus planes!', seeGift: 'Ver mis planes', eyebrow: 'Arma tus planes', add: 'Agregar a mis planes', totals: (n, p) => `${n} en tus planes · Hoy pagas ${p}` } };
+const SPLANS = { en: { head: 'Your vacation plans', title: 'Your vacation plans offer', wa: n => `Hi${n ? ' ' + n : ''}! These are the vacation plans we put together:` },
+  es: { head: 'Tus planes de vacaciones', title: 'Tu oferta de planes vacacionales', wa: n => `¡Hola${n ? ' ' + n : ''}! Estos son los planes de vacaciones que armamos:` } };
 const t = () => S.mode === 'reg' ? { ...T[S.lang], ...PLANS[S.lang] } : T[S.lang];
 const money = n => '$' + (Math.round(n) || 0).toLocaleString('en-US');
 const itemById = id => ITEMS.find(i => i.id === id);
@@ -2562,7 +2566,7 @@ function renderVendor() {
   if (ids.length) {
     const names = ids.map(id => itemById(id).name.es).join(', '), gap = wishGap();
     let act;
-    if (gap <= 0) act = `<span>Ya entra todo</span><button data-wall>Pasar al regalo</button>`;
+    if (gap <= 0) act = `<span>Ya entra todo</span><button data-wall>${S.mode === 'reg' ? 'Pasar a sus planes' : 'Pasar al regalo'}</button>`;
     else if (S.mode === 'vip' && vouchersToCover() !== null) {
       const k = vouchersToCover();
       act = `<span>Con <b>+${money(k)}</b> en vouchers (${k / VOUCHER}) entra todo</span><button data-wgive="${k}">Dar +${money(k)} y pasar</button>`;
@@ -3251,7 +3255,7 @@ async function openShare() {
 }
 async function saveOffer() {
   if (!S.share.blob) return;
-  const dl = await getDl(), fname = `oferta-regalo-${new Date().toISOString().slice(0, 10)}.png`;
+  const dl = await getDl(), fname = `${S.mode === 'reg' ? 'planes' : 'oferta-regalo'}-${new Date().toISOString().slice(0, 10)}.png`;
   if (!dl) {   // v22 · como app (GitHub Pages): compartir directo (WhatsApp, etc.) o descargar
     try {
       const file = new File([S.share.blob], fname, { type: 'image/png' });
@@ -3411,7 +3415,7 @@ function snapshot() {
     return { id, qty: sl.qty, kinds: it.kinds ? personKinds(it, sl) : undefined, cbd: it.kinds ? personCbd(it, sl) : undefined, manualOpt: sl.manual ? sl.opt : undefined,
       vipUnits: (v.units[id] || []).map(i => `${it.opts[i].pay}/${it.opts[i].b}`), regular: lineReg(it, sl) }; });
   return {
-    app: 'Gift Studio v28', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
+    app: 'Gift Studio v28.1', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
     guestBudget: hasBud() ? S.will : null, vouchers: S.step / VOUCHER, voucherValue: S.step, 
     cert: S.cart.cert, cart: lines, wish: S.wish,
     vip: { guestPays: v.cost, copays: v.pay, budgetUsed: v.used, overflow: v.overflow, left: S.will - v.cost, regularValue: v.value },
