@@ -12,7 +12,7 @@
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <script>(function(){var t;try{t=localStorage.getItem('gs-theme')}catch(e){}if(t!=='light'&&t!=='dark')t=(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';document.documentElement.setAttribute('data-theme',t);})();</script>
-<title>Gift Studio v29</title>
+<title>Gift Studio v29.1</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:ital,wght@0,400;0,500;0,600;1,700&display=swap" rel="stylesheet">
@@ -99,7 +99,8 @@ svg{display:block}
 /* ── Layout ── */
 .layout .wrap{display:grid;grid-template-columns:minmax(0,1fr);gap:24px;padding-top:14px;padding-bottom:calc(var(--nav-h) + 40px)}
 /* v29: el regalo a un lado del catálogo solo en tablet (pantalla táctil); en laptop va como en el celular */
-@media (min-width:1080px) and (pointer:coarse){
+@media not all{   /* v29.1: regalo a un lado desactivado; tablet horizontal = como celular */
+
   .layout .wrap{grid-template-columns:minmax(0,1fr) 360px;align-items:start}
   .nav{display:none!important}
   .layout .wrap{padding-bottom:60px}
@@ -796,7 +797,7 @@ body.is-vendor .notice.vnote{display:flex}
   .hero h2{font-size:clamp(30px,3.4vw,46px)}
   .hero-body{padding-block:18px}
 }
-@media (min-width:1360px) and (pointer:coarse){.layout .wrap{grid-template-columns:minmax(0,1fr) 400px}}
+@media not all{.layout .wrap{grid-template-columns:minmax(0,1fr) 400px}}
 /* Celular horizontal (pantalla muy baja): sin barra de abajo (el carrito sigue arriba a la derecha) y todo más compacto */
 @media (orientation:landscape) and (max-height:520px){
   :root{--nav-h:0px}
@@ -830,7 +831,7 @@ body.is-vendor .notice.vnote{display:flex}
 .cart-reset{justify-content:space-between;gap:8px}
 .cart-reset .ghost{white-space:nowrap;font-size:14px;padding-inline:4px}
 /* v19 · tablet: con el regalo vacío el panel se colapsa y el catálogo usa todo el ancho */
-@media (min-width:1080px) and (pointer:coarse){
+@media not all{
   body.cart-empty .layout .wrap{grid-template-columns:minmax(0,1fr)}
   body.cart-empty #cartView{display:none!important}
   #cartView.cart-in{animation:cartIn .38s cubic-bezier(.2,.9,.3,1)}
@@ -921,8 +922,8 @@ body.is-vendor .notice.vnote{display:flex}
   .ci .mini-step button{width:34px;height:34px;font-size:18px}
   .ci-txt b{font-size:15.5px}
 }
-@media (min-width:1180px) and (pointer:coarse){.layout .wrap{grid-template-columns:minmax(0,1fr) 384px}}
-@media (min-width:1360px) and (pointer:coarse){.layout .wrap{grid-template-columns:minmax(0,1fr) 410px}}
+@media not all{.layout .wrap{grid-template-columns:minmax(0,1fr) 384px}}
+@media not all{.layout .wrap{grid-template-columns:minmax(0,1fr) 410px}}
 /* ── v25 · interruptor VIP Services arriba; la pastilla de presupuesto completa es tocable ── */
 #modes{display:none!important}
 .hdr-row{flex-wrap:nowrap;width:100%}
@@ -960,9 +961,9 @@ body.is-vendor .notice.vnote{display:flex}
 .toast{bottom:calc(var(--nav-h) + 16px + env(safe-area-inset-bottom,0px))}
 .cart-lc{margin:-4px 0 12px}
 .cart-lc .mrow-v{border:1.5px solid var(--line);border-radius:18px;border-top-width:1.5px}
-@media (min-width:1080px) and (pointer:coarse){.cart-lc{display:none}}
-/* v29 · laptop (mouse): mismo esquema que el celular, en grande. Barra de abajo; el regalo en su propia pantalla */
-@media (min-width:1080px) and (not (pointer:coarse)){
+@media not all{.cart-lc{display:none}}
+/* v29 · laptop y tablet horizontal: mismo esquema que el celular, en grande. Barra de abajo; el regalo en su propia pantalla */
+@media (min-width:1080px){
   .top .wrap{padding-right:74px}   /* deja libre el botón del carrito */
   .nav-in{max-width:760px;margin:0 auto}
   .nav button{min-height:56px;font-size:13px}
@@ -970,7 +971,7 @@ body.is-vendor .notice.vnote{display:flex}
   #cartView{width:100%;max-width:820px;margin:0 auto}
   #cartView .sugg-list{grid-template-columns:repeat(3,minmax(0,1fr))}   /* sugerencias más chicas: caben 6 en dos filas */
 }
-@media (min-width:1280px) and (not (pointer:coarse)){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media (min-width:1280px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
 .zmap{position:relative;aspect-ratio:2000/1248;border-radius:18px;overflow:hidden;background-size:100% 100%;margin-top:6px}
 .zbox{position:absolute;border:1.5px solid rgba(230,185,90,.85);border-radius:12px;box-shadow:0 0 0 999px rgba(15,18,30,.42)}
 .zbox i{position:absolute;left:50%;bottom:calc(100% + 4px);transform:translateX(-50%);font-style:normal;font-weight:600;font-size:10px;letter-spacing:.02em;background:rgba(20,22,34,.72);color:#F1D79A;border-radius:999px;padding:1px 7px;white-space:nowrap}
@@ -2606,7 +2607,7 @@ function renderTabs() {
   navSync();
 }
 /* ── v11.4 · navegación: Atrás (botón de arriba, gesto o botón del celular, Esc) ── */
-const SIDE_MQ = '(min-width:1080px) and (pointer:coarse)';   // v29: regalo a un lado solo en tablet; laptop = como celular
+const SIDE_MQ = 'not all';   // v29.1: el regalo ya nunca va a un lado (laptop y tablet = como celular)
 const isWide = () => window.matchMedia(SIDE_MQ).matches;
 const catName = id => (CATS.find(c => c.id === id) || CATS[0]).name[S.lang];
 function screenTitle() {
@@ -3432,7 +3433,7 @@ function snapshot() {
     return { id, qty: sl.qty, kinds: it.kinds ? personKinds(it, sl) : undefined, cbd: it.kinds ? personCbd(it, sl) : undefined, manualOpt: sl.manual ? sl.opt : undefined,
       vipUnits: (v.units[id] || []).map(i => `${it.opts[i].pay}/${it.opts[i].b}`), regular: lineReg(it, sl) }; });
   return {
-    app: 'Gift Studio v29', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
+    app: 'Gift Studio v29.1', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
     guestBudget: hasBud() ? S.will : null, vouchers: S.step / VOUCHER, voucherValue: S.step, 
     cert: S.cart.cert, cart: lines, wish: S.wish,
     vip: { guestPays: v.cost, copays: v.pay, budgetUsed: v.used, overflow: v.overflow, left: S.will - v.cost, regularValue: v.value },
