@@ -12,7 +12,7 @@
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <script>(function(){var t;try{t=localStorage.getItem('gs-theme')}catch(e){}if(t!=='light'&&t!=='dark')t=(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';document.documentElement.setAttribute('data-theme',t);})();</script>
-<title>Gift Studio v29.13</title>
+<title>Gift Studio v29.17</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:ital,wght@0,400;0,500;0,600;1,700&display=swap" rel="stylesheet">
@@ -2342,9 +2342,10 @@ function lcPay(it, s) {
   if (S.mode !== 'vip' || !S.step) return null;
   const base = costIn('vip', S.cart);
   if (!s.qty) return Math.max(0, costIn('vip', withItem(S.cart, it.id, 1, { kind: s.kind })) - base);
-  let without = withItem(S.cart, it.id, 0);
-  if (it.kid && without.sel[it.kid]) without = withItem(without, it.kid, 0);
-  return Math.max(0, base - costIn('vip', without));
+  // v29.17 · seleccionada: lo mismo que reparte el desglose del checkout (antes cada tarjeta se cobraba como si
+  // el LC lo usaran las demás y la suma de tarjetas no cuadraba con el total)
+  const sp = splitVip(calcVip(S.cart)), cash = id => (sp[id] ? sp[id].cash : 0);
+  return cash(it.id) + (it.kid ? cash(it.kid) : 0);
 }
 function kidsOf(it) { return it.kid && S.cart.sel[it.kid] ? S.cart.sel[it.kid].qty : 0; }
 function paxText(a, k) { return `${a}.${k} Pax`; }
@@ -3544,7 +3545,7 @@ function snapshot() {
     return { id, qty: sl.qty, kinds: it.kinds ? personKinds(it, sl) : undefined, cbd: it.kinds ? personCbd(it, sl) : undefined, manualOpt: sl.manual ? sl.opt : undefined,
       vipUnits: (v.units[id] || []).map(i => `${it.opts[i].pay}/${it.opts[i].b}`), regular: lineReg(it, sl) }; });
   return {
-    app: 'Gift Studio v29.13', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
+    app: 'Gift Studio v29.17', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
     guestBudget: hasBud() ? S.will : null, vouchers: S.step / VOUCHER, voucherValue: S.step, 
     cert: S.cart.cert, cart: lines, wish: S.wish,
     vip: { guestPays: v.cost, copays: v.pay, budgetUsed: v.used, overflow: v.overflow, left: S.will - v.cost, regularValue: v.value },
