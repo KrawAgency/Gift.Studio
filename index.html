@@ -293,6 +293,7 @@ body.is-vendor .wneg{display:flex}
 
 /* ── v8.7 ── */
 .pc-price b.promo{color:var(--ok)}
+.pc-price b.lcfree{text-transform:uppercase;letter-spacing:.04em}
 .reg-lbl{font-size:calc(12px*var(--fs,1));color:var(--muted)}
 .reg-lbl s{text-decoration-color:var(--warn);text-decoration-thickness:1.5px}
 .anchor-pill span.promo{background:var(--orange)!important;color:#fff!important}
@@ -2326,8 +2327,21 @@ function priceBlock(it) {
   if (S.mode !== 'vip' && cpn > 0 && !it.vipOnly) return line(money(cp), money(reg), 'promo');
   if (S.mode !== 'vip') return line(money(it.vipOnly ? promoUnit(it) : reg));
   const promo = promoAll(it, q);
+  // v29.14 · Leisure Cash como efectivo: lo que cubre el saldo restante se ve "Free"; lo que se pasa muestra solo la diferencia
+  const lc = lcPay(it, s);
+  if (lc != null && lc < promo) return line(lc ? money(lc) : t().free2, money(promo), lc ? 'promo' : 'promo lcfree');
   if (!hasDiscount(it)) return line(money(promo));
   return line(promo ? money(promo) : t().free2, cp > promo ? money(cp) : '', 'promo');
+}
+// v29.14 · cuánto paga de verdad el huésped por esta tarjeta con el Leisure Cash que queda
+// (sin seleccionar: lo que sube el total al agregar 1; seleccionada: lo que aporta su línea al total)
+function lcPay(it, s) {
+  if (S.mode !== 'vip' || !S.step) return null;
+  const base = costIn('vip', S.cart);
+  if (!s.qty) return Math.max(0, costIn('vip', withItem(S.cart, it.id, 1, { kind: s.kind })) - base);
+  let without = withItem(S.cart, it.id, 0);
+  if (it.kid && without.sel[it.kid]) without = withItem(without, it.kid, 0);
+  return Math.max(0, base - costIn('vip', without));
 }
 function kidsOf(it) { return it.kid && S.cart.sel[it.kid] ? S.cart.sel[it.kid].qty : 0; }
 function paxText(a, k) { return `${a}.${k} Pax`; }
