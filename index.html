@@ -12,7 +12,7 @@
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <script>(function(){var t;try{t=localStorage.getItem('gs-theme')}catch(e){}if(t!=='light'&&t!=='dark')t=(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';document.documentElement.setAttribute('data-theme',t);})();</script>
-<title>Gift Studio v29.21</title>
+<title>Gift Studio v29.22</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:ital,wght@0,400;0,500;0,600;1,700&display=swap" rel="stylesheet">
@@ -324,6 +324,13 @@ body.is-vendor .wneg{display:flex}
 
 /* ── v9.2 ── */
 .gal{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sh-part{display:contents}
+#vidHost{display:flex;flex-direction:column;gap:12px}
+.vid{position:relative;display:block;width:100%;aspect-ratio:16/9;border:0;padding:0;border-radius:24px;overflow:hidden;background:#000;cursor:pointer}
+.vid img,.vid iframe{position:absolute;inset:0;width:100%;height:100%;border:0;object-fit:cover}
+.vid-play{position:absolute;left:50%;top:50%;width:64px;height:64px;margin:-32px 0 0 -32px;border-radius:50%;background:rgba(0,0,0,.55);box-shadow:0 4px 18px rgba(0,0,0,.35);transition:transform .15s}
+.vid-play::after{content:'';position:absolute;left:26px;top:20px;border-style:solid;border-width:12px 0 12px 20px;border-color:transparent transparent transparent #fff}
+.vid:active .vid-play{transform:scale(.92)}
 .gal .sh-img{aspect-ratio:4/3;border-radius:16px}
 .gal .sh-img:first-child{grid-column:1 / -1;aspect-ratio:16/9}
 .gal .sh-img:last-child:nth-child(even){grid-column:1 / -1;aspect-ratio:16/9}   /* sin foto huérfana al final */
@@ -1371,6 +1378,8 @@ const EXC_RANK = ['isla', 'xelha', 'mayan', 'xcaret', 'chichen-deluxe', 'atvs', 
   'xplor-fuego', 'jungle', 'turtles', 'zip', 'tulum-half', 'interax', 'snorkel', 'jetski', 'harmony', 'shop-cancun', 'shop-playa'];
 const excRank = id => { const i = EXC_RANK.indexOf(id.replace(/^x-/, '')); return i < 0 ? 99 : i; };
 // v21: segunda foto (se ve abajo en la hoja del tour)
+// v29.22 · video de YouTube en la hoja de detalle (id + segundo de inicio). Para agregar otro: id_excursión: { id: 'XXXX', start: 0 }
+const EXC_VIDEO = { xelha: { id: 'i1EugQm1xnc', start: 10 } };
 const EXC_PHOTO2 = { chichen: 'x37b', snorkel: 'x35b', 'xplor-day': 'x19b', 'xplor-fuego': 'x20b', xelha: 'xh_slides', xenotes: 'x31b', isla: 'x29b', xcaret: 'x36b', 'chichen-deluxe': 'x37b' };
 // v23 · Descripciones de excursiones (investigadas en las fichas de Amstar DMC, Xcaret Parks y operadores; oct 2026).
 // desc = 2–3 frases para el huésped · inc = lo que incluye / lo que hay que saber. Los detalles pueden cambiar: confirmar al reservar.
@@ -1516,7 +1525,7 @@ for (const [ph, id, sub, nm, tk, reg, promo, kReg, kPromo] of EXC) {
     id: 'x-' + id, cat: 'excursions', sub, photo: 'x' + ph, max: 10, reg, exc: true, kid: 'x-' + id + '-k',
     name: { en: nm, es }, sub_: TICKET[tk], desc: EXC_DESC[id] ? { en: EXC_DESC[id].en, es: EXC_DESC[id].es } : { en: `${nm}.`, es: `${es}.` },
     ...(EXC_DESC[id] && EXC_DESC[id].inc ? { bullets: EXC_DESC[id].inc, bulletsT: { en: 'What’s included · good to know', es: 'Qué incluye · bueno saber' } } : {}),
-    opts: mkOpts(promo, 25), ...(EXC_PHOTO2[id] ? { photo2: EXC_PHOTO2[id] } : {}), ...(id === 'xplor-day' || id === 'xplor-fuego' ? { gallery: ['xp_slide'] } : id === 'xenotes' ? { gallery: ['x21b'] } : id === 'chichen-deluxe' ? { gallery: ['vall_sign', 'vall_cat'] } : id === 'xcaret' ? { gallery: ['xc_flamingo', 'xc_hacienda', 'xc_caleta', 'xc_voladores'] } : id === 'isla' ? { gallery: ['isla_playa', 'x35'] } : id === 'mayan' ? { gallery: ['my_laguna', 'my_snorkel'] } : id === 'tulum-mayan' ? { gallery: ['x31', 'my_laguna', 'my_snorkel'] } : id === 'xelha' ? { gallery: ['xh_cliff', 'xh_tube', 'xh_snorkel', 'xh_food', 'xh_hammock'] } : {}), ...(LOGOS[id] ? { logo: LOGOS[id] } : {}),
+    opts: mkOpts(promo, 25), ...(EXC_VIDEO[id] ? { video: EXC_VIDEO[id] } : {}), ...(EXC_PHOTO2[id] ? { photo2: EXC_PHOTO2[id] } : {}), ...(id === 'xplor-day' || id === 'xplor-fuego' ? { gallery: ['xp_slide'] } : id === 'xenotes' ? { gallery: ['x21b'] } : id === 'chichen-deluxe' ? { gallery: ['vall_sign', 'vall_cat'] } : id === 'xcaret' ? { gallery: ['xc_flamingo', 'xc_hacienda', 'xc_caleta', 'xc_voladores'] } : id === 'isla' ? { gallery: ['isla_playa', 'x35'] } : id === 'mayan' ? { gallery: ['my_laguna', 'my_snorkel'] } : id === 'tulum-mayan' ? { gallery: ['x31', 'my_laguna', 'my_snorkel'] } : id === 'xelha' ? { gallery: ['xh_cliff', 'xh_tube', 'xh_snorkel', 'xh_food', 'xh_hammock'] } : {}), ...(LOGOS[id] ? { logo: LOGOS[id] } : {}),
   });
   ITEMS.push({
     id: 'x-' + id + '-k', cat: 'excursions', hidden: true, kidOf: 'x-' + id, photo: 'x' + ph, max: 10, reg: kReg ?? reg,
@@ -2821,6 +2830,7 @@ function itemSheet(id) {
     ${it.bullets ? `<h4>${it.bulletsT ? it.bulletsT[L] : t().includesT}</h4><ul class="menu">${it.bullets[L].map(x => `<li>${x}</li>`).join('')}</ul>` : ''}
     ${zoneHTML(it)}
     ${it.gallery ? `<div class="gal">${it.gallery.map(g => `<div class="sh-img ph-${g}"></div>`).join('')}</div>` : ''}
+    ${it.video ? VID_MARK : ''}
     ${it.menu ? `<h4>${t().menuT}</h4><ul class="menu">${it.menu[L].map(x => `<li>${x}</li>`).join('')}</ul><p class="sub" style="margin:0">${DINNER_NOTE[L]}</p>` : ''}
     ${it.photo2 ? `<div class="sh-img ph-${it.photo2}" style="aspect-ratio:3/2"></div>` : ''}
     <div class="sh-foot">
@@ -2934,6 +2944,13 @@ function doneSheet() {
   return `${sheetTop('')}<div class="done-mark">${ICON.check}</div><h2>${t().doneTitle}</h2><p class="desc">${t().doneText}</p>${cartItemsHTML(false)}${sumsHTML()}
     <div class="sh-foot"><button class="cta" data-newguest>${t().newGuest}</button></div>`;
 }
+const VID_MARK = '<!--VID-->';
+function vidThumb(v) {
+  const es = S.lang === 'es';
+  return `<h4>${es ? 'Míralo en video' : 'Watch the video'}</h4>
+    <button class="vid" data-vplay="${v.id}" data-vstart="${v.start || 0}" aria-label="${es ? 'Reproducir video' : 'Play video'}">
+      <img src="https://i.ytimg.com/vi/${v.id}/hqdefault.jpg" alt="" loading="lazy" decoding="async"><span class="vid-play"></span></button>`;
+}
 function renderSheet() {
   if (!S.sheet) return;
   const sh = S.sheet, body =
@@ -2941,7 +2958,14 @@ function renderSheet() {
     sh.kind === 'guide' ? guideSheet() : sh.kind === 'share' ? shareSheet() : sh.kind === 'vdata' ? vdataSheet() : sh.kind === 'dbg' ? dbgSheet() : sh.kind === 'compare' ? (count() ? compareSheet() : '') : sh.kind === 'summary' ? (count() ? summarySheet() : '') : doneSheet();
   if (!body) { closeSheet(); return; }
   const keep = $('sheet').scrollTop, tEl = document.getElementById('toast'), tIn = tEl && tEl.parentNode === $('sheet');
-  $('sheet').innerHTML = `<div class="sh">${body}</div>`;
+  // v29.22 · si la hoja trae video, se pinta en 3 partes y al repintar (+/−, opciones) solo cambian las de arriba y abajo,
+  // así el reproductor no se reinicia ni se detiene
+  const vk = sh.kind === 'item' && body.includes(VID_MARK) ? `${sh.id}:${S.lang}` : '', vh = document.getElementById('vidHost');
+  if (vk) {
+    const [a, b] = body.split(VID_MARK);
+    if (vh && vh.dataset.k === vk) { $('shA').innerHTML = a; $('shB').innerHTML = b; }
+    else $('sheet').innerHTML = `<div class="sh"><div id="shA" class="sh-part">${a}</div><div id="vidHost" data-k="${vk}">${vidThumb(itemById(sh.id).video)}</div><div id="shB" class="sh-part">${b}</div></div>`;
+  } else $('sheet').innerHTML = `<div class="sh">${body}</div>`;
   if (tIn) $('sheet').appendChild(tEl);   // conserva el aviso visible al repintar la hoja
   $('sheet').scrollTop = keep;
 }
@@ -3002,6 +3026,15 @@ function endPull() {
 }
 ['touchend', 'touchcancel'].forEach(ev => $('sheet').addEventListener(ev, endPull));
 $('sheet').addEventListener('click', e => { if (e.target === $('sheet')) closeSheet(); });
+// v29.22 · el reproductor de YouTube solo se carga al tocar la miniatura (la hoja abre igual de rápido y no gasta datos)
+$('sheet').addEventListener('click', e => {
+  const b = e.target.closest('[data-vplay]'); if (!b) return;
+  const f = document.createElement('div'); f.className = 'vid';
+  f.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${b.dataset.vplay}?start=${b.dataset.vstart}&autoplay=1&rel=0&playsinline=1" title="Video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>`;
+  b.replaceWith(f);
+});
+// al cerrar la hoja se quita el reproductor para que el audio no siga sonando
+$('sheet').addEventListener('close', () => { const vh = document.getElementById('vidHost'); if (vh) vh.remove(); });
 
 /* ═════════════════════════════════════════════
    v13 · Guía visual "¿Qué se te antoja?"
@@ -3556,7 +3589,7 @@ function snapshot() {
     return { id, qty: sl.qty, kinds: it.kinds ? personKinds(it, sl) : undefined, cbd: it.kinds ? personCbd(it, sl) : undefined, manualOpt: sl.manual ? sl.opt : undefined,
       vipUnits: (v.units[id] || []).map(i => `${it.opts[i].pay}/${it.opts[i].b}`), regular: lineReg(it, sl) }; });
   return {
-    app: 'Gift Studio v29.21', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
+    app: 'Gift Studio v29.22', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
     guestBudget: hasBud() ? S.will : null, vouchers: S.step / VOUCHER, voucherValue: S.step, 
     cert: S.cart.cert, cart: lines, wish: S.wish,
     vip: { guestPays: v.cost, copays: v.pay, budgetUsed: v.used, overflow: v.overflow, left: S.will - v.cost, regularValue: v.value },
