@@ -12,7 +12,7 @@
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <script>(function(){var t;try{t=localStorage.getItem('gs-theme')}catch(e){}if(t!=='light'&&t!=='dark')t=(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';document.documentElement.setAttribute('data-theme',t);})();</script>
-<title>Gift Studio v29.22</title>
+<title>Gift Studio v29.23</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:ital,wght@0,400;0,500;0,600;1,700&display=swap" rel="stylesheet">
@@ -331,6 +331,7 @@ body.is-vendor .wneg{display:flex}
 .vid-play{position:absolute;left:50%;top:50%;width:64px;height:64px;margin:-32px 0 0 -32px;border-radius:50%;background:rgba(0,0,0,.55);box-shadow:0 4px 18px rgba(0,0,0,.35);transition:transform .15s}
 .vid-play::after{content:'';position:absolute;left:26px;top:20px;border-style:solid;border-width:12px 0 12px 20px;border-color:transparent transparent transparent #fff}
 .vid:active .vid-play{transform:scale(.92)}
+.vid-t{margin:4px 0 -4px;font-weight:600;font-size:14px}
 .gal .sh-img{aspect-ratio:4/3;border-radius:16px}
 .gal .sh-img:first-child{grid-column:1 / -1;aspect-ratio:16/9}
 .gal .sh-img:last-child:nth-child(even){grid-column:1 / -1;aspect-ratio:16/9}   /* sin foto huérfana al final */
@@ -1378,8 +1379,27 @@ const EXC_RANK = ['isla', 'xelha', 'mayan', 'xcaret', 'chichen-deluxe', 'atvs', 
   'xplor-fuego', 'jungle', 'turtles', 'zip', 'tulum-half', 'interax', 'snorkel', 'jetski', 'harmony', 'shop-cancun', 'shop-playa'];
 const excRank = id => { const i = EXC_RANK.indexOf(id.replace(/^x-/, '')); return i < 0 ? 99 : i; };
 // v21: segunda foto (se ve abajo en la hoja del tour)
-// v29.22 · video de YouTube en la hoja de detalle (id + segundo de inicio). Para agregar otro: id_excursión: { id: 'XXXX', start: 0 }
-const EXC_VIDEO = { xelha: { id: 'i1EugQm1xnc', start: 10 } };
+// v29.23 · videos de YouTube en la hoja de detalle: id_excursión: [{ id: 'XXXX', start: segundos, t: { es, en } (título opcional) }, ...]
+const V = (id, start = 0, t) => ({ id, start, ...(t ? { t } : {}) });
+const NEW_ATTR = { es: 'Nueva atracción', en: 'New attraction' }, NEW_SLIDE = { es: 'Nuevo tobogán', en: 'New slide' };
+const EXC_VIDEO = {
+  xelha: [V('i1EugQm1xnc', 10)],
+  isla: [V('YeI0K3JJ-8U', 10)],
+  'chichen-deluxe': [V('zO_AmkL4En8', 10)],
+  'xplor-day': [V('xKQTF0i2XIg', 10), V('sf7vgyo7iOU', 0, NEW_ATTR)],
+  'xplor-fuego': [V('pXC7OjMYSQk'), V('YgjcREpjEBY', 0, NEW_SLIDE)],
+  xcaret: [V('9A9DCBOCYrU', 10)],
+  jungle: [V('uoZai7kvDdY', 10)],
+  'tulum-mayan': [V('qrXV46ft7UY', 10)],
+  atvs: [V('aEsfmU49Cow', 10)],
+  zip: [V('aEsfmU49Cow', 10)],
+  primax: [V('gXskEHQKhJo')],
+  interax: [V('eNOV95aDLiA')],
+  harmony: [V('I1Mpnl39CUk')],
+  xenotes: [V('TDiDBiMmyA8')],
+  'shop-playa': [V('G8zxV0lr3kw')],
+  'shop-cancun': [V('soSoIh9e5O0')],
+};
 const EXC_PHOTO2 = { chichen: 'x37b', snorkel: 'x35b', 'xplor-day': 'x19b', 'xplor-fuego': 'x20b', xelha: 'xh_slides', xenotes: 'x31b', isla: 'x29b', xcaret: 'x36b', 'chichen-deluxe': 'x37b' };
 // v23 · Descripciones de excursiones (investigadas en las fichas de Amstar DMC, Xcaret Parks y operadores; oct 2026).
 // desc = 2–3 frases para el huésped · inc = lo que incluye / lo que hay que saber. Los detalles pueden cambiar: confirmar al reservar.
@@ -2945,11 +2965,12 @@ function doneSheet() {
     <div class="sh-foot"><button class="cta" data-newguest>${t().newGuest}</button></div>`;
 }
 const VID_MARK = '<!--VID-->';
-function vidThumb(v) {
-  const es = S.lang === 'es';
-  return `<h4>${es ? 'Míralo en video' : 'Watch the video'}</h4>
+function vidThumb(vs) {
+  const es = S.lang === 'es', L = S.lang;
+  return `<h4>${es ? 'Míralo en video' : 'Watch the video'}</h4>` + vs.map(v => `
+    ${v.t ? `<p class="vid-t">${v.t[L]}</p>` : ''}
     <button class="vid" data-vplay="${v.id}" data-vstart="${v.start || 0}" aria-label="${es ? 'Reproducir video' : 'Play video'}">
-      <img src="https://i.ytimg.com/vi/${v.id}/hqdefault.jpg" alt="" loading="lazy" decoding="async"><span class="vid-play"></span></button>`;
+      <img src="https://i.ytimg.com/vi/${v.id}/hqdefault.jpg" alt="" loading="lazy" decoding="async" onerror="this.remove()"><span class="vid-play"></span></button>`).join('');
 }
 function renderSheet() {
   if (!S.sheet) return;
@@ -3589,7 +3610,7 @@ function snapshot() {
     return { id, qty: sl.qty, kinds: it.kinds ? personKinds(it, sl) : undefined, cbd: it.kinds ? personCbd(it, sl) : undefined, manualOpt: sl.manual ? sl.opt : undefined,
       vipUnits: (v.units[id] || []).map(i => `${it.opts[i].pay}/${it.opts[i].b}`), regular: lineReg(it, sl) }; });
   return {
-    app: 'Gift Studio v29.22', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
+    app: 'Gift Studio v29.23', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
     guestBudget: hasBud() ? S.will : null, vouchers: S.step / VOUCHER, voucherValue: S.step, 
     cert: S.cart.cert, cart: lines, wish: S.wish,
     vip: { guestPays: v.cost, copays: v.pay, budgetUsed: v.used, overflow: v.overflow, left: S.will - v.cost, regularValue: v.value },
