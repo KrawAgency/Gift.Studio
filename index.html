@@ -1027,6 +1027,9 @@ body.is-vendor .notice.vnote{display:flex}
 /* v29.13 · botón Atrás: el estilo del botón le ganaba al "hidden" y se veía en la pantalla principal sin hacer nada.
    Ahora se oculta pero conserva su lugar, para que el título no se mueva al entrar o salir de una categoría */
 .ab-back[hidden]{display:grid;visibility:hidden;pointer-events:none}
+/* v29.15 · al bajar en la pantalla principal (sin Atrás) el título se pega a la izquierda y cabe completo; la g ya no se corta */
+.appbar.compact .ab-back[hidden]{display:none}
+.brand h1{padding:0 .12em .2em 0;margin-bottom:-.2em}
 /* v29.13 · toggle VIP compacto en la barra fija: aparece al bajar, cuando el toggle grande ya no se ve */
 .appbar .ab-vip{display:none;order:0;margin:0 0 0 auto;flex-shrink:0}
 .appbar.compact .ab-vip{display:inline-flex;animation:abVipIn .2s ease-out}
