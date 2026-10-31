@@ -12,7 +12,7 @@
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <script>(function(){var t;try{t=localStorage.getItem('gs-theme')}catch(e){}if(t!=='light'&&t!=='dark')t=(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';document.documentElement.setAttribute('data-theme',t);})();</script>
-<title>Gift Studio v29.11</title>
+<title>Gift Studio v29.12</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:ital,wght@0,400;0,500;0,600;1,700&display=swap" rel="stylesheet">
@@ -1013,6 +1013,16 @@ body.is-vendor .notice.vnote{display:flex}
   .pc-foot{min-height:52px}
   .pc-foot .pill-add.pc-plus i{width:46px;height:46px;font-size:calc(24px*var(--fs,1))}
 }
+/* v29.12 · lugares fijos que el toggle VIP solo reemplaza */
+.ph-resort{background-image:url(img/111.webp?v=29.12)}
+.hero-photo.ph-resort{background-position:62% 60%}
+.hero.hero-reg{border-color:var(--orange)}
+.hero.hero-reg .hero-photo{border-left-color:var(--orange)}
+.hero.hero-reg h2{color:#fff}
+.hero.hero-reg .hero-add{background:var(--gold)}
+.hero-swap{display:grid}.hero-swap>div{grid-area:1/1;display:grid;min-width:0}.hero-swap .hero{height:100%}
+.hs-off{visibility:hidden;pointer-events:none}
+.vstar.reg{background:var(--orange);color:#fff;font-weight:700}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
 
 /* ── Fotos ── */
@@ -1777,6 +1787,8 @@ const T = {
     yourBudget: 'Your budget', budgetSub: 'For vacation extras', budgetNow: n => `Now ${n}`,
     unlocked: n => n === 1 ? '1 new option unlocked' : `${n} new options unlocked`,
     vipPricing: 'Using VIP Services pricing', vipPricingSub: 'Exclusive promotional prices on every experience',
+    regPricing: 'Using in-app promo pricing', regPricingSub: 'Resort coupons and promotional prices on every experience',
+    resortKicker: 'Your resort', resortTitle: 'Dreams Riviera', resortLede: 'Cancún · Spa, cabanas, dinners and tours for your stay.', resortVip: 'See VIP Services',
     freeWithMassage: n => n === 1 ? '1 free with your massage' : `${n} free with your massages`,
     lc: n => `${n} Leisure Cash`, vHint: 'Each gift voucher is $50 of Leisure Cash toward your experiences.',
     vTap: 'Tap to adjust', vUsed: (u, n) => `Using ${u} of ${n}`, done: 'Done',
@@ -1851,6 +1863,8 @@ const T = {
     yourBudget: 'Tu presupuesto', budgetSub: 'Para extras de vacaciones', budgetNow: n => `Ahora ${n}`,
     unlocked: n => n === 1 ? 'Se abrió 1 opción nueva' : `Se abrieron ${n} opciones nuevas`,
     vipPricing: 'Con precios de VIP Services', vipPricingSub: 'Precios exclusivos de promoción en cada experiencia',
+    regPricing: 'Con precios de promoción de la app', regPricingSub: 'Cupones del resort y precios de promoción en cada experiencia',
+    resortKicker: 'Tu resort', resortTitle: 'Dreams Riviera', resortLede: 'Cancún · Spa, cabañas, cenas y tours para tu estancia.', resortVip: 'Ver VIP Services',
     freeWithMassage: n => n === 1 ? '1 gratis con tu masaje' : `${n} gratis con tus masajes`,
     lc: n => `${n} de Leisure Cash`, vHint: 'Cada gift voucher vale $50 de Leisure Cash para tus experiencias.',
     vTap: 'Toca para ajustar', vUsed: (u, n) => `Usas ${u} de ${n}`, done: 'Listo',
@@ -2242,6 +2256,20 @@ function resetAll() {
 }
 
 /* ── Catálogo ── */
+function resortHeroHTML() {   // v29.12: sin VIP, el mismo espacio muestra el resort (el toggle solo reemplaza)
+  return `
+  <article class="hero hero-reg">
+    <div class="hero-body">
+      <span class="hero-kicker">${t().resortKicker}</span>
+      <h2>${t().resortTitle}</h2>
+      <p class="lede">${t().resortLede}</p>
+      <div class="hero-actions">
+        <button class="hero-add" data-mode="vip"><span class="star">✦</span> ${t().resortVip}</button>
+      </div>
+    </div>
+    <div class="hero-photo ph-resort" role="img" aria-label="Dreams Riviera Cancún"></div>
+  </article>`;
+}
 function heroHTML() {
   const on = S.cart.cert;
   if (on && S.mode === 'vip') return `
@@ -2366,8 +2394,11 @@ function renderCatalog() {
   $('modes').innerHTML = `<span class="knob" aria-hidden="true"></span>
     <button data-mode="reg" aria-pressed="${S.mode === 'reg'}">${t().modeReg}</button>
     <button data-mode="vip" aria-pressed="${S.mode === 'vip'}"><span class="star">✦</span>${t().modeVip}</button>`;
-  $('hero').innerHTML = S.mode === 'vip' ? heroHTML() : '';
-  $('hero').style.display = S.mode === 'vip' ? '' : 'none';
+  // v29.12: las dos versiones viven apiladas en el mismo lugar; el toggle solo cambia cuál se ve (mismo alto siempre)
+  if (S.cart.cert) $('hero').innerHTML = S.mode === 'vip' ? heroHTML() : resortHeroHTML();
+  else { const v = S.mode === 'vip';
+    $('hero').innerHTML = `<div class="hero-swap"><div${v ? '' : ' class="hs-off" inert aria-hidden="true"'}>${heroHTML()}</div><div${v ? ' class="hs-off" inert aria-hidden="true"' : ''}>${resortHeroHTML()}</div></div>`; }
+  $('hero').style.display = '';
   $('chips').innerHTML = CATS.map(c => `<button class="chip" data-cat="${c.id}" aria-pressed="${S.cat === c.id}">${c.name[S.lang]}</button>`).join('');
   const subs = S.cat === 'excursions' ? EXC_SUBS : S.cat === 'spa' ? SPA_SUBS : null;
   $('subchips').innerHTML = subs ? subs.map(c => `<button class="chip" data-sub="${c.id}" aria-pressed="${S.sub === c.id}">${c.name[S.lang]}</button>`).join('') : '';
@@ -2435,7 +2466,12 @@ function moneyVrow() {   // v25.4 · solo la fila de Leisure Cash (misma mecáni
 }
 function moneyHTML() {
   const bills = hasBud() ? Math.min(10, Math.round(S.will / 50)) : 0;
-  let vrow = '';
+  // v29.12: el renglón siempre existe; el toggle solo cambia su contenido (no aparece ni desaparece)
+  let vrow = `
+    <div class="vrow mrow mrow-v mrow-reg" data-vrow="regpricing">
+      <span class="vstack" style="--n:1"><span class="vstar reg" aria-hidden="true">%</span></span>
+      <span class="vtxt"><b>${t().regPricing}</b><small>${t().regPricingSub}</small></span>
+    </div>`;
   if (S.mode === 'vip') {
     const n = S.step / VOUCHER, v = calcVip(S.cart), usedN = Math.ceil(v.within / VOUCHER);
     const stack = n ? Array.from({ length: Math.min(n, 8) }, (_, i) => `<span class="vch ph-voucher${i < usedN ? ' used' : ''}" style="--i:${i}"></span>`).join('')
@@ -3452,7 +3488,7 @@ document.addEventListener('pointerup', e => {
   const r = row.getBoundingClientRect(), side = (e.clientX - r.left) > r.width / 2 ? 'R' : 'L', now = performance.now();
   const key = row.dataset.vrow + side;
   if (row.dataset.vrow === 'budget' && !e.target.closest('button')) { clearTimeout(budTapTimer); if (!(now - lastTap.t < 350 && lastTap.side === key)) budTapTimer = setTimeout(() => openSheet('budget'), 360); }
-  if (now - lastTap.t < 350 && lastTap.side === key) { lastTap = { t: 0, side: null }; if (row.dataset.vrow === 'budget') side === 'R' ? gPlus() : gMinus(); else side === 'R' ? vPlus() : vMinus(); }
+  if (now - lastTap.t < 350 && lastTap.side === key) { lastTap = { t: 0, side: null }; if (row.dataset.vrow === 'budget') side === 'R' ? gPlus() : gMinus(); else if (row.dataset.vrow === 'voucher') side === 'R' ? vPlus() : vMinus(); }
   else lastTap = { t: now, side: key };
 });
 document.addEventListener('dblclick', e => { if (e.target.closest('[data-vrow]')) e.preventDefault(); });
@@ -3464,7 +3500,7 @@ function snapshot() {
     return { id, qty: sl.qty, kinds: it.kinds ? personKinds(it, sl) : undefined, cbd: it.kinds ? personCbd(it, sl) : undefined, manualOpt: sl.manual ? sl.opt : undefined,
       vipUnits: (v.units[id] || []).map(i => `${it.opts[i].pay}/${it.opts[i].b}`), regular: lineReg(it, sl) }; });
   return {
-    app: 'Gift Studio v29.11', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
+    app: 'Gift Studio v29.12', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
     guestBudget: hasBud() ? S.will : null, vouchers: S.step / VOUCHER, voucherValue: S.step, 
     cert: S.cart.cert, cart: lines, wish: S.wish,
     vip: { guestPays: v.cost, copays: v.pay, budgetUsed: v.used, overflow: v.overflow, left: S.will - v.cost, regularValue: v.value },
