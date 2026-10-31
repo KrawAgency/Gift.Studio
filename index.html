@@ -12,7 +12,7 @@
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <script>(function(){var t;try{t=localStorage.getItem('gs-theme')}catch(e){}if(t!=='light'&&t!=='dark')t=(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';document.documentElement.setAttribute('data-theme',t);})();</script>
-<title>Gift Studio v29.17</title>
+<title>Gift Studio v29.18</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:ital,wght@0,400;0,500;0,600;1,700&display=swap" rel="stylesheet">
@@ -2323,13 +2323,17 @@ function promoUnit(it) { const o = it.opts[0]; return o.pay + o.b; }
 // Precio que ve el huésped en el catálogo: regular, y con VIP también el promo
 // v18: precio en una sola línea → lo que paga hoy + tachado contra lo que pagaría (sin etiquetas extra)
 function priceBlock(it) {
-  const s = selOf(it.id), q = Math.max(s.qty, 1);
-  const reg = s.qty ? lineRegAll(it, s) : regPlain(it, s.kind);
-  const cpn = s.qty ? lineCoupon(it, s) : couponUnit(it), cp = Math.max(0, reg - cpn);   // precio sin VIP con cupones
+  const s = selOf(it.id);
+  // v29.18 · con Leisure Cash la tarjeta habla de la SIGUIENTE unidad: la que ya agregaste quedó en el carrito,
+  // así que si dice "Free" es porque otra más también sale gratis
+  const nextView = S.mode === 'vip' && S.step && s.qty > 0 && s.qty < (it.max || 99);
+  const sq = nextView ? 0 : s.qty, q = Math.max(sq, 1);
+  const reg = sq ? lineRegAll(it, s) : regPlain(it, s.kind);
+  const cpn = sq ? lineCoupon(it, s) : couponUnit(it), cp = Math.max(0, reg - cpn);   // precio sin VIP con cupones
   const line = (now, was, cls = '') => `<span class="pc-price"><b${cls ? ` class="${cls}"` : ''}>${now}</b>${was ? ` <s>${was}</s>` : ''}</span>`;
   if (S.mode !== 'vip' && cpn > 0 && !it.vipOnly) return line(money(cp), money(reg), 'promo');
   if (S.mode !== 'vip') return line(money(it.vipOnly ? promoUnit(it) : reg));
-  const promo = promoAll(it, q);
+  const promo = nextView ? promoAll(it, s.qty + 1) - promoAll(it, s.qty) : promoAll(it, q);
   // v29.14 · Leisure Cash como efectivo: lo que cubre el saldo restante se ve "Free"; lo que se pasa muestra solo la diferencia
   const lc = lcPay(it, s);
   if (lc != null && lc < promo) return line(lc ? money(lc) : t().free2, money(promo), lc ? 'promo' : 'promo lcfree');
@@ -2337,11 +2341,10 @@ function priceBlock(it) {
   return line(promo ? money(promo) : t().free2, cp > promo ? money(cp) : '', 'promo');
 }
 // v29.14 · cuánto paga de verdad el huésped por esta tarjeta con el Leisure Cash que queda
-// (sin seleccionar: lo que sube el total al agregar 1; seleccionada: lo que aporta su línea al total)
+// (mientras se pueda agregar otra: lo que sube el total con una más; ya en el máximo: lo que aporta su línea al total)
 function lcPay(it, s) {
   if (S.mode !== 'vip' || !S.step) return null;
-  const base = costIn('vip', S.cart);
-  if (!s.qty) return Math.max(0, costIn('vip', withItem(S.cart, it.id, 1, { kind: s.kind })) - base);
+  if (s.qty < (it.max || 99)) return Math.max(0, costIn('vip', withItem(S.cart, it.id, s.qty + 1, { kind: s.kind })) - costIn('vip', S.cart));
   // v29.17 · seleccionada: lo mismo que reparte el desglose del checkout (antes cada tarjeta se cobraba como si
   // el LC lo usaran las demás y la suma de tarjetas no cuadraba con el total)
   const sp = splitVip(calcVip(S.cart)), cash = id => (sp[id] ? sp[id].cash : 0);
@@ -3545,7 +3548,7 @@ function snapshot() {
     return { id, qty: sl.qty, kinds: it.kinds ? personKinds(it, sl) : undefined, cbd: it.kinds ? personCbd(it, sl) : undefined, manualOpt: sl.manual ? sl.opt : undefined,
       vipUnits: (v.units[id] || []).map(i => `${it.opts[i].pay}/${it.opts[i].b}`), regular: lineReg(it, sl) }; });
   return {
-    app: 'Gift Studio v29.17', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
+    app: 'Gift Studio v29.18', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
     guestBudget: hasBud() ? S.will : null, vouchers: S.step / VOUCHER, voucherValue: S.step, 
     cert: S.cart.cert, cart: lines, wish: S.wish,
     vip: { guestPays: v.cost, copays: v.pay, budgetUsed: v.used, overflow: v.overflow, left: S.will - v.cost, regularValue: v.value },
