@@ -86,7 +86,7 @@ svg{display:block}
 .top .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:2px;padding-bottom:6px}
 .brand{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
 .brand{flex:1;min-width:0}
-.brand h1{margin:0;font-size:calc(30px*var(--fs,1));font-weight:700;font-style:italic;letter-spacing:-.01em;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:font-size .2s ease}
+.brand h1{margin:0;font-size:calc(30px*var(--fs,1));font-weight:700;font-style:italic;letter-spacing:-.01em;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transform-origin:left center}
 .icons{display:flex;align-items:center;gap:4px;background:var(--card);border-radius:999px;padding:5px;box-shadow:0 4px 14px -8px rgba(46,47,67,.3)}
 .lang{display:flex}
 .lang button{padding:7px 10px;border-radius:999px;font-weight:600;font-size:calc(13px*var(--fs,1));color:var(--muted);min-height:36px}
@@ -2663,7 +2663,23 @@ function renderCart() {
 function syncVendH() { document.documentElement.style.setProperty('--vend-h', S.vendor ? $('vendor').offsetHeight + 'px' : '0px'); }
 window.addEventListener('resize', syncVendH);
 // La barra superior se compacta al hacer scroll (como los títulos grandes de iOS)
-window.addEventListener('scroll', () => { $('appbar').classList.toggle('compact', window.scrollY > 24); }, { passive: true });
+// v29.16 · antes la letra se achicaba con transición mientras el título ya brincaba a la izquierda y aparecía el VIP:
+// por un instante se veía cortado ("Your vac…"). Ahora el cambio de layout es de golpe y el título se anima con
+// transform (FLIP): sale de donde estaba y con su tamaño de antes, y llega a su lugar nuevo. Con margen para no parpadear en el umbral.
+let abCompact = false;
+function setCompact(on) {
+  if (on === abCompact) return; abCompact = on;
+  const bar = $('appbar'), h = $('appTitle'), a = h.getBoundingClientRect(), fa = parseFloat(getComputedStyle(h).fontSize);
+  bar.classList.toggle('compact', on);
+  if (!h.textContent || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const z = h.getBoundingClientRect(), fz = parseFloat(getComputedStyle(h).fontSize);
+  h.style.transition = 'none';
+  h.style.transform = `translate(${a.left - z.left}px, ${(a.top + a.height / 2) - (z.top + z.height / 2)}px) scale(${fa / fz})`;
+  h.getBoundingClientRect();
+  h.style.transition = 'transform .22s cubic-bezier(.2,.7,.2,1)';
+  h.style.transform = '';
+}
+window.addEventListener('scroll', () => { const y = window.scrollY; if (y > 28) setCompact(true); else if (y < 12) setCompact(false); }, { passive: true });
 function renderVendor() {
   document.body.classList.toggle('is-vendor', S.vendor);
   $('vendor').classList.toggle('on', S.vendor);
