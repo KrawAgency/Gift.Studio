@@ -12,7 +12,7 @@
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <script>(function(){var t;try{t=localStorage.getItem('gs-theme')}catch(e){}if(t!=='light'&&t!=='dark')t=(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';document.documentElement.setAttribute('data-theme',t);})();</script>
-<title>Gift Studio v29.20</title>
+<title>Gift Studio v29.21</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:ital,wght@0,400;0,500;0,600;1,700&display=swap" rel="stylesheet">
@@ -310,7 +310,7 @@ body.is-vendor .wneg{display:flex}
 @keyframes hmIn{from{opacity:.4;transform:scale(.98)}to{opacity:1;transform:none}}
 .hm-photo{width:64px;height:64px;border-radius:14px;background-size:cover;background-position:center 30%;flex-shrink:0;cursor:pointer}
 .hm-txt{flex:1;min-width:0;text-align:left;color:#fff;line-height:1.25}
-.hm-txt b{display:block;font-family:var(--script);font-style:italic;font-weight:700;font-size:clamp(16px,4.6vw,22px);color:var(--gold-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hm-txt b{display:block;font-family:var(--script);font-style:italic;font-weight:700;font-size:clamp(16px,4.6vw,22px);color:var(--gold-text);line-height:1.15;text-wrap:balance}   /* v29.21: antes se cortaba con … en celular */
 .hm-txt small{display:block;font-size:calc(12.5px*var(--fs,1));opacity:.85}
 .hm-added{display:inline-flex;align-items:center;gap:6px;background:#fff;color:var(--navy);border-radius:999px;padding:8px 12px;font-weight:600;font-size:calc(13.5px*var(--fs,1));min-height:40px;flex-shrink:0}
 .hm-added svg{width:15px;height:15px}
@@ -2669,10 +2669,18 @@ window.addEventListener('resize', syncVendH);
 // por un instante se veía cortado ("Your vac…"). Ahora el cambio de layout es de golpe y el título se anima con
 // transform (FLIP): sale de donde estaba y con su tamaño de antes, y llega a su lugar nuevo. Con margen para no parpadear en el umbral.
 let abCompact = false;
+// v29.21 · si el título no cabe (p. ej. "Tus vacaciones" con el botón Atrás en un celular angosto) se achica lo justo, mínimo 18px
+function fitTitle() {
+  const h = $('appTitle'); h.style.fontSize = '';
+  if (h.scrollWidth <= h.clientWidth) return;
+  const fs = parseFloat(getComputedStyle(h).fontSize);
+  h.style.fontSize = Math.max(18, Math.floor(fs * h.clientWidth / h.scrollWidth * 10) / 10 - .5) + 'px';
+}
+window.addEventListener('resize', () => fitTitle());
 function setCompact(on) {
   if (on === abCompact) return; abCompact = on;
   const bar = $('appbar'), h = $('appTitle'), a = h.getBoundingClientRect(), fa = parseFloat(getComputedStyle(h).fontSize);
-  bar.classList.toggle('compact', on);
+  bar.classList.toggle('compact', on); fitTitle();
   if (!h.textContent || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   const z = h.getBoundingClientRect(), fz = parseFloat(getComputedStyle(h).fontSize);
   h.style.transition = 'none';
@@ -2772,7 +2780,7 @@ function backAction() { if (navGuard) { try { keepY = window.scrollY; history.ba
 function renderStatic() {
   document.documentElement.lang = S.lang;
   document.querySelectorAll('[data-t]').forEach(el => { el.textContent = t()[el.dataset.t]; });
-  $('appTitle').textContent = screenTitle();
+  $('appTitle').textContent = screenTitle(); fitTitle();
   document.querySelectorAll('[data-lang]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang === S.lang)));
 }
 function render() { syncCbd(); syncOpts(); renderStatic(); renderCatalog(); renderCart(); renderVendor(); renderTabs(); if (S.sheet) renderSheet(); }
@@ -2791,11 +2799,13 @@ function itemSheet(id) {
   const opts = !it.kinds ? '' : (isSel && persons.length === 1)
     ? `<h4>${t().addon}</h4><div class="seg-chips"><button class="sc cbdsc" data-cbd="${id}" data-n="0" aria-pressed="${personCbd(it, s)[0]}">${t().cbdBtn}</button></div>`
     : isSel ? '' : `<p class="sub" style="margin:0">${t().cbdNote}</p>`;
-  const regP = isSel ? lineRegAll(it, s) : regPlain(it, s.kind), promoP = promoAll(it, Math.max(s.qty, 1));
-  const cpnP = isSel ? lineCoupon(it, s) : couponUnit(it), cpP = Math.max(0, regP - cpnP);
+  // v29.21 · la pastilla del precio sigue la misma regla que la tarjeta: lo que cuesta una más (con LC, cupones y tope de cupones)
+  const regP = regPlain(it, s.kind), promoP = promoUnit(it), m = it.vipOnly && S.mode !== 'vip' ? promoP : unitCost(it, s);
+  const cpP = Math.max(0, regP - couponUnit(it));
   const pill = S.mode === 'vip'
-    ? `${cpP > promoP ? `<span><s>${money(cpP)}</s></span>` : ''}<span class="${hasDiscount(it) ? 'promo' : ''}">${promoP ? promoTxt(it, promoP) : t().free2}</span>`
-    : cpnP > 0 ? `<span><s>${money(regP)}</s></span><span class="promo">${t().couponShort} ${money(cpP)}</span>` : `<span>${t().regPrice} ${money(regP)}</span>`;
+    ? m < promoP ? `<span><s>${money(promoP)}</s></span><span class="promo">${m ? money(m) : t().free2}</span>`
+      : `${cpP > m ? `<span><s>${money(cpP)}</s></span>` : ''}<span class="${hasDiscount(it) ? 'promo' : ''}">${promoTxt(it, m)}</span>`
+    : m < regP ? `<span><s>${money(regP)}</s></span><span class="promo">${t().couponShort} ${money(m)}</span>` : `<span>${t().regPrice} ${money(regP)}</span>`;
   return `
     ${sheetTop('')}
     <div class="sh-img main ph-${it.sheetPhoto || it.photo}" style="${off ? 'filter:grayscale(1)' : ''}"><div class="anchor-pill">${pill}</div></div>
@@ -2907,8 +2917,8 @@ function compareSheet() {
         ${lcUsed ? `<tr class="lcrow"><td>${t().lcUsed}</td><td class="na">—</td><td class="vip"><span class="lcv">${money(lcUsed)}</span></td></tr>` : ''}
         ${r.couponsRaw > r.coupons ? `<tr class="lcrow"><td>${t().couponCap(money(COUPON.total))}</td><td>+${money(r.couponsRaw - r.coupons)}</td><td class="na">—</td></tr>` : ''}
         <tr class="tot"><td>${t().todayPay}</td><td>${money(r.cost)}</td><td class="vip">${money(v.cost)}</td></tr>
-        ${r.cost - v.cost > 0 ? `<tr class="saverow"><td>${t().youSave}</td><td class="na">—</td><td class="vip">${money(r.cost - v.cost)}</td></tr>` : ''}
-        <tr><td>${t().yourBudget}</td><td>${st(r.cost)}</td><td class="vip">${st(v.cost)}</td></tr>
+        ${v.value - v.cost > 0 ? `<tr class="saverow"><td>${t().youSave}</td><td${r.coupons ? '' : ' class="na"'}>${r.coupons ? money(r.coupons) : '—'}</td><td class="vip">${money(v.value - v.cost)}</td></tr>` : ''}
+        ${hasBud() ? `<tr><td>${t().yourBudget}</td><td>${st(r.cost)}</td><td class="vip">${st(v.cost)}</td></tr>` : ''}
       </tfoot>
     </table></div>
     <p class="vs-msg" style="margin:0">${m1}</p>
@@ -3546,7 +3556,7 @@ function snapshot() {
     return { id, qty: sl.qty, kinds: it.kinds ? personKinds(it, sl) : undefined, cbd: it.kinds ? personCbd(it, sl) : undefined, manualOpt: sl.manual ? sl.opt : undefined,
       vipUnits: (v.units[id] || []).map(i => `${it.opts[i].pay}/${it.opts[i].b}`), regular: lineReg(it, sl) }; });
   return {
-    app: 'Gift Studio v29.20', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
+    app: 'Gift Studio v29.21', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
     guestBudget: hasBud() ? S.will : null, vouchers: S.step / VOUCHER, voucherValue: S.step, 
     cert: S.cart.cert, cart: lines, wish: S.wish,
     vip: { guestPays: v.cost, copays: v.pay, budgetUsed: v.used, overflow: v.overflow, left: S.will - v.cost, regularValue: v.value },
