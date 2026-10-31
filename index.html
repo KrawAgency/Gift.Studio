@@ -12,7 +12,7 @@
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <script>(function(){var t;try{t=localStorage.getItem('gs-theme')}catch(e){}if(t!=='light'&&t!=='dark')t=(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';document.documentElement.setAttribute('data-theme',t);})();</script>
-<title>Gift Studio v29.12</title>
+<title>Gift Studio v29.13</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:ital,wght@0,400;0,500;0,600;1,700&display=swap" rel="stylesheet">
@@ -1023,6 +1023,14 @@ body.is-vendor .notice.vnote{display:flex}
 .hero-swap{display:grid}.hero-swap>div{grid-area:1/1;display:grid;min-width:0}.hero-swap .hero{height:100%}
 .hs-off{visibility:hidden;pointer-events:none}
 .vstar.reg{background:var(--orange);color:#fff;font-weight:700}
+/* v29.13 · botón Atrás: el estilo del botón le ganaba al "hidden" y se veía en la pantalla principal sin hacer nada.
+   Ahora se oculta pero conserva su lugar, para que el título no se mueva al entrar o salir de una categoría */
+.ab-back[hidden]{display:grid;visibility:hidden;pointer-events:none}
+/* v29.13 · toggle VIP compacto en la barra fija: aparece al bajar, cuando el toggle grande ya no se ve */
+.appbar .ab-vip{display:none;order:0;margin:0 0 0 auto;flex-shrink:0}
+.appbar.compact .ab-vip{display:inline-flex;animation:abVipIn .2s ease-out}
+.appbar .ab-vip + .ab-cart{margin-left:0}
+@keyframes abVipIn{from{opacity:0}to{opacity:1}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
 
 /* ── Fotos ── */
@@ -1117,6 +1125,7 @@ body.is-vendor .notice.vnote{display:flex}
   <div class="wrap">
     <button class="ab-btn ab-back" id="abBack" data-back hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
     <div class="brand" id="brand"><h1 id="appTitle"></h1></div>
+    <button class="vip-sw ab-vip" id="abVip" role="switch" aria-checked="false" aria-label="VIP Services"><span class="vs-lbl"><span class="star">✦</span>VIP</span><span class="vs-track"><i></i></span></button>
     <button class="ab-btn ab-cart" data-tab="cart" id="abCart"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 3.5h2.6l2.2 11h10.4l2-7.5H6.2"/><circle cx="9.5" cy="19" r="1.6"/><circle cx="16.5" cy="19" r="1.6"/></svg><span class="badge" id="abBadge"></span></button>
   </div>
 </div>
@@ -2390,6 +2399,7 @@ function renderCatalog() {
   document.body.classList.toggle('mode-vip', S.mode === 'vip');
   document.body.classList.toggle('mode-reg', S.mode === 'reg');
   $('vipSw').setAttribute('aria-checked', String(S.mode === 'vip'));
+  $('abVip').setAttribute('aria-checked', String(S.mode === 'vip'));
   $('navStay').classList.toggle('vip-on', S.mode === 'vip');
   $('modes').innerHTML = `<span class="knob" aria-hidden="true"></span>
     <button data-mode="reg" aria-pressed="${S.mode === 'reg'}">${t().modeReg}</button>
@@ -3474,6 +3484,7 @@ document.addEventListener('keydown', e => {
 });
 $('vendorClose').addEventListener('click', () => setVendor(false));
 $('vipSw').addEventListener('click', () => setMode(S.mode === 'vip' ? 'reg' : 'vip'));
+$('abVip').addEventListener('click', () => setMode(S.mode === 'vip' ? 'reg' : 'vip'));   // v29.13: toggle en la barra fija
 $('vDataBtn').addEventListener('click', () => openSheet('vdata'));
 $('vRainBtn').addEventListener('click', () => {
   const it = itemById('pk-rain'); it.hidden = !it.hidden;
@@ -3500,7 +3511,7 @@ function snapshot() {
     return { id, qty: sl.qty, kinds: it.kinds ? personKinds(it, sl) : undefined, cbd: it.kinds ? personCbd(it, sl) : undefined, manualOpt: sl.manual ? sl.opt : undefined,
       vipUnits: (v.units[id] || []).map(i => `${it.opts[i].pay}/${it.opts[i].b}`), regular: lineReg(it, sl) }; });
   return {
-    app: 'Gift Studio v29.12', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
+    app: 'Gift Studio v29.13', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
     guestBudget: hasBud() ? S.will : null, vouchers: S.step / VOUCHER, voucherValue: S.step, 
     cert: S.cart.cert, cart: lines, wish: S.wish,
     vip: { guestPays: v.cost, copays: v.pay, budgetUsed: v.used, overflow: v.overflow, left: S.will - v.cost, regularValue: v.value },
