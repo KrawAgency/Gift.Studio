@@ -12,7 +12,7 @@
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <script>(function(){var t;try{t=localStorage.getItem('gs-theme')}catch(e){}if(t!=='light'&&t!=='dark')t=(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';document.documentElement.setAttribute('data-theme',t);})();</script>
-<title>Gift Studio v29.10</title>
+<title>Gift Studio v29.11</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:ital,wght@0,400;0,500;0,600;1,700&display=swap" rel="stylesheet">
@@ -994,6 +994,25 @@ body.is-vendor .notice.vnote{display:flex}
   dialog.sheet::backdrop{background:rgba(10,10,16,.78);-webkit-backdrop-filter:blur(6px) saturate(.7);backdrop-filter:blur(6px) saturate(.7)}
 }
 
+/* v29.11 · botón de la tarjeta fuera de la foto: renglón fijo al fondo (precio a la izquierda, acción a la derecha),
+   igual en todas las tarjetas sin importar el largo del nombre */
+.pc{height:100%}
+.pc-info h3{min-height:2.5em}                                     /* el nombre siempre reserva 2 líneas */
+.pc-foot{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-top:auto;padding:0 2px 0 4px;min-height:44px}
+.pc-pr{display:flex;flex-direction:column;justify-content:center;text-align:left;min-width:0;cursor:pointer}
+.pc-foot .pc-price{flex-direction:column;align-items:flex-start;gap:0;margin:0;line-height:1.15}
+.pc-foot .pc-price s{margin-left:0}
+.pc-foot .pc-tools{position:static;flex-shrink:0}
+.pc-foot .pill-add,.pc-foot .pill-wish,.pc-foot .mini-step{box-shadow:none}
+.pc-foot .mini-step{border:1px solid var(--line)}
+.pc-foot .pill-add.pc-plus{padding:0;min-height:0;background:none}
+.pc-foot .pill-add.pc-plus i{width:40px;height:40px;font-size:calc(22px*var(--fs,1))}
+.pc.off .pc-foot .pc-pr{opacity:.55}
+@media (max-width:420px){.pc-foot .mini-step button{width:30px;height:30px}.pc-foot .mini-step span{min-width:16px}}
+@media (min-width:760px) and (min-height:600px){
+  .pc-foot{min-height:52px}
+  .pc-foot .pill-add.pc-plus i{width:46px;height:46px;font-size:calc(24px*var(--fs,1))}
+}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
 
 /* ── Fotos ── */
@@ -2318,7 +2337,7 @@ function cardHTML(it) {
     : upg ? `<button class="pill-add upgo" data-upg="${upg.from}"><i>⬆</i>${t().upgradeShort}</button>`
     : vo ? `<button class="pill-add vipgo" data-mode="vip"><i>✦</i>VIP</button>`
     : off ? `<button class="pill-wish heart${inWish ? ' on' : ''}" data-wish="${it.id}" aria-pressed="${inWish}" aria-label="${t().love}"><i>${inWish ? '♥' : '♡'}</i></button>`
-    : `<button class="pill-add" data-inc="${it.id}"><i>+</i>${t().add}</button>`;
+    : `<button class="pill-add pc-plus" data-inc="${it.id}" aria-label="${t().add}"><i>+</i></button>`;
   const vtag = S.mode === 'vip' ? `<span class="vtag">B ${money(isSel ? it.opts[s.opt].b * effQty(S.cart, it.id) : Math.min(...it.opts.map(o => o.b)))}${isSel ? '' : '+'}</span>` : '';
   return `
   <article class="pc${isSel ? ' sel' : ''}${off ? ' off' : ''}${justLit ? ' just-lit' : ''}">
@@ -2326,12 +2345,14 @@ function cardHTML(it) {
       ${vo ? `<span class="lock newtag">✦ ${t().onlyVip}</span>` : off ? `<span class="lock over">${t().overBy2(money(over))}</span>` : dayTagHTML(it) || (top ? `<span class="lock topt">★ ${t().topSeller}</span>` : '')}
       ${vtag}
       ${it.logo ? `<span class="pc-logo${it.logoLt ? ' lt' : ''}"><img src="${it.logo}" alt=""></span>` : ''}
-      <div class="pc-tools">${tools}</div>
     </div>
     <button class="pc-info" data-open="${it.id}">
       <h3>${it.name[L]}</h3>
-      ${priceBlock(it)}
     </button>
+    <div class="pc-foot">
+      <button class="pc-pr" data-open="${it.id}">${priceBlock(it)}</button>
+      <div class="pc-tools">${tools}</div>
+    </div>
   </article>`;
 }
 function renderCatalog() {
@@ -3443,7 +3464,7 @@ function snapshot() {
     return { id, qty: sl.qty, kinds: it.kinds ? personKinds(it, sl) : undefined, cbd: it.kinds ? personCbd(it, sl) : undefined, manualOpt: sl.manual ? sl.opt : undefined,
       vipUnits: (v.units[id] || []).map(i => `${it.opts[i].pay}/${it.opts[i].b}`), regular: lineReg(it, sl) }; });
   return {
-    app: 'Gift Studio v29.10', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
+    app: 'Gift Studio v29.11', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
     guestBudget: hasBud() ? S.will : null, vouchers: S.step / VOUCHER, voucherValue: S.step, 
     cert: S.cart.cert, cart: lines, wish: S.wish,
     vip: { guestPays: v.cost, copays: v.pay, budgetUsed: v.used, overflow: v.overflow, left: S.will - v.cost, regularValue: v.value },
