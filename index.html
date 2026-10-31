@@ -12,7 +12,7 @@
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <script>(function(){var t;try{t=localStorage.getItem('gs-theme')}catch(e){}if(t!=='light'&&t!=='dark')t=(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';document.documentElement.setAttribute('data-theme',t);})();</script>
-<title>Gift Studio v29.18</title>
+<title>Gift Studio v29.19</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:ital,wght@0,400;0,500;0,600;1,700&display=swap" rel="stylesheet">
@@ -537,6 +537,7 @@ body.is-vendor .vtag,body.is-vendor .hero .vtag-hero{display:inline-block}
 .ci .mini-step{box-shadow:none;border:1px solid var(--line)}
 .empty{color:var(--muted);margin:4px 0 6px}
 .sums{background:var(--soft);border-radius:20px;padding:14px 16px;margin-top:12px;display:flex;flex-direction:column;gap:8px}
+.sums > .cta{margin-top:6px}
 .row{display:flex;justify-content:space-between;align-items:baseline;font-size:calc(14px*var(--fs,1))}
 .row span{color:var(--muted)}
 .row s{color:var(--muted);font-variant-numeric:tabular-nums}
@@ -1819,7 +1820,7 @@ const T = {
     withCoupons: 'With your resort coupons', couponShort: 'With coupons', couponsRow: 'Resort coupons', couponCap: n => `${n} coupon limit`,
     noVipCoupons: 'Without VIP (with your coupons)', lcCover: 'Can be covered with Leisure Cash',
     couponNote: () => `Without VIP Services the price is the regular price minus your resort coupons: $${COUPON.spa} per spa treatment, $${COUPON.dinner} per romantic dinner, $${COUPON.wine} per bottle of wine (up to ${COUPON.wineMax}), $${COUPON.total} in total. Coupons don’t combine with the VIP Services promotion.`,
-    regValue: 'Regular value', todayPay: 'Today you pay',
+    regValue: 'Regular value', vipDisc: 'VIP discount', todayPay: 'Today you pay',
     laterPay: n => `Getaway: $${n} USD only if you decide to use it (30 days to decide).`,
     book: 'Book my gift', reset: 'Start over',
     keep: 'Keep choosing', confirm: 'Confirm',
@@ -1895,7 +1896,7 @@ const T = {
     withCoupons: 'Con tus cupones del resort', couponShort: 'Con cupones', couponsRow: 'Cupones del resort', couponCap: n => `tope de ${n}`,
     noVipCoupons: 'Sin VIP (con tus cupones)', lcCover: 'Se puede cubrir con Leisure Cash',
     couponNote: () => `Sin VIP Services el precio es el regular menos tus cupones del resort: $${COUPON.spa} por tratamiento de spa, $${COUPON.dinner} por cena romántica, $${COUPON.wine} por botella de vino (máximo ${COUPON.wineMax}), $${COUPON.total} en total. Los cupones no se combinan con la promoción de VIP Services.`,
-    regValue: 'Valor regular', todayPay: 'Pagas hoy',
+    regValue: 'Valor regular', vipDisc: 'Descuento VIP', todayPay: 'Pagas hoy',
     laterPay: n => `Escapada: $${n} USD solo si decides usarla (30 días para decidir).`,
     book: 'Reservar mi regalo', reset: 'Empezar de nuevo',
     keep: 'Seguir eligiendo', confirm: 'Confirmar',
@@ -2590,22 +2591,26 @@ function budgetLine(cost) {
   return `<div class="row"><span>${t().yourBudget}: ${money(S.will)}</span><span class="${over > 0 ? 'over' : ''}" style="${over > 0 ? '' : 'color:var(--ink)'}">${over > 0 ? t().overBy(money(over)) : t().left(money(-over))}</span></div>
     <div class="gmeter${over > 0 ? ' over' : ''}"><i style="width:${S.will ? Math.min(100, cost / S.will * 100) : (cost ? 100 : 0)}%"></i></div>`;
 }
-function sumsHTML() {
-  // Ahorro = valor regular de lo elegido − lo que paga hoy con VIP Services
+// v29.19 · un solo desglose: valor regular tachado y debajo, en verde, lo que se descuenta
+// (cupones solo sin VIP; con VIP: descuento VIP y gift vouchers). Las líneas en cero no se muestran.
+function sumsHTML(foot = '') {
+  const minus = (lbl, n) => n > 0 ? `<div class="row"><span>${lbl}</span><span style="color:var(--ok);font-weight:600">−${money(n)}</span></div>` : '';
   if (S.mode === 'reg') {
-    const r = calcReg(S.cart), v = calcVip(S.cart), sv = r.cost - v.cost;
+    const r = calcReg(S.cart);
     return `<div class="sums">${budgetLine(r.cost)}
-      ${r.coupons ? `<div class="row"><span>${t().regValue}</span><s>${money(r.regular)}</s></div><div class="row"><span>${t().couponsRow}${r.couponsRaw > r.coupons ? ` · ${t().couponCap(money(COUPON.total))}` : ''}</span><span style="color:var(--ok);font-weight:600">−${money(r.coupons)}</span></div>` : ''}
-      <div class="row total"><span>${t().todayPay}</span><b>${money(r.cost)}</b></div>
+      ${r.coupons ? `<div class="row"><span>${t().regValue}</span><s>${money(r.regular)}</s></div>${minus(t().couponsRow + (r.couponsRaw > r.coupons ? ` · ${t().couponCap(money(COUPON.total))}` : ''), r.coupons)}` : ''}
+      <div class="row total"><span>${t().todayPay}</span><b>${money(r.cost)}</b></div>${foot}
 </div>`;
   }
-  const v = calcVip(S.cart), rc = calcReg(S.cart).cost, sv = rc - v.cost, nv = S.step / VOUCHER;   // ahorro contra el camino de cupones
+  const v = calcVip(S.cart), nv = S.step / VOUCHER;
+  const promo = v.pay + v.used, disc = Math.max(0, v.value - promo), sv = Math.max(0, v.value - v.cost);   // ahorro = valor regular − lo que paga hoy
   return `<div class="sums">${budgetLine(v.cost)}
-    ${nv ? `<div class="row"><span>${t().vouchers(nv)}</span><span style="color:var(--ink);font-weight:600">${t().lcShort(money(v.within))}</span></div>` : ''}
-    ${rc > v.cost ? `<div class="row"><span>${t().noVipCoupons}</span><s>${money(rc)}</s></div>` : ''}
+    ${sv > 0 ? `<div class="row"><span>${t().regValue}</span><s>${money(v.value)}</s></div>` : ''}
+    ${minus(t().vipDisc, disc)}
+    ${nv ? minus(t().vouchers(nv), v.within) : ''}
     <div class="row total"><span>${t().todayPay}</span><b>${money(v.cost)}</b></div>
     ${sv > 0 ? `<div class="save"><span>${t().youSave}</span><b>${money(sv)}</b></div>` : ''}
-    ${S.cart.cert ? `<p class="later">${t().laterPay(CERT.activation)}</p>` : ''}</div>`;
+    ${S.cart.cert ? `<p class="later">${t().laterPay(CERT.activation)}</p>` : ''}${foot}</div>`;
 }
 function vsMessage() {
   const r = calcReg(S.cart).cost, v = calcVip(S.cart).cost, B = money(S.will);
@@ -2654,11 +2659,11 @@ function renderCart() {
       ${S.mode === 'vip' ? `<div class="cart-lc">${moneyVrow()}</div>` : ''}
       <p class="later" style="margin:-6px 0 6px;font-weight:600">${S.mode === 'vip' ? '✦ ' + t().modeVip : t().modeReg}</p>
       ${n ? cartItemsHTML(true) : `<p class="empty">${t().emptyPicks}</p>`}
-      ${n ? sumsHTML() : ''}
+      ${n ? sumsHTML(cta) : ''}
       ${n ? `<button class="share-btn" data-share><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M12 7v7M9 11l3 3 3-3"/></svg>${shr().btn}</button>` : ''}
       ${n ? `<div class="cart-reset"><button class="ghost" data-compare>${t().compare}</button><button class="ghost" data-reset>${t().reset}</button></div>` : ''}
       ${n ? suggestHTML() : ''}   <!-- v18.1: con el regalo vacío no se repite el catálogo en el panel -->
-      <div class="cta-bar">${cta}</div>
+      ${n ? '' : `<div class="cta-bar">${cta}</div>`}   <!-- v29.19: con regalo, el botón vive fijo dentro de la cuenta -->
     </div>`;
   bumpBadges(n);
 }
@@ -3548,7 +3553,7 @@ function snapshot() {
     return { id, qty: sl.qty, kinds: it.kinds ? personKinds(it, sl) : undefined, cbd: it.kinds ? personCbd(it, sl) : undefined, manualOpt: sl.manual ? sl.opt : undefined,
       vipUnits: (v.units[id] || []).map(i => `${it.opts[i].pay}/${it.opts[i].b}`), regular: lineReg(it, sl) }; });
   return {
-    app: 'Gift Studio v29.18', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
+    app: 'Gift Studio v29.19', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
     guestBudget: hasBud() ? S.will : null, vouchers: S.step / VOUCHER, voucherValue: S.step, 
     cert: S.cart.cert, cart: lines, wish: S.wish,
     vip: { guestPays: v.cost, copays: v.pay, budgetUsed: v.used, overflow: v.overflow, left: S.will - v.cost, regularValue: v.value },
