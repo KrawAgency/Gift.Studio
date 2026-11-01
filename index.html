@@ -1145,6 +1145,7 @@ body.is-vendor .notice.vnote{display:flex}
 .ph-cat_spa{background-image:url(img/cat_spa.webp)}
 .ph-cat_bali{background-image:url(img/cat_bali.webp)}
 .ph-cat_exc{background-image:url(img/cat_exc.webp)}
+.ph-cat_all{background-image:url(img/cat_all.webp)}
 .ph-cat_dinner{background-image:url(img/cat_dinner.webp)}
 .ph-cat_extras{background-image:url(img/cat_extras.webp)}
 /* v30 · mapa del hotel */
@@ -2642,7 +2643,7 @@ function renderCatalog() {
   const freeOn = S.mode === 'vip';   // v30.11: con VIP siempre (aunque no haya vouchers: certificado y Shopping Tours son gratis)
   if (S.cat === 'free' && !freeOn) S.cat = 'all';
   const freeBtn = freeOn ? `<button class="cat cat-free" data-cat="free" aria-pressed="${S.cat === 'free'}"><span class="ci">FREE</span><span>${S.lang === 'es' ? 'Gratis' : 'Free'}</span></button>` : '';
-  const catBtn = c => `<button class="cat" data-cat="${c.id}" aria-pressed="${S.cat === c.id}">${CAT_PH[c.id] ? `<span class="ci ph-${CAT_PH[c.id]}"></span>` : '<span class="ci ci-all">✦</span>'}<span>${c.name[S.lang]}</span></button>`;
+  const catBtn = c => `<button class="cat" data-cat="${c.id}" aria-pressed="${S.cat === c.id}">${CAT_PH[c.id] ? `<span class="ci ph-${CAT_PH[c.id]}"></span>` : '<span class="ci ph-cat_all"></span>'}<span>${c.name[S.lang]}</span></button>`;
   $('chips').innerHTML = `<button class="cat cat-guide" data-guide><span class="ci">✨</span><span>${t().guideMe}</span></button>`
     + catBtn(CATS[0]) + freeBtn + CATS.slice(1).map(catBtn).join('');
   const subs = S.cat === 'excursions' ? EXC_SUBS : S.cat === 'spa' ? SPA_SUBS : null;
