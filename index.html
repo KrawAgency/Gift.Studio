@@ -3827,6 +3827,9 @@ document.addEventListener('click', e => {
     // Nov 2026 · igual que "Explorar servicios": lleva la vista a las categorías para ver lo que cambió
     const el = $('chips'), bar = $('appbar').getBoundingClientRect().height;
     window.scrollTo({ top: Math.max(0, el.getBoundingClientRect().top + window.scrollY - bar - 10), behavior: 'smooth' });
+    const lit = [...document.querySelectorAll('#grid .pc')].slice(0, 4);
+    lit.forEach(x => { x.classList.remove('glow'); void x.offsetWidth; x.classList.add('glow'); });
+    setTimeout(() => lit.forEach(x => x.classList.remove('glow')), 2200);
     return;
   }
   if (el.hasAttribute('data-dbgcopy')) {
