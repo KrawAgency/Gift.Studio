@@ -234,6 +234,10 @@ body.mode-reg .hero .hero-lock{filter:grayscale(0)}
 .sugg-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:10px}
 .sugg-head b{font-size:calc(15px*var(--fs,1))}.sugg-head span{font-size:calc(12px*var(--fs,1));color:var(--muted)}
 .sugg-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.rel{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:4px;scrollbar-width:none}
+.rel::-webkit-scrollbar{display:none}
+.rel .sg{flex:0 0 40%;max-width:220px;scroll-snap-align:start;cursor:pointer}
+.rel .sg b{font-size:calc(13.5px*var(--fs,1));font-weight:600;line-height:1.25}
 .sg{position:relative;background:var(--card);border-radius:16px;padding:6px 6px 10px;display:flex;flex-direction:column;gap:2px;min-width:0}
 .sg.fresh{box-shadow:0 0 0 2px var(--gold)}
 .sg-img{position:relative;aspect-ratio:16/10;border-radius:12px;background-size:cover;background-position:center;margin-bottom:4px;cursor:pointer}
@@ -3034,10 +3038,27 @@ function itemSheet(id) {
     ${it.video ? VID_MARK : ''}
     ${it.menu ? `<h4>${t().menuT}</h4><ul class="menu">${it.menu[L].map(x => `<li>${x}</li>`).join('')}</ul><p class="sub" style="margin:0">${DINNER_NOTE[L]}</p>` : ''}
     ${it.photo2 ? `<div class="sh-img ph-${it.photo2}" style="aspect-ratio:3/2"></div>` : ''}
+    ${isSel ? '' : relatedHTML(it)}
     <div class="sh-foot">
       ${footQty(it, s, isSel, ok)}
       ${isSel ? `<button class="cta" data-close>${t().cont}</button>` : upgradeInto(id) && !ok ? `<button class="cta" data-upg="${upgradeInto(id).from}">⬆ ${t().upgradeBtn(upgradeInto(id).d)}</button>` : `<button class="cta" data-addn="${id}" ${ok ? '' : 'disabled'}>${t().addGift}</button>`}
     </div>`;
+}
+// Nov 2026 · "También te puede gustar": parecidos al final de la ficha, antes de agregar.
+// Orden: su escalera de mejoras (UPGRADES) → mismo grupo → misma categoría
+function relatedIds(id) {
+  const it = itemById(id), lad = new Set([id]);
+  for (let grow = true; grow;) { grow = false; for (const u of UPGRADES) { if (lad.has(u.from) !== lad.has(u.to)) { lad.add(u.from); lad.add(u.to); grow = true; } } }
+  const ok = x => x.id !== id && !x.hidden && !x.kidOf && x.cat === it.cat;
+  const pool = ITEMS.filter(ok);
+  const rank = x => lad.has(x.id) ? 0 : it.grp && x.grp === it.grp ? 1 : 2;
+  return pool.map((x, i) => ({ x, i })).sort((a, b) => (rank(a.x) - rank(b.x)) || (a.i - b.i)).slice(0, 6).map(o => o.x.id);
+}
+function relatedHTML(it) {
+  const ids = relatedIds(it.id); if (!ids.length) return '';
+  const L = S.lang;
+  return `<h4>${L === 'es' ? 'También te puede gustar' : 'You may also like'}</h4><div class="rel">${ids.map(id => { const r = itemById(id); return `
+    <div class="sg" data-rel="${id}"><div class="sg-img ph-${r.photo}">${topBadge(id) ? `<span class="lock topt">★ ${t().topSeller}</span>` : ''}</div><b>${r.name[L]}</b>${priceBlock(r)}</div>`; }).join('')}</div>`;
 }
 // Antes de agregar, la hoja arranca en 1 y suma sobre esa cantidad; ya en el regalo, edita el carrito directo
 function pendFits(id, q) { const it = itemById(id); return q <= it.max && costIn(S.mode, withItem(S.cart, id, q)) <= S.will; }
@@ -3669,7 +3690,7 @@ function vdataSheet() {
 
 /* ── Eventos ── */
 document.addEventListener('click', e => {
-  const el = e.target.closest('button, [data-open], [data-cert-open]');
+  const el = e.target.closest('button, [data-open], [data-cert-open], [data-rel]');
   if (!el || el.disabled) return;
   const d = el.dataset;
   if (d.lang) { S.lang = d.lang; store.set('lang', S.lang); render(); return; }
@@ -3733,6 +3754,7 @@ document.addEventListener('click', e => {
     const pk = personKinds(it, sl), n = Number(d.n);
     pk[n] = d.k || (pk[n] === 'relax' ? 'deep' : 'relax'); sl.pk = pk; render(); return;
   }
+  if (d.rel) { openSheet('item', d.rel, S.sheetPrev); $('sheet').scrollTop = 0; return; }
   if (d.open) { openSheet('item', d.open); return; }
   if (d.rm) { setQty(d.rm, 0); return; }
   if (el.hasAttribute('data-rmcert')) { const snap = snapCart(); S.cart.cert = false; render(); toast(t().removedX(t().stayTitle), undoTo(snap)); return; }
