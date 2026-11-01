@@ -12,7 +12,7 @@
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <script>(function(){var t;try{t=localStorage.getItem('gs-theme')}catch(e){}if(t!=='light'&&t!=='dark')t=(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';document.documentElement.setAttribute('data-theme',t);})();</script>
-<title>Gift Studio v29.25</title>
+<title>Gift Studio v30.5</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:ital,wght@0,400;0,500;0,600;1,700&display=swap" rel="stylesheet">
@@ -136,7 +136,7 @@ svg{display:block}
 body.mode-vip .modes .knob{transform:translateX(100%);background:var(--knob-vip)}
 body.mode-vip .modes button[data-mode="vip"]{color:var(--gold-text)}
 .modes .star{color:var(--gold)}
-body.mode-reg{--orange:#6B6B78}
+/* v30.3 · los botones van verdes siempre, con o sin VIP */
 .hero-lock{position:absolute;inset:0;background:rgba(31,31,36,.72);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:20px;color:#fff;z-index:2}
 .hero-lock p{margin:0;font-weight:600;font-size:calc(16px*var(--fs,1));max-width:30ch}
 .hero-lock svg{width:26px;height:26px;color:var(--gold-text)}
@@ -1119,6 +1119,70 @@ body.is-vendor .notice.vnote{display:flex}
 .ph-pool{background-image:url(img/78.webp)}
 .ph-lounge{background-image:url(img/79.webp)}
 .ph-voucher{background-image:url(img/80.webp)}
+
+/* v30.5 · fotos del Shopping Tour Cancún */
+.ph-sc_cun{background-image:url(img/sc_cun.webp);aspect-ratio:3/2}
+.ph-sc_cun_sq{background-image:url(img/sc_cun_sq.webp);aspect-ratio:1/1}
+.ph-sc_ij{background-image:url(img/sc_ij.webp)}
+.ph-sc_teq{background-image:url(img/sc_teq.webp)}
+.ph-sc_tacos{background-image:url(img/sc_tacos.webp)}
+.ph-sc_crafts{background-image:url(img/sc_crafts.webp)}
+.ph-sc_bags{background-image:url(img/sc_bags.webp)}
+/* v30 · mapa del hotel */
+.cv-map{position:absolute;right:16px;bottom:18px;width:48px;height:48px;border-radius:50%;display:grid;place-items:center;color:#fff;background:rgba(30,45,80,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.25)}
+.cv-map svg{width:24px;height:24px}
+.cv-map:active{transform:scale(.94)}
+.map-box{position:relative;border-radius:18px;overflow:auto;background:#8fcf5a;max-height:calc(100dvh - 260px);overscroll-behavior:contain;-webkit-overflow-scrolling:touch;cursor:zoom-in}
+.map-box.zoomed{cursor:zoom-out}
+.map-box img{display:block;width:100%;max-width:none;height:auto;user-select:none;-webkit-user-select:none}
+.map-zoom{display:flex;gap:8px;justify-content:center}
+.map-zoom button{min-width:48px;height:44px;padding:0 16px;border-radius:999px;background:var(--soft,var(--line));color:var(--ink);font-weight:700;font-size:calc(16px*var(--fs,1))}
+/* v30 · guía: hoja de altura fija y tarjetas todas del mismo tamaño */
+.sheet.g-full{height:100%}
+.gcard.wide{grid-column:auto}
+.gcard.wide .gc-img{aspect-ratio:4/3}
+/* ═══ v30 · portada, encabezado de un renglón y categorías en círculos ═══ */
+.top{display:none!important}
+.appbar .ab-vip{display:inline-flex!important;animation:none}
+.appbar .brand h1{font-size:calc(26px*var(--fs,1))}
+.appbar.compact .brand h1{font-size:calc(22px*var(--fs,1))}
+.ab-set{position:relative;flex-shrink:0}
+.ab-back:not([hidden]) ~ .ab-set{display:none}
+.appbar .ab-back[hidden]{display:none}
+.appbar .wrap{gap:6px}
+.appbar .ab-cart{width:40px;height:40px;min-width:0;min-height:0}
+.appbar .ab-vip .vs-lbl{font-size:calc(14px*var(--fs,1))}
+.ab-gear{width:38px!important;height:38px!important;min-width:0!important;min-height:0!important;padding:0!important;display:grid;place-items:center}
+.ab-gear svg{width:19px;height:19px}
+.ab-pop{position:absolute;top:calc(100% + 8px);left:0;z-index:60;display:flex;flex-direction:column;gap:8px;padding:10px;border-radius:18px;background:var(--card);border:1.5px solid var(--line);box-shadow:0 14px 30px -12px rgba(0,0,0,.5)}
+.ab-pop[hidden]{display:none}
+.cover{position:relative;margin-top:4px;height:min(48vh,360px);border-radius:28px;overflow:hidden;background-size:cover;background-position:62% 70%;display:flex;flex-direction:column;justify-content:space-between;color:#fff;isolation:isolate;box-shadow:0 14px 30px -18px rgba(0,0,0,.6)}
+.cover::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(to bottom,rgba(6,22,38,.78) 0%,rgba(6,22,38,.42) 34%,rgba(6,22,38,0) 58%),linear-gradient(to top,rgba(6,12,24,.55),rgba(6,12,24,0) 32%)}
+.cv-top{padding:20px 20px 0}
+.cv-kick{display:block;font-size:calc(12px*var(--fs,1));letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.85);font-weight:500}
+.cover h2{margin:4px 0 4px;font-family:var(--serif,Georgia,serif);font-size:calc(34px*var(--fs,1));line-height:1.05;font-weight:700;color:#fff;text-shadow:0 2px 14px rgba(0,30,50,.45)}
+.cover p{margin:0;font-size:calc(15px*var(--fs,1));line-height:1.35;color:rgba(255,255,255,.92);max-width:30ch}
+.cv-cta{align-self:flex-start;margin:0 20px 18px;display:inline-flex;align-items:center;gap:8px;padding:12px 20px;border-radius:999px;background:#2f7fd6;color:#fff;font-weight:700;font-size:calc(15px*var(--fs,1));box-shadow:0 10px 24px -10px rgba(47,127,214,.8)}
+.cv-cta span{font-size:1.1em}
+.cv-cta:active{transform:scale(.97)}
+.cats{display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;margin:16px -18px 0;padding:4px 18px 4px;border-radius:20px}
+.cats::-webkit-scrollbar{display:none}
+.cat{flex:0 0 auto;min-width:68px;white-space:nowrap;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:calc(13px*var(--fs,1));font-weight:600;color:var(--ink)}
+.cat .ci{width:62px;height:62px;border-radius:50%;background-size:cover;background-position:center;background-color:var(--line);border:2.5px solid transparent;display:grid;place-items:center;font-size:24px}
+.cat[aria-pressed=true] .ci{border-color:var(--gold)}
+.cat[aria-pressed=true]{color:var(--ink);font-weight:700}
+.cat .ci-all{background:var(--card);color:var(--gold-text)}
+.cat-guide .ci{background:linear-gradient(135deg,#e8b04a,#c9782f);font-size:26px}
+.cat:active .ci{transform:scale(.94)}
+#catGuest:empty{display:none}
+.money.solo-v{grid-template-columns:minmax(0,1fr);margin-top:14px;min-height:76px;align-content:center}
+.money.solo-v .vrow{min-height:73px}
+#hero{margin-top:14px}
+.subchips{margin-top:10px!important}
+#grid{margin-top:14px}
+.glow{animation:glow 1s ease-in-out 2;outline:3px solid transparent;outline-offset:3px}
+@keyframes glow{50%{outline-color:#2f7fd6}}
+@media (min-width:760px){.cover{height:340px}.cover h2{font-size:44px}.cats{margin-left:0;margin-right:0;padding-left:0}}
 </style>
 
 </head>
@@ -1138,34 +1202,26 @@ body.is-vendor .notice.vnote{display:flex}
 <div class="appbar" id="appbar">
   <div class="wrap">
     <button class="ab-btn ab-back" id="abBack" data-back hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <div class="ab-set" id="abSet"><button class="ab-btn ab-gear" id="abGear" aria-label="Settings / Ajustes" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+      <div class="ab-pop" id="abPop" hidden><div class="lang" role="group" aria-label="Language / Idioma">
+          <button data-lang="en">EN</button><button data-lang="es">ES</button>
+        </div><div class="thm" role="group" aria-label="Theme"><button data-theme-set="light" aria-label="Light theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button><button data-theme-set="dark" aria-label="Dark theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg></button></div></div></div>
     <div class="brand" id="brand"><h1 id="appTitle"></h1></div>
     <button class="vip-sw ab-vip" id="abVip" role="switch" aria-checked="false" aria-label="VIP Services"><span class="vs-lbl"><span class="star">✦</span>VIP</span><span class="vs-track"><i></i></span></button>
     <button class="ab-btn ab-cart" data-tab="cart" id="abCart"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 3.5h2.6l2.2 11h10.4l2-7.5H6.2"/><circle cx="9.5" cy="19" r="1.6"/><circle cx="16.5" cy="19" r="1.6"/></svg><span class="badge" id="abBadge"></span></button>
   </div>
 </div>
 
-<header class="top">
-  <div class="wrap">
-    <div class="hdr-row">
-      <div class="icons">
-        <div class="lang" role="group" aria-label="Language / Idioma">
-          <button data-lang="en">EN</button><button data-lang="es">ES</button>
-        </div>
-      </div>
-      <button class="vip-sw" id="vipSw" role="switch" aria-checked="false"><span class="vs-lbl"><span class="star">✦</span>VIP<span class="vs-sv"> Services</span></span><span class="vs-track"><i></i></span></button>
-      <div class="thm" role="group" aria-label="Theme"><button data-theme-set="light" aria-label="Light theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button><button data-theme-set="dark" aria-label="Dark theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg></button></div>
-    </div>
-  </div>
-</header>
 
 <main class="layout">
   <div class="wrap">
     <section id="catalogView">
+      <section class="cover ph-resort" id="cover"></section>
       <div class="modes" id="modes" role="group"></div>
+      <div class="cats" id="chips" role="group"></div>
       <div id="catGuest"></div>
       <div id="guideStrip"></div>
-      <div id="hero" style="margin-top:16px"></div>
-      <div class="chips" id="chips" role="group"></div>
+      <div id="hero"></div>
       <div class="chips subchips" id="subchips" role="group"></div>
       <div class="grid" id="grid"></div>
       <div id="offWrap"></div>
@@ -1748,6 +1804,8 @@ for (const [id, ph, ph2] of [['mani50', 'mani'], ['mani80', 'mani2'], ['pedi50',
   ['x-shop-cancun', 'x41', 'shop_cun'], ['x-shop-playa', 'x42', 'shop_pdc']]) {
   const it = ITEMS.find(i => i.id === id); if (it) { it.photo = ph; if (ph2) it.photo2 = ph2; }
 }
+// v30.5 · Shopping Tour Cancún: letras de Cancún de portada, galería del recorrido, la joyería ancha y el logo de International Jewelry
+Object.assign(ITEMS.find(i => i.id === 'x-shop-cancun'), { photo: 'sc_cun_sq', sheetPhoto: 'sc_cun', photo2: 'sc_ij', gallery: ['sc_teq', 'sc_tacos', 'sc_crafts', 'sc_bags'], logo: 'img/ij_logo.webp', logoSheet: true });   // el logo solo en la ficha (en la tarjeta no se alcanza a leer)
 // Duraciones: una sola tarjeta por tratamiento en el catálogo; las demás duraciones viven dentro de la tarjeta
 // (el masaje de 80 min y el masaje en pareja de 80 min se quedan como tarjetas propias)
 const DURS = [
@@ -1833,7 +1891,7 @@ const T = {
     unlocked: n => n === 1 ? '1 new option unlocked' : `${n} new options unlocked`,
     vipPricing: 'Using VIP Services pricing', vipPricingSub: 'Exclusive promotional prices on every experience',
     regPricing: 'Using in-app promo pricing', regPricingSub: 'Resort coupons and promotional prices on every experience',
-    resortKicker: 'Your resort', resortTitle: 'Dreams Riviera', resortLede: 'Cancún · Spa, cabanas, dinners and tours for your stay.', resortVip: 'See VIP Services',
+    resortKicker: 'Your resort', mapT: 'Resort map', mapHint: 'Tap the map to zoom in, then drag to move around.', mapFit: 'Full map', explore: 'Explore services', coverLede: 'Spa, cabanas, dinners and tours for your vacation.', guideMe: 'Guide me', resortTitle: 'Dreams Riviera', resortLede: 'Cancún · Spa, cabanas, dinners and tours for your stay.', resortVip: 'See VIP Services',
     freeWithMassage: n => n === 1 ? '1 free with your massage' : `${n} free with your massages`,
     lc: n => `${n} Leisure Cash`, vHint: 'Each gift voucher is $50 of Leisure Cash toward your experiences.',
     vTap: 'Tap to adjust', vUsed: (u, n) => `Using ${u} of ${n}`, done: 'Done',
@@ -1909,7 +1967,7 @@ const T = {
     unlocked: n => n === 1 ? 'Se abrió 1 opción nueva' : `Se abrieron ${n} opciones nuevas`,
     vipPricing: 'Con precios de VIP Services', vipPricingSub: 'Precios exclusivos de promoción en cada experiencia',
     regPricing: 'Con precios de promoción de la app', regPricingSub: 'Cupones del resort y precios de promoción en cada experiencia',
-    resortKicker: 'Tu resort', resortTitle: 'Dreams Riviera', resortLede: 'Cancún · Spa, cabañas, cenas y tours para tu estancia.', resortVip: 'Ver VIP Services',
+    resortKicker: 'Tu resort', mapT: 'Mapa del hotel', mapHint: 'Toca el mapa para acercar y arrastra para moverte.', mapFit: 'Mapa completo', explore: 'Explorar servicios', coverLede: 'Spa, cabañas, cenas y tours para tus vacaciones.', guideMe: 'Guíame', resortTitle: 'Dreams Riviera', resortLede: 'Cancún · Spa, cabañas, cenas y tours para tu estancia.', resortVip: 'Ver VIP Services',
     freeWithMassage: n => n === 1 ? '1 gratis con tu masaje' : `${n} gratis con tus masajes`,
     lc: n => `${n} de Leisure Cash`, vHint: 'Cada gift voucher vale $50 de Leisure Cash para tus experiencias.',
     vTap: 'Toca para ajustar', vUsed: (u, n) => `Usas ${u} de ${n}`, done: 'Listo',
@@ -2255,7 +2313,7 @@ function vendorWhy(cs) {
 // Deshacer: copia del regalo antes de quitar algo
 const snapCart = () => JSON.parse(JSON.stringify({ cart: S.cart, wish: S.wish }));
 const snapAll = () => JSON.parse(JSON.stringify({ cart: S.cart, wish: S.wish, will: S.will, step: S.step, mode: S.mode, cat: S.cat, sub: S.sub, tab: S.tab }));
-function undoTo(snap) { return { label: t().undo, fn: () => { Object.assign(S, snap); if (S.will === null) S.will = Infinity; S.fresh = []; render(); } }; }
+function undoTo(snap) { return { label: t().undo, fn: () => { Object.assign(S, snap); S.will = Infinity; S.fresh = []; render(); } }; }
 function setQty(id, qty) {
   if (qty <= 0 && S.cart.sel[id]) {
     const snap = snapCart();
@@ -2289,8 +2347,8 @@ function vPlus() { if (S.step + VOUCHER > VOUCHER_MAX * VOUCHER) { nudge('.mrow-
 function vMinus() { if (S.step <= 0) { nudge('.mrow-v'); return; } S.fresh = []; S.step -= VOUCHER; render(); }
 const GUEST_MAX = 2000;
 const hasBud = () => Number.isFinite(S.will);   // ¿el huésped definió presupuesto?
-function gPlus() { if (!hasBud()) { withFresh(() => { S.will = 50; render(); flashG('$50'); }); return; } if (S.will + 50 > GUEST_MAX) { nudge('.mrow-g'); return; } withFresh(() => { S.will += 50; render(); flashG('+$50'); }); }
-function gMinus() { if (!hasBud() || S.will <= 0) { nudge('.mrow-g'); return; } S.fresh = []; S.will -= 50; render(); flashG('−$50'); }
+/* v30 · presupuesto del huésped eliminado */ function gPlus_unused() { if (!hasBud()) { withFresh(() => { S.will = 50; render(); flashG('$50'); }); return; } if (S.will + 50 > GUEST_MAX) { nudge('.mrow-g'); return; } withFresh(() => { S.will += 50; render(); flashG('+$50'); }); }
+function gMinus_unused() { if (!hasBud() || S.will <= 0) { nudge('.mrow-g'); return; } S.fresh = []; S.will -= 50; render(); flashG('−$50'); }
 function flashG(txt) { requestAnimationFrame(() => { document.querySelectorAll('.mrow-g .gflash').forEach(el => { el.textContent = txt; el.classList.remove('go'); void el.offsetWidth; el.classList.add('go'); }); }); }
 function nudge(sel) { document.querySelectorAll(sel).forEach(el => { el.classList.remove('nudge'); void el.offsetWidth; el.classList.add('nudge'); }); }
 function setMode(m) { S.mode = m; render(); }
@@ -2301,6 +2359,36 @@ function resetAll() {
 }
 
 /* ── Catálogo ── */
+// v30 · portada: foto del resort con el texto arriba y un botón que baja a los servicios
+const CAT_PH = { spa: 'couples', bali: 'bali_beach', excursions: 'x29', dinner: 'sunset', extras: 'berries' };
+function coverHTML() {
+  return `<div class="cv-top"><span class="cv-kick">${t().resortKicker} · Cancún</span><h2>${t().resortTitle}</h2><p>${t().coverLede}</p></div>
+    <button class="cv-cta" data-explore>${t().explore} <span aria-hidden="true">↓</span></button>
+    <button class="cv-map" data-map aria-label="${t().mapT}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21.5s-7-6.1-7-11.8a7 7 0 0 1 14 0c0 5.7-7 11.8-7 11.8z"/><circle cx="12" cy="9.7" r="2.6"/></svg></button>`;
+}
+// v30 · mapa del hotel en hoja desplegable; toca el mapa (o + / −) para acercar y arrastra para moverte
+let mapZ = 1;
+function mapSheet() {
+  mapZ = 1;
+  return `${sheetTop('')}<h2>${t().mapT}</h2><p class="sub" style="margin-top:-6px">${t().mapHint}</p>
+    <div class="map-box" id="mapBox"><img src="img/map.webp?v=30" alt="${t().mapT}" id="mapImg" draggable="false"></div>
+    <div class="map-zoom"><button data-mapz="-1" aria-label="−">−</button><button data-mapz="0">${t().mapFit}</button><button data-mapz="1" aria-label="+">+</button></div>`;
+}
+function mapZoom(z, cx, cy) {
+  const box = $('mapBox'), img = $('mapImg'); if (!box || !img) return;
+  z = Math.min(4, Math.max(1, z));
+  const r = box.getBoundingClientRect(); cx = cx ?? r.width / 2; cy = cy ?? r.height / 2;
+  const fx = (box.scrollLeft + cx) / img.offsetWidth, fy = (box.scrollTop + cy) / img.offsetHeight;
+  mapZ = z; img.style.width = (z * 100) + '%'; box.classList.toggle('zoomed', z > 1);
+  box.scrollLeft = fx * img.offsetWidth - cx; box.scrollTop = fy * img.offsetHeight - cy;
+}
+function exploreServices() {
+  const el = $('chips'), bar = $('appbar').getBoundingClientRect().height;
+  window.scrollTo({ top: Math.max(0, el.getBoundingClientRect().top + window.scrollY - bar - 10), behavior: 'smooth' });
+  const lit = [el, ...[...document.querySelectorAll('#grid .pc')].slice(0, 4)];
+  lit.forEach(x => { x.classList.remove('glow'); void x.offsetWidth; x.classList.add('glow'); });
+  setTimeout(() => lit.forEach(x => x.classList.remove('glow')), 2200);
+}
 function resortHeroHTML() {   // v29.12: sin VIP, el mismo espacio muestra el resort (el toggle solo reemplaza)
   return `
   <article class="hero hero-reg">
@@ -2366,8 +2454,8 @@ function priceBlock(it) {
   if (S.mode !== 'vip') return m < unitReg ? line(money(m), money(unitReg), 'promo') : line(money(m));
   const unitPromo = promoUnit(it), unitCp = Math.max(0, unitReg - couponUnit(it));
   if (m < unitPromo) return line(m ? money(m) : t().free2, money(unitPromo), m ? 'promo' : 'promo lcfree');
-  if (!hasDiscount(it)) return line(money(m));
-  return line(money(m), unitCp > m ? money(unitCp) : '', 'promo');
+  // v30.4 · con VIP nunca se ve peor que sin VIP: si cuesta menos que el regular, se tacha el regular en verde
+  return m < unitReg ? line(money(m), money(unitReg), 'promo') : line(money(m));
 }
 function unitCost(it, s, max = it.max || 99) {
   const kind = { kind: s.kind };
@@ -2418,7 +2506,6 @@ function cardHTML(it) {
     ? `<div class="mini-step"><button data-dec="${it.id}" aria-label="−">−</button><span>${s.qty}</span><button class="plus" data-inc="${it.id}" ${plusAttr(ok)} aria-label="+">+</button></div>`
     : upg ? `<button class="pill-add upgo" data-upg="${upg.from}"><i>⬆</i>${t().upgradeShort}</button>`
     : vo ? `<button class="pill-add vipgo" data-mode="vip"><i>✦</i>VIP</button>`
-    : off ? `<button class="pill-wish heart${inWish ? ' on' : ''}" data-wish="${it.id}" aria-pressed="${inWish}" aria-label="${t().love}"><i>${inWish ? '♥' : '♡'}</i></button>`
     : `<button class="pill-add pc-plus" data-inc="${it.id}" aria-label="${t().add}"><i>+</i></button>`;
   const vtag = S.mode === 'vip' ? `<span class="vtag">B ${money(isSel ? it.opts[s.opt].b * effQty(S.cart, it.id) : Math.min(...it.opts.map(o => o.b)))}${isSel ? '' : '+'}</span>` : '';
   return `
@@ -2426,7 +2513,7 @@ function cardHTML(it) {
     <div class="pc-img ph-${it.photo}" data-open="${it.id}">
       ${vo ? `<span class="lock newtag">✦ ${t().onlyVip}</span>` : off ? `<span class="lock over">${t().overBy2(money(over))}</span>` : dayTagHTML(it) || (top ? `<span class="lock topt">★ ${t().topSeller}</span>` : '')}
       ${vtag}
-      ${it.logo ? `<span class="pc-logo${it.logoLt ? ' lt' : ''}"><img src="${it.logo}" alt=""></span>` : ''}
+      ${it.logo && !it.logoSheet ? `<span class="pc-logo${it.logoLt ? ' lt' : ''}"><img src="${it.logo}" alt=""></span>` : ''}
     </div>
     <button class="pc-info" data-open="${it.id}">
       <h3>${it.name[L]}</h3>
@@ -2443,18 +2530,17 @@ function renderCatalog() {
     if (gs.dataset.html !== html) { const tl = gs.querySelector('.gtiles'), x = tl ? tl.scrollLeft : 0; gs.innerHTML = html; gs.dataset.html = html; const nl = gs.querySelector('.gtiles'); if (nl) nl.scrollLeft = x; } }
   document.body.classList.toggle('mode-vip', S.mode === 'vip');
   document.body.classList.toggle('mode-reg', S.mode === 'reg');
-  $('vipSw').setAttribute('aria-checked', String(S.mode === 'vip'));
   $('abVip').setAttribute('aria-checked', String(S.mode === 'vip'));
   $('navStay').classList.toggle('vip-on', S.mode === 'vip');
   $('modes').innerHTML = `<span class="knob" aria-hidden="true"></span>
     <button data-mode="reg" aria-pressed="${S.mode === 'reg'}">${t().modeReg}</button>
     <button data-mode="vip" aria-pressed="${S.mode === 'vip'}"><span class="star">✦</span>${t().modeVip}</button>`;
   // v29.12: las dos versiones viven apiladas en el mismo lugar; el toggle solo cambia cuál se ve (mismo alto siempre)
-  if (S.cart.cert) $('hero').innerHTML = S.mode === 'vip' ? heroHTML() : resortHeroHTML();
-  else { const v = S.mode === 'vip';
-    $('hero').innerHTML = `<div class="hero-swap"><div${v ? '' : ' class="hs-off" inert aria-hidden="true"'}>${heroHTML()}</div><div${v ? ' class="hs-off" inert aria-hidden="true"' : ''}>${resortHeroHTML()}</div></div>`; }
-  $('hero').style.display = '';
-  $('chips').innerHTML = CATS.map(c => `<button class="chip" data-cat="${c.id}" aria-pressed="${S.cat === c.id}">${c.name[S.lang]}</button>`).join('');
+  // v30.2 · la tarjeta del certificado ya no va en el catálogo (está en la pestaña Escapada)
+  $('hero').innerHTML = ''; $('hero').style.display = 'none';
+  $('cover').innerHTML = coverHTML();
+  $('chips').innerHTML = `<button class="cat cat-guide" data-guide><span class="ci">✨</span><span>${t().guideMe}</span></button>`
+    + CATS.map(c => `<button class="cat" data-cat="${c.id}" aria-pressed="${S.cat === c.id}">${CAT_PH[c.id] ? `<span class="ci ph-${CAT_PH[c.id]}"></span>` : '<span class="ci ci-all">✦</span>'}<span>${c.name[S.lang]}</span></button>`).join('');
   const subs = S.cat === 'excursions' ? EXC_SUBS : S.cat === 'spa' ? SPA_SUBS : null;
   $('subchips').innerHTML = subs ? subs.map(c => `<button class="chip" data-sub="${c.id}" aria-pressed="${S.sub === c.id}">${c.name[S.lang]}</button>`).join('') : '';
   $('subchips').style.display = subs ? '' : 'none';
@@ -2540,22 +2626,9 @@ function moneyHTML() {
         : `<b>${t().vipPricing}</b><small>${t().vipPricingSub}</small>`}</span>
     </div>`;
   }
-  // Mecánica oculta: doble toque a la derecha del presupuesto suma $50, a la izquierda resta $50
-  // v18: sin presupuesto definido, la fila es delgada y discreta (el doble toque sigue funcionando)
-  if (!hasBud()) return `
-  <div class="money nobud${vrow ? '' : ' solo'}">
-    <div class="vrow mrow mrow-g slim" data-vrow="budget"><span class="vtxt"><small>${t().yourBudget}: <b>${t().budOpen}</b></small></span><span class="gflash" aria-hidden="true"></span></div>
-    <button class="mchg" data-budget><span>${t().budSet}</span></button>${vrow}
-  </div>`;
-  return `
-  <div class="money">
-    <div class="vrow mrow mrow-g" data-vrow="budget">
-      <span class="gstack" style="--n:${Math.max(bills, 1)}">${bills ? Array.from({ length: bills }, (_, i) => `<i style="--i:${i}"></i>`).join('') : '<i class="none"></i>'}</span>
-      <span class="vtxt"><small>${t().yourBudget} · ${t().budgetSub.toLowerCase()}</small><b>${hasBud() ? money(S.will) : t().budOpen}</b></span>
-      <span class="gflash" aria-hidden="true"></span>
-    </div>
-    <button class="mchg" data-budget><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg><span>${hasBud() ? t().change : t().budSet}</span></button>${vrow}
-  </div>`;
+  // v30 · se quitó el presupuesto del huésped: solo queda el renglón de vouchers con VIP
+  // v30.2 · el renglón siempre está: sin VIP dice "precios de promoción", con VIP muestra los vouchers (solo cambia, no aparece/desaparece)
+  return `<div class="money solo-v">${vrow}</div>`;
 }
 function suggestHTML() {
   const left = S.will - costIn(S.mode, S.cart);
@@ -2704,9 +2777,12 @@ function fitTitle() {
   const h = $('appTitle'); h.style.fontSize = '';
   if (h.scrollWidth <= h.clientWidth) return;
   const fs = parseFloat(getComputedStyle(h).fontSize);
-  h.style.fontSize = Math.max(18, Math.floor(fs * h.clientWidth / h.scrollWidth * 10) / 10 - .5) + 'px';
+  h.style.fontSize = Math.max(15, Math.floor(fs * h.clientWidth / h.scrollWidth * 10) / 10 - .5) + 'px';
 }
 window.addEventListener('resize', () => fitTitle());
+// v30.5 · la letra Poppins llega después; si el título se ajustó antes, se cortaba en el celular
+try { document.fonts && document.fonts.ready.then(() => fitTitle()); document.fonts && document.fonts.addEventListener('loadingdone', () => fitTitle()); } catch (e) {}
+try { new ResizeObserver(() => fitTitle()).observe($('brand')); } catch (e) {}
 function setCompact(on) {
   if (on === abCompact) return; abCompact = on;
   const bar = $('appbar'), h = $('appTitle'), a = h.getBoundingClientRect(), fa = parseFloat(getComputedStyle(h).fontSize);
@@ -2727,19 +2803,7 @@ function renderVendor() {
   // Solo informativo: cuánto Leisure Cash has dado y cuánto se está usando
   $('payNum').textContent = `${money(S.step)} LC`;
   $('payDetail').textContent = `${S.step / VOUCHER} vouchers · usado ${money(v.within)} · doble toque en los vouchers: der +$50, izq −$50`;
-  // ♥ del huésped → palanca de negociación (solo la ve el vendedor)
-  const ids = Object.keys(S.wish), box = $('vWish');
-  box.hidden = !ids.length;
-  if (ids.length) {
-    const names = ids.map(id => itemById(id).name.es).join(', '), gap = wishGap();
-    let act;
-    if (gap <= 0) act = `<span>Ya entra todo</span><button data-wall>${S.mode === 'reg' ? 'Pasar a sus planes' : 'Pasar al regalo'}</button>`;
-    else if (S.mode === 'vip' && vouchersToCover() !== null) {
-      const k = vouchersToCover();
-      act = `<span>Con <b>+${money(k)}</b> en vouchers (${k / VOUCHER}) entra todo</span><button data-wgive="${k}">Dar +${money(k)} y pasar</button>`;
-    } else act = `<span>Faltan <b>${money(gap)}</b> de su presupuesto</span><button data-wraise>Subir +${money(Math.ceil(gap / 50) * 50)} y pasar</button>`;
-    box.innerHTML = `<b>♥ ${names}</b>${act}`;
-  }
+  $('vWish').hidden = true;   // v30 · lista de deseos eliminada
   syncVendH();
 }
 
@@ -2834,7 +2898,7 @@ function itemSheet(id) {
   const cpP = Math.max(0, regP - couponUnit(it));
   const pill = S.mode === 'vip'
     ? m < promoP ? `<span><s>${money(promoP)}</s></span><span class="promo">${m ? money(m) : t().free2}</span>`
-      : `${cpP > m ? `<span><s>${money(cpP)}</s></span>` : ''}<span class="${hasDiscount(it) ? 'promo' : ''}">${promoTxt(it, m)}</span>`
+      : m < regP ? `<span><s>${money(regP)}</s></span><span class="promo">${promoTxt(it, m)}</span>` : `<span>${promoTxt(it, m)}</span>`
     : m < regP ? `<span><s>${money(regP)}</s></span><span class="promo">${t().couponShort} ${money(m)}</span>` : `<span>${t().regPrice} ${money(regP)}</span>`;
   return `
     ${sheetTop('')}
@@ -2897,12 +2961,6 @@ function certSheet() {
     <p class="desc">${t().certLong}</p>
     <div class="sh-img main ph-map"></div>
     <div class="sh-foot">${S.cart.cert ? `<button class="cta" data-close>${t().cont}</button>` : `<button class="cta" data-cert>${t().addGift}</button>`}</div>`;
-}
-function budgetSheet() {
-  return `
-    ${sheetTop(t().budgetTitle)}
-    <p class="sub" style="margin-top:-6px">${t().budgetHint}</p>
-    <div class="opt-list"><button class="opt-row" data-will="open" aria-pressed="${!hasBud()}"><span>${t().budOpenOpt}</span><span class="dot"></span></button>${WILL.map(w => `<button class="opt-row" data-will="${w}" aria-pressed="${S.will === w}"><span>${w === 0 ? t().free : t().upTo(w)}</span><span class="dot"></span></button>`).join('')}</div>`;
 }
 // Reparte el Leisure Cash entre las piezas: lo que no cubre el regalo lo paga el huésped
 function splitVip(v) {
@@ -2976,9 +3034,10 @@ function vidThumb(vs) {
 function renderSheet() {
   if (!S.sheet) return;
   const sh = S.sheet, body =
-    sh.kind === 'item' ? itemSheet(sh.id) : sh.kind === 'cert' ? certSheet() : sh.kind === 'budget' ? budgetSheet() :
+    sh.kind === 'item' ? itemSheet(sh.id) : sh.kind === 'map' ? mapSheet() : sh.kind === 'cert' ? certSheet() :
     sh.kind === 'guide' ? guideSheet() : sh.kind === 'share' ? shareSheet() : sh.kind === 'vdata' ? vdataSheet() : sh.kind === 'dbg' ? dbgSheet() : sh.kind === 'compare' ? (count() ? compareSheet() : '') : sh.kind === 'summary' ? (count() ? summarySheet() : '') : doneSheet();
   if (!body) { closeSheet(); return; }
+  $('sheet').classList.toggle('g-full', sh.kind === 'guide' || sh.kind === 'map');   // v30 · la guía siempre a la misma altura que la ficha de un producto
   const keep = $('sheet').scrollTop, tEl = document.getElementById('toast'), tIn = tEl && tEl.parentNode === $('sheet');
   // v29.22 · si la hoja trae video, se pinta en 3 partes y al repintar (+/−, opciones) solo cambian las de arriba y abajo,
   // así el reproductor no se reinicia ni se detiene
@@ -3048,6 +3107,14 @@ function endPull() {
 }
 ['touchend', 'touchcancel'].forEach(ev => $('sheet').addEventListener(ev, endPull));
 $('sheet').addEventListener('click', e => { if (e.target === $('sheet')) closeSheet(); });
+// v30 · tocar el mapa acerca en ese punto; otro toque regresa al mapa completo (si se arrastró, no cuenta como toque)
+let mapDown = null;
+$('sheet').addEventListener('pointerdown', e => { if (e.target.id === 'mapImg') mapDown = { x: e.clientX, y: e.clientY }; });
+$('sheet').addEventListener('click', e => {
+  if (e.target.id !== 'mapImg' || !mapDown) return;
+  const moved = Math.hypot(e.clientX - mapDown.x, e.clientY - mapDown.y) > 8; mapDown = null; if (moved) return;
+  const r = $('mapBox').getBoundingClientRect(); mapZoom(mapZ > 1 ? 1 : 2.5, e.clientX - r.left, e.clientY - r.top);
+});
 // v29.22 · el reproductor de YouTube solo se carga al tocar la miniatura (la hoja abre igual de rápido y no gasta datos)
 $('sheet').addEventListener('click', e => {
   const b = e.target.closest('[data-vplay]'); if (!b) return;
@@ -3247,7 +3314,7 @@ function gItemHTML(p) {
     <div class="sh-foot stack">
       ${blocked ? `<button class="cta" data-mode="vip" style="background:var(--navy);color:var(--gold-text)">✦ ${t().seeVip}</button>`
         : fits ? `<button class="cta" data-gadd>${g.add}</button>`
-        : `<button class="cta" data-graise>${t().raiseTo(money(raiseTarget(p.id, p.kind, n)))}</button><button class="cta ghost-cta" data-gwish aria-pressed="${!!S.wish[p.id]}">${S.wish[p.id] ? '♥ ' + t().loved : '♡ ' + t().love}</button>`}
+        : `<button class="cta" data-graise>${t().raiseTo(money(raiseTarget(p.id, p.kind, n)))}</button>`}
       ${it.exc || it.kid ? `<button class="cta ghost-cta" data-gdetail>${g.details}</button>` : `<button class="ghost" data-gdetail>${g.details}</button>`}
     </div>`;
 }
@@ -3292,6 +3359,7 @@ function guideTap(i) {
 
 /* ── Tira de entrada en el catálogo ── */
 function guideStripHTML() {
+  return '';   // v30 · la guía ahora es el primer círculo ("Guíame")
   if (count() && isWide()) return '';   // v25: en celular se quedan siempre · v18: es el abridor; con algo en el regalo se quita · v24.3: ya no se quita al elegir una categoría (la pantalla brincaba)
   const g = gt();
   return `<section class="gstrip" aria-label="${esc(g.stripTitle)}">
@@ -3496,7 +3564,6 @@ document.addEventListener('click', e => {
   if (d.gstart) { const map = { spa: [['spa']], bali: [['bali']], dinner: [['dinner']], exc: [['exc']] }; openGuide(map[d.gstart] || []); return; }
   if (d.gi !== undefined) { guideTap(Number(d.gi)); return; }
   if (el.hasAttribute('data-gadd') || el.hasAttribute('data-gforce')) { const p = S.guide.stack[S.guide.stack.length - 1].p; gAdd(p.id, p.kind, p.n || 1, el.hasAttribute('data-gforce')); return; }
-  if (el.hasAttribute('data-gwish')) { const p = S.guide.stack[S.guide.stack.length - 1].p; toggleWish(p.id); return; }
   if (el.hasAttribute('data-graise')) { const p = S.guide.stack[S.guide.stack.length - 1].p; if (raiseAdd(p.id, p.kind, p.n || 1)) gGo('done', p); return; }
   if (el.hasAttribute('data-gdetail')) { const p = S.guide.stack[S.guide.stack.length - 1].p; if (p.kind) kindMemo[p.id] = p.kind; openSheet('item', p.id, 'guide'); return; }
   if (d.ghydro) { S.cart = withItem(S.cart, 'hydro', Number(d.ghydro)); render(); return; }
@@ -3504,8 +3571,10 @@ document.addEventListener('click', e => {
   if (d.gall) { const [gc, gs] = d.gall.split(':'); closeSheet(); S.tab = 'catalog'; S.cat = gc; S.sub = gs || 'all'; render(); window.scrollTo({ top: 0 }); return; }
   if (d.tab) { switchTab(d.tab); return; }
   if (d.mode) { setMode(d.mode); return; }
-  if (el.hasAttribute('data-budget')) { openSheet('budget'); return; }
-  if (d.will !== undefined) { S.will = d.will === 'open' ? Infinity : Number(d.will); render(); setTimeout(closeSheet, 180); return; }
+  if (el.hasAttribute('data-explore')) { exploreServices(); return; }
+  if (el.hasAttribute('data-map')) { openSheet('map'); return; }
+  if (d.mapz !== undefined) { mapZoom(d.mapz === '0' ? 1 : mapZ + Number(d.mapz)); return; }
+  if (el.hasAttribute('data-guide')) { openGuide(); return; }
   if (el.hasAttribute('data-cert-open')) { openSheet('cert'); return; }
   if (el.hasAttribute('data-cert')) { if (S.mode !== 'vip') S.mode = 'vip'; S.cart.cert = !S.cart.cert; render(); return; }
   if (el.hasAttribute('data-compare')) { openSheet('compare'); return; }
@@ -3538,12 +3607,7 @@ document.addEventListener('click', e => {
   if (el.hasAttribute('data-upg')) { const f = d.upg || 'massage', c = upgradeCart(f); if (c) { S.cart = c; render(); toast(t().upgradedTo(itemById(UPGRADES.find(x => x.from === f).to).name[S.lang])); } return; }
   if (d.raise) { raiseAdd(d.raise); return; }
   if (d.force) { forceAdd(d.force); return; }
-  if (d.wish) { toggleWish(d.wish); return; }
   if (d.wmove) { moveWish(d.wmove); return; }
-  if (d.wrm) { delete S.wish[d.wrm]; render(); return; }
-  if (el.hasAttribute('data-wall')) { moveAllWish(); return; }
-  if (el.hasAttribute('data-wraise')) { const snap = snapAll(); S.will = Math.min(GUEST_MAX, S.will + Math.ceil(wishGap() / 50) * 50); moveAllWish(); toast(t().raised(money(S.will)), undoTo(snap)); return; }
-  if (d.wgive) { const k = Number(d.wgive); S.step += k; bump(); moveAllWish(); toast('+' + money(k) + ' en vouchers'); return; }
   if (d.inc) { if (canAdd(d.inc)) { S.fresh = S.fresh.filter(x => x !== d.inc); if (S.wish[d.inc]) delete S.wish[d.inc]; } inc(d.inc); return; }
   if (d.dec) { dec(d.dec); return; }
   if (d.opt) { setOpt(d.opt, Number(d.i)); return; }
@@ -3583,7 +3647,8 @@ document.addEventListener('keydown', e => {
   if (S.vendor && S.mode === 'vip' && e.key === '-') { e.preventDefault(); vMinus(); }
 });
 $('vendorClose').addEventListener('click', () => setVendor(false));
-$('vipSw').addEventListener('click', () => setMode(S.mode === 'vip' ? 'reg' : 'vip'));
+$('abGear').addEventListener('click', e => { e.stopPropagation(); const p = $('abPop'); p.hidden = !p.hidden; $('abGear').setAttribute('aria-expanded', String(!p.hidden)); });
+document.addEventListener('click', e => { const p = $('abPop'); if (!p.hidden && !e.target.closest('#abSet')) { p.hidden = true; $('abGear').setAttribute('aria-expanded', 'false'); } });
 $('abVip').addEventListener('click', () => setMode(S.mode === 'vip' ? 'reg' : 'vip'));   // v29.13: toggle en la barra fija
 $('vDataBtn').addEventListener('click', () => openSheet('vdata'));
 $('vRainBtn').addEventListener('click', () => {
@@ -3598,8 +3663,7 @@ document.addEventListener('pointerup', e => {
   const row = e.target.closest('[data-vrow]'); if (!row) return;
   const r = row.getBoundingClientRect(), side = (e.clientX - r.left) > r.width / 2 ? 'R' : 'L', now = performance.now();
   const key = row.dataset.vrow + side;
-  if (row.dataset.vrow === 'budget' && !e.target.closest('button')) { clearTimeout(budTapTimer); if (!(now - lastTap.t < 350 && lastTap.side === key)) budTapTimer = setTimeout(() => openSheet('budget'), 360); }
-  if (now - lastTap.t < 350 && lastTap.side === key) { lastTap = { t: 0, side: null }; if (row.dataset.vrow === 'budget') side === 'R' ? gPlus() : gMinus(); else if (row.dataset.vrow === 'voucher') side === 'R' ? vPlus() : vMinus(); }
+  if (now - lastTap.t < 350 && lastTap.side === key) { lastTap = { t: 0, side: null }; if (row.dataset.vrow === 'voucher') side === 'R' ? vPlus() : vMinus(); }
   else lastTap = { t: now, side: key };
 });
 document.addEventListener('dblclick', e => { if (e.target.closest('[data-vrow]')) e.preventDefault(); });
@@ -3611,7 +3675,7 @@ function snapshot() {
     return { id, qty: sl.qty, kinds: it.kinds ? personKinds(it, sl) : undefined, cbd: it.kinds ? personCbd(it, sl) : undefined, manualOpt: sl.manual ? sl.opt : undefined,
       vipUnits: (v.units[id] || []).map(i => `${it.opts[i].pay}/${it.opts[i].b}`), regular: lineReg(it, sl) }; });
   return {
-    app: 'Gift Studio v29.25', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
+    app: 'Gift Studio v30.5', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
     guestBudget: hasBud() ? S.will : null, vouchers: S.step / VOUCHER, voucherValue: S.step, 
     cert: S.cart.cert, cart: lines, wish: S.wish,
     vip: { guestPays: v.cost, copays: v.pay, budgetUsed: v.used, overflow: v.overflow, left: S.will - v.cost, regularValue: v.value },
