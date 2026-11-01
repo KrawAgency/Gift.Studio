@@ -8,5 +8,6 @@ Selector de regalos para invitar huéspedes a la presentación de UVC. Se usa en
 
 ## Archivos
 - `index.html` — toda la app (HTML, CSS y JS en un solo archivo).
-- `img/` — fotos optimizadas (WebP); se descargan solo cuando aparecen en pantalla.
+- `img/` — fotos optimizadas (WebP) y logos (`logo-*`); se descargan solo cuando aparecen en pantalla.
+- `CLAUDE.md` — mapa del código y reglas de negocio para trabajar con Claude.
 - `manifest.json` + `icon-*.png` — para instalarla como app.
