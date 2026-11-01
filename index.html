@@ -1338,24 +1338,24 @@ const ITEMS = [
   { id: 'massage', cat: 'spa', grp: 'massages', photo: 'massage', unit: 1, max: 4, kinds: true, kreg: { relax: 189, deep: 199 },
     name: { en: 'Massage 50 min', es: 'Masaje de 50 min' },
     sub:  { en: 'For one person', es: 'Para una persona' },
-    desc: { en: 'A 50-minute massage. Choose relax or deep tissue.', es: 'Masaje de 50 minutos. Elige relajante o tejido profundo.' },
+    desc: { en: 'A 50-minute massage. Relax: long, smooth strokes that melt away daily stress and boost circulation. Deep tissue (Tension Relief): works through multiple areas of tension and includes Tension Relief Gel to prolong the benefits and deepen muscle relaxation.', es: 'Masaje de 50 minutos. Relajante: pases largos y suaves que liberan el estrés del día y mejoran la circulación. Tejido profundo (Tension Relief): trabaja varias zonas de tensión e incluye Tension Relief Gel para prolongar el efecto y relajar más el músculo.' },
     per:  { en: 'per person', es: 'por persona' },
     opts: [ { pay: 0, b: 100 }, { pay: 50, b: 50 }, { pay: 75, b: 25 }, { pay: 100, b: 0 } ] },
   { id: 'couples', cat: 'spa', grp: 'massages', photo: 'couples', sheetPhoto: 'couples_a', photo2: 'couples_b', unit: 2, max: 2, kinds: true, kreg: { relax: 189, deep: 199 },
     name: { en: 'Couples massage 50 min', es: 'Masaje en pareja 50 min' },
     sub:  { en: 'For two, side by side', es: 'Para dos, lado a lado' },
-    desc: { en: 'Two 50-minute massages side by side. Choose relax or deep tissue.', es: 'Dos masajes de 50 minutos lado a lado. Elige relajante o tejido profundo.' },
+    desc: { en: 'Two 50-minute massages. Both of you in the same room, side by side, and each one picks their own technique. Relax: long, smooth strokes that melt away daily stress and boost circulation. Deep tissue (Tension Relief): works through multiple areas of tension and includes Tension Relief Gel to prolong the benefits and deepen muscle relaxation.', es: 'Dos masajes de 50 minutos. Los dos en la misma cabina, lado a lado, y cada quien elige su técnica. Relajante: pases largos y suaves que liberan el estrés del día y mejoran la circulación. Tejido profundo (Tension Relief): trabaja varias zonas de tensión e incluye Tension Relief Gel para prolongar el efecto y relajar más el músculo.' },
     per:  { en: 'per couple', es: 'por pareja' },
     opts: mkOpts(200, 50) },   // v17.2: faltaba el escalón $50 + 150 LC
   { id: 'couples80', cat: 'spa', grp: 'massages', photo: 'couples', sheetPhoto: 'couples_a', photo2: 'couples_b', unit: 2, max: 2, kinds: true, kreg: { relax: 235, deep: 249 },
     name: { en: 'Couples massage 80 min', es: 'Masaje en pareja 80 min' },
     sub:  { en: 'For two, side by side', es: 'Para dos, lado a lado' },
-    desc: { en: 'Two 80-minute massages side by side. Choose relax or deep tissue.', es: 'Dos masajes de 80 minutos lado a lado. Elige relajante o tejido profundo.' },
+    desc: { en: 'Two 80-minute massages. Both of you in the same room, side by side, and each one picks their own technique. Relax: long, smooth strokes that melt away daily stress and boost circulation. Deep tissue (Tension Relief): works through multiple areas of tension and includes Tension Relief Gel to prolong the benefits and deepen muscle relaxation.', es: 'Dos masajes de 80 minutos. Los dos en la misma cabina, lado a lado, y cada quien elige su técnica. Relajante: pases largos y suaves que liberan el estrés del día y mejoran la circulación. Tejido profundo (Tension Relief): trabaja varias zonas de tensión e incluye Tension Relief Gel para prolongar el efecto y relajar más el músculo.' },
     opts: mkOpts(250, 50) },
   { id: 'massage80', cat: 'spa', grp: 'massages', photo: 'massage_b', unit: 1, max: 4, kinds: true, kreg: { relax: 235, deep: 249 },
     name: { en: 'Massage 80 min', es: 'Masaje de 80 min' },
     sub:  { en: 'For one person', es: 'Para una persona' },
-    desc: { en: 'An 80-minute massage. Choose relax or deep tissue.', es: 'Masaje de 80 minutos. Elige relajante o tejido profundo.' },
+    desc: { en: 'An 80-minute massage, extra time to really let go. Relax: long, smooth strokes that melt away daily stress and boost circulation. Deep tissue (Tension Relief): works through multiple areas of tension and includes Tension Relief Gel to prolong the benefits and deepen muscle relaxation.', es: 'Masaje de 80 minutos, tiempo extra para soltarte de verdad. Relajante: pases largos y suaves que liberan el estrés del día y mejoran la circulación. Tejido profundo (Tension Relief): trabaja varias zonas de tensión e incluye Tension Relief Gel para prolongar el efecto y relajar más el músculo.' },
     opts: [ { pay: 0, b: 125 }, { pay: 25, b: 100 }, { pay: 50, b: 75 }, { pay: 75, b: 50 }, { pay: 100, b: 25 }, { pay: 125, b: 0 } ] },
   // Add-on ligado a los masajes: no aparece en el catálogo; su cantidad sale de las personas que lo eligen
   { id: 'cbd', cat: 'spa', photo: 'massage', hidden: true, max: 99, reg: 35,
@@ -1695,12 +1695,12 @@ function spaItem(id, grp, fam, photo, en, es, subEn, subEs, reg, promo, step, ex
 ITEMS.splice(ITEMS.findIndex(i => i.id === 'massage'), 0,
   { id: 'massage25', cat: 'spa', grp: 'massages', photo: 'massage', unit: 1, max: 4, kinds: true, kreg: { relax: 109, deep: 109 },
     name: { en: 'Massage 25 min', es: 'Masaje de 25 min' }, sub: { en: 'For one person', es: 'Para una persona' },
-    desc: { en: 'A 25-minute massage. Choose relax or deep tissue.', es: 'Masaje de 25 minutos. Elige relajante o tejido profundo.' },
+    desc: { en: 'A quick 25-minute fix for tension headaches, fatigue and upper-body soreness. Relax for long, smooth strokes, or deep tissue with Tension Relief Gel to get the knots out fast.', es: 'Un alivio rápido de 25 minutos para dolor de cabeza por tensión, cansancio y molestias de la parte alta del cuerpo. Relajante con pases largos y suaves, o tejido profundo con Tension Relief Gel para soltar los nudos rápido.' },
     opts: mkOpts(75, 25) });
 ITEMS.splice(ITEMS.findIndex(i => i.id === 'hydro'), 0,
   { id: 'hotstones', cat: 'spa', grp: 'massages', photo: 'stones', unit: 1, max: 4, kinds: true, noKind: true, kreg: { relax: 249, deep: 249 },
     name: { en: 'Hot Stones 80 min', es: 'Piedras calientes 80 min' }, sub: { en: 'For one person', es: 'Para una persona' },
-    desc: { en: 'An 80-minute hot stone massage.', es: 'Masaje de 80 minutos con piedras calientes.' },
+    desc: { en: 'Long, smooth strokes combined with the penetrating heat of warm stones. You get the effect of a deep tissue massage without the heavy pressure: relaxed muscles and a soothed body. Only available as 80 minutes.', es: 'Pases largos y suaves combinados con el calor profundo de las piedras. Logra el efecto de un masaje de tejido profundo sin la presión fuerte: músculos relajados y el cuerpo en calma. Solo existe en 80 minutos.' },
     opts: mkOpts(200, 50) });
 ITEMS.splice(ITEMS.findIndex(i => i.id === 'hydro') + 1, 0,
   { ...spaItem('hydro80', 'treatments', 'hydro', 'hydro2', 'Hydrotherapy 80 min', 'Hidroterapia 80 min', 'Sauna, steam room & hydromassage', 'Sauna, vapor e hidromasaje', 89, 50, 25), gallery: ['hydro_circuit', 'hydro_couple', 'hydro_sauna'], photo2: 'hydro_aerial' },
@@ -2104,6 +2104,7 @@ const S = {
 };
 if (!T[S.lang]) S.lang = 'en';
 const kindMemo = {};
+const pkMemo = {};   // Nov 2026 · técnica por persona elegida antes de agregar (masaje en pareja)
 let prevOff = {};
 
 const $ = id => document.getElementById(id);
@@ -2169,7 +2170,8 @@ function durHTML(it) {
   const head = VAR_HEAD[g[0]] ? VAR_HEAD[g[0]][S.lang] : t().duration;
   return `<h4>${head}</h4><div class="seg-chips">${g.map(id => {
     const x = itemById(id), on = id === it.id;
-    const pr = S.mode === 'vip' ? promoUnit(x) : couponPrice(x);
+    const pm = !cur && x.kinds && x.unit > 1 && !x.noKind && pkMemo[it.id];   // Nov 2026 · sin VIP la técnica de cada quien cambia el precio regular
+    const pr = S.mode === 'vip' ? promoUnit(x) : pm ? Math.max(0, pm.slice(0, x.unit).reduce((a, k) => a + kindReg(x, k), 0) - couponUnit(x)) : couponPrice(x);
     let extra = '';
     if (cur && !on) { const c = durSwap(it.id, id), d = costIn(S.mode, c) - costIn(S.mode, S.cart); extra = d > 0 ? `+${money(d)}` : d < 0 ? `−${money(-d)}` : SLOT_OF[id] ? (pr ? money(pr) : t().free2) : t().free2; }   // v30.13: en horarios, mismo precio = misma etiqueta
     return `<button class="sc dur" data-dur="${it.id}" data-to="${id}" aria-pressed="${on}">${varLbl(id)}<span class="vt2">${cur && !on ? extra : pr ? money(pr) : t().free2}</span></button>`;
@@ -2266,7 +2268,7 @@ function calcReg(cart) {
 function costIn(mode, cart, step = S.step) { return mode === 'reg' ? calcReg(cart).cost : calcVip(cart, step).cost; }
 function withItem(cart, id, qty, extra = {}) {
   const sel = { ...cart.sel }, order = [...cart.order];
-  const cur = cart.sel[id] || { qty: 0, opt: 0, kind: kindMemo[id] || 'relax' };
+  const cur = cart.sel[id] || { qty: 0, opt: 0, kind: kindMemo[id] || 'relax', ...(pkMemo[id] ? { pk: [...pkMemo[id]] } : {}) };
   if (qty <= 0) { delete sel[id]; return { sel, order: order.filter(x => x !== id), cert: cart.cert }; }
   sel[id] = { ...cur, ...extra, qty };
   if (!order.includes(id)) order.push(id);
@@ -3015,15 +3017,16 @@ function sheetTop(title) {
 function itemSheet(id) {
   const L = S.lang, it = itemById(id), s = selOf(id), isSel = s.qty > 0;
   const cs = cardState(it), off = !isSel && cs.st !== 'on' && cs.st !== 'max' && !upgradeInto(id), ok = cs.st === 'on';
-  const persons = isSel && it.kinds ? personKinds(it, s) : [];
+  // Nov 2026 · en pareja el desglose por persona se ve desde antes de agregar (misma ficha siempre)
+  const persons = !it.kinds ? [] : isSel ? personKinds(it, s) : (it.unit > 1 && !it.noKind) ? personKinds(it, { ...s, qty: 1, pk: pkMemo[id] }) : [];
   const kinds = !it.kinds ? '' : it.noKind ? (persons.length > 1 ? `<h4>${t().addon}</h4>${persons.map((pk, n) => `<div class="pk-row"><span>${t().person(n + 1)}</span><div class="seg-chips"><button class="sc cbdsc" data-cbd="${id}" data-n="${n}" aria-pressed="${personCbd(it, s)[n]}">+ CBD $35</button></div></div>`).join('')}` : '') : persons.length > 1
-    ? `<h4>${t().techEach}</h4>${persons.map((pk, n) => `<div class="pk-row"><span>${t().person(n + 1)}</span><div class="seg-chips">${MASSAGE_KINDS.map(k => `<button class="sc" data-pk="${id}" data-n="${n}" data-k="${k.id}" aria-pressed="${pk === k.id}">${k.name[L]}</button>`).join('')}<button class="sc cbdsc" data-cbd="${id}" data-n="${n}" aria-pressed="${personCbd(it, s)[n]}">+ CBD $35</button></div></div>`).join('')}`
+    ? `<h4>${t().techEach}</h4>${persons.map((pk, n) => `<div class="pk-row"><span>${t().person(n + 1)}</span><div class="seg-chips">${MASSAGE_KINDS.map(k => `<button class="sc" data-pk="${id}" data-n="${n}" data-k="${k.id}" aria-pressed="${pk === k.id}">${k.name[L]}</button>`).join('')}${isSel ? `<button class="sc cbdsc" data-cbd="${id}" data-n="${n}" aria-pressed="${personCbd(it, s)[n]}">+ CBD $35</button>` : ''}</div></div>`).join('')}`
     : `<h4>${t().type}</h4><div class="seg-chips">${MASSAGE_KINDS.map(k => `<button class="sc" data-kind="${id}" data-k="${k.id}" aria-pressed="${(persons[0] || s.kind) === k.id}">${k.name[L]}</button>`).join('')}</div>`;
   const opts = !it.kinds ? '' : (isSel && persons.length === 1)
     ? `<h4>${t().addon}</h4><div class="seg-chips"><button class="sc cbdsc" data-cbd="${id}" data-n="0" aria-pressed="${personCbd(it, s)[0]}">${t().cbdBtn}</button></div>`
     : isSel ? '' : `<p class="sub" style="margin:0">${t().cbdNote}</p>`;
   // v29.21 · la pastilla del precio sigue la misma regla que la tarjeta: lo que cuesta una más (con LC, cupones y tope de cupones)
-  const regP = regPlain(it, s.kind), promoP = promoUnit(it), m = it.vipOnly && S.mode !== 'vip' ? promoP : unitCost(it, s);
+  const regP = persons.length > 1 && !it.noKind ? persons.slice(0, it.unit).reduce((a, k) => a + kindReg(it, k), 0) : regPlain(it, s.kind), promoP = promoUnit(it), m = it.vipOnly && S.mode !== 'vip' ? promoP : unitCost(it, s);
   const cpP = Math.max(0, regP - couponUnit(it));
   const vanReg = it.van ? (s.qty ? lineRegAll(it, s) : VAN_FARE(1)) : 0;
   const pill = it.van ? (S.mode === 'vip' ? `<span><s>${money(vanReg)}</s></span><span class="promo">${t().free2}</span>` : `<span>${t().regPrice} ${money(vanReg)}</span>`) : S.mode === 'vip'
@@ -3845,7 +3848,7 @@ document.addEventListener('click', e => {
       const c = durSwap(from, to), over = costIn(S.mode, c) - S.will;
       if (over > 0 && costIn(S.mode, c) > costIn(S.mode, S.cart)) { toast(t().overBudget(money(over))); return; }
       S.cart = c; render(); toast(DUR_MIN[to] ? t().durChanged(DUR_MIN[to]) : (S.lang === 'es' ? 'Se cambió a ' : 'Changed to ') + varLbl(to));
-    }
+    } else { if (pkMemo[from]) pkMemo[to] = [...pkMemo[from]]; if (kindMemo[from]) kindMemo[to] = kindMemo[from]; }   // Nov 2026 · la técnica elegida sigue al cambiar de duración
     openSheet('item', to, S.sheetPrev); return;
   }
   if (d.cbd) { toggleCbd(d.cbd, Number(d.n)); return; }
@@ -3858,9 +3861,10 @@ document.addEventListener('click', e => {
   if (d.inc) { if (canAdd(d.inc)) { S.fresh = S.fresh.filter(x => x !== d.inc); if (S.wish[d.inc]) delete S.wish[d.inc]; } inc(d.inc); return; }
   if (d.dec) { dec(d.dec); return; }
   if (d.opt) { setOpt(d.opt, Number(d.i)); return; }
-  if (d.kind) { kindMemo[d.kind] = d.k; if (S.cart.sel[d.kind]) { S.cart.sel[d.kind].kind = d.k; S.cart.sel[d.kind].pk = null; } render(); return; }
+  if (d.kind) { kindMemo[d.kind] = d.k; delete pkMemo[d.kind]; if (S.cart.sel[d.kind]) { S.cart.sel[d.kind].kind = d.k; S.cart.sel[d.kind].pk = null; } render(); return; }
   if (d.pk) {
-    const it = itemById(d.pk), sl = S.cart.sel[d.pk]; if (!sl) return;
+    const it = itemById(d.pk), sl = S.cart.sel[d.pk];
+    if (!sl) { const pk = personKinds(it, { qty: 1, kind: kindMemo[d.pk] || 'relax', pk: pkMemo[d.pk] }), n = Number(d.n); pk[n] = d.k || (pk[n] === 'relax' ? 'deep' : 'relax'); pkMemo[d.pk] = pk; render(); return; }
     const pk = personKinds(it, sl), n = Number(d.n);
     pk[n] = d.k || (pk[n] === 'relax' ? 'deep' : 'relax'); sl.pk = pk; render(); return;
   }
