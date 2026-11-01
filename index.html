@@ -12,7 +12,7 @@
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <script>(function(){var t;try{t=localStorage.getItem('gs-theme')}catch(e){}if(t!=='light'&&t!=='dark')t=(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';document.documentElement.setAttribute('data-theme',t);})();</script>
-<title>Gift Studio v30.6</title>
+<title>Gift Studio v30.7</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:ital,wght@0,400;0,500;0,600;1,700&display=swap" rel="stylesheet">
@@ -1125,6 +1125,7 @@ body.is-vendor .notice.vnote{display:flex}
 .ph-sc_cun_sq{background-image:url(img/sc_cun_sq.webp);aspect-ratio:1/1}
 .ph-sc_ij{background-image:url(img/sc_ij.webp)}
 .ph-sc_teq{background-image:url(img/sc_teq.webp)}
+.gal .ph-sc_teq{grid-column:1 / -1;aspect-ratio:1142/1087!important}
 .ph-sc_tacos{background-image:url(img/sc_tacos.webp)}
 .ph-sc_crafts{background-image:url(img/sc_crafts.webp)}
 .ph-sc_bags{background-image:url(img/sc_bags.webp)}
@@ -1602,6 +1603,18 @@ const EXC_DESC = {
 };
 // Cada tour es una sola tarjeta; los niños son un boleto ligado (oculto) que se controla desde adentro.
 // Si no hay precio de niño, se usa el de adulto.
+// v30.7 · horarios de los Shopping Tours: cada horario es una opción dentro de la ficha (igual que los programas de delfines)
+const SHOP_SLOTS = { 'shop-cancun': ['10:40 am – 3:30 pm', '3:40 pm – 8:30 pm'], 'shop-playa': ['10 am – 3 pm', '12 pm – 5 pm', '2 pm – 7 pm'] };
+const SLOT_OF = {};
+for (const [base, slots] of Object.entries(SHOP_SLOTS)) {
+  const row = EXC.find(r => r[1] === base), d = EXC_DESC[base];
+  slots.forEach((sl, k) => {
+    const id = k ? `${base}-${k + 1}` : base;
+    if (k) { EXC.push([row[0], id, ...row.slice(2)]); EXC_ES[id] = EXC_ES[base]; if (EXC_VIDEO[base]) EXC_VIDEO[id] = EXC_VIDEO[base]; }
+    EXC_DESC[id] = { ...d, inc: { es: d.inc.es.map(x => /^Todos los días/.test(x) ? 'Horario: ' + sl : x), en: d.inc.en.map(x => /^Every day/.test(x) ? 'Schedule: ' + sl : x) } };
+    SLOT_OF['x-' + id] = sl;
+  });
+}
 for (const [ph, id, sub, nm, tk, reg, promo, kReg, kPromo] of EXC) {
   const es = EXC_ES[id] || nm;
   ITEMS.push({
@@ -1811,9 +1824,10 @@ for (const [id, ph, ph2] of [['mani50', 'mani'], ['mani80', 'mani2'], ['pedi50',
   const it = ITEMS.find(i => i.id === id); if (it) { it.photo = ph; if (ph2) it.photo2 = ph2; }
 }
 // v30.5 · Shopping Tour Cancún: letras de Cancún de portada, galería del recorrido, la joyería ancha y el logo de International Jewelry
-Object.assign(ITEMS.find(i => i.id === 'x-shop-cancun'), { photo: 'sc_cun_sq', sheetPhoto: 'sc_cun', photo2: 'sc_ij', gallery: ['sc_teq', 'sc_tacos', 'sc_crafts', 'sc_bags'], logo: 'img/ij_logo.webp', logoSheet: true });
+// v30.7 · el logo de International Jewelry va dentro de la foto principal (sobre el cielo); los tacos grandes y el tequila completo
+for (const it of ITEMS.filter(i => /^x-shop-cancun(-\d)?$/.test(i.id))) Object.assign(it, { photo: 'sc_cun_sq', sheetPhoto: 'sc_cun', photo2: 'sc_ij', gallery: ['sc_tacos', 'sc_crafts', 'sc_bags', 'sc_teq'] });
 // v30.6 · Shopping Tour Playa del Carmen: Quinta Avenida, galería, la tienda de Matises & Co. y su logo sobre su rosa de marca
-Object.assign(ITEMS.find(i => i.id === 'x-shop-playa'), { photo: 'pc_5ta_sq', sheetPhoto: 'pc_5ta', photo2: 'pc_matises', gallery: ['pc_toys', 'pc_jeweler', 'pc_eagle'], logo: 'img/matises_logo.webp', logoSheet: true, logoBg: '#EB4DA4' });   // el logo solo en la ficha (en la tarjeta no se alcanza a leer)
+for (const it of ITEMS.filter(i => /^x-shop-playa(-\d)?$/.test(i.id))) Object.assign(it, { photo: 'pc_5ta_sq', sheetPhoto: 'pc_5ta', photo2: 'pc_matises', gallery: ['pc_toys', 'pc_jeweler', 'pc_eagle'], logo: 'img/matises_logo.webp', logoSheet: true, logoBg: '#EB4DA4' });   // el logo solo en la ficha (en la tarjeta no se alcanza a leer)
 // Duraciones: una sola tarjeta por tratamiento en el catálogo; las demás duraciones viven dentro de la tarjeta
 // (el masaje de 80 min y el masaje en pareja de 80 min se quedan como tarjetas propias)
 const DURS = [
@@ -1821,16 +1835,19 @@ const DURS = [
   ['neck25', 'neck50'], ['foot25', 'foot50'], ['scalp25', 'scalp50'], ['pedi50', 'pedi80'], ['mani50', 'mani80'],
   ['x-chichen-deluxe', 'x-chichen'], ['x-primax', 'x-interax', 'x-harmony'],   // v26: variantes de tour
   ['x-tulum-mayan', 'x-tulum-half'], ['bali-south', 'bali-north'],   // v27
+  ['x-shop-cancun', 'x-shop-cancun-2'], ['x-shop-playa', 'x-shop-playa-2', 'x-shop-playa-3'],   // v30.7: horarios
 ];
 const DUR_MIN = { massage25: 25, massage: 50, massage80: 80, couples: 50, couples80: 80, hydro: 50, hydro80: 80,
   neck25: 25, neck50: 50, foot25: 25, foot50: 50, scalp25: 25, scalp50: 50, pedi50: 50, pedi80: 80, mani50: 50, mani80: 80 };
-const DUR_ONLY = ['massage25', 'hydro80', 'neck25', 'foot25', 'scalp25', 'pedi80', 'mani80', 'x-chichen', 'x-interax', 'x-harmony', 'x-tulum-half', 'bali-north'];
+const DUR_ONLY = ['massage25', 'hydro80', 'neck25', 'foot25', 'scalp25', 'pedi80', 'mani80', 'x-chichen', 'x-interax', 'x-harmony', 'x-tulum-half', 'bali-north', 'x-shop-cancun-2', 'x-shop-playa-2', 'x-shop-playa-3'];
 // v26 · etiquetas de variantes que no son duración
 const VAR_LBL = { 'x-chichen-deluxe': { en: 'Deluxe', es: 'Deluxe' }, 'x-chichen': { en: 'Classic', es: 'Clásico' },
   'x-tulum-mayan': { en: 'Adventure', es: 'Adventure' }, 'x-tulum-half': { en: 'Half day', es: 'Medio día' },
   'bali-south': { en: 'South Beach', es: 'Playa Sur' }, 'bali-north': { en: 'North Beach · Preferred', es: 'Playa Norte · Preferred' },
   'x-primax': { en: 'Primax', es: 'Primax' }, 'x-interax': { en: 'Interax', es: 'Interax' }, 'x-harmony': { en: 'Harmony', es: 'Harmony' } };
 const VAR_HEAD = { 'x-chichen-deluxe': { en: 'Tour type', es: 'Tipo de tour' }, 'x-tulum-mayan': { en: 'Tour type', es: 'Tipo de tour' }, 'bali-south': { en: 'Beach', es: 'Playa' }, 'x-primax': { en: 'Program', es: 'Programa' } };
+for (const id in SLOT_OF) VAR_LBL[id] = { en: SLOT_OF[id], es: SLOT_OF[id] };
+VAR_HEAD['x-shop-cancun'] = VAR_HEAD['x-shop-playa'] = { en: 'Schedule', es: 'Horario' };
 const varLbl = id => DUR_MIN[id] ? `${DUR_MIN[id]} min` : VAR_LBL[id] ? VAR_LBL[id][S.lang] : itemById(id).name[S.lang];
 for (const id of DUR_ONLY) { const it = ITEMS.find(i => i.id === id); if (it) it.durOnly = true; }
 const durGroup = id => DURS.find(g => g.includes(id));
@@ -2133,7 +2150,8 @@ function kindSummary(it, s) {
 function massageUnits(cart) { return cart.order.reduce((n, id) => { const it = itemById(id); return it.kinds ? n + cart.sel[id].qty * (it.unit || 1) : n; }, 0); }
 function freeHydros(cart) { const h = cart.sel.hydro ? cart.sel.hydro.qty : 0; return Math.min(h, massageUnits(cart)); }
 function effQty(cart, id) { const q = cart.sel[id].qty; return id === 'hydro' ? q - freeHydros(cart) : q; }
-function subOf(it) { if (it.kid && S.cart.sel[it.id]) return paxText(S.cart.sel[it.id].qty, kidsOf(it)); if (it.sub_) return it.sub_[S.lang]; return (S.mode === 'reg' && it.subReg ? it.subReg : it.sub)[S.lang]; }
+const slotTxt = id => SLOT_OF[id] ? ' · ' + SLOT_OF[id] : '';   // v30.7 · el horario elegido se ve junto a las personas
+function subOf(it) { if (it.kid && S.cart.sel[it.id]) return paxText(S.cart.sel[it.id].qty, kidsOf(it)) + slotTxt(it.id); if (it.sub_) return it.sub_[S.lang]; return (S.mode === 'reg' && it.subReg ? it.subReg : it.sub)[S.lang]; }
 const optOrder = it => it.opts.map((o, i) => ({ o, i })).sort((a, b) => a.o.pay - b.o.pay);
 
 // Con VIP: cada unidad (cada masaje, cada cena) arranca con lo máximo que acepta en Leisure Cash.
@@ -2553,8 +2571,8 @@ function renderCatalog() {
   $('subchips').innerHTML = subs ? subs.map(c => `<button class="chip" data-sub="${c.id}" aria-pressed="${S.sub === c.id}">${c.name[S.lang]}</button>`).join('') : '';
   $('subchips').style.display = subs ? '' : 'none';
   const subKey = i => i.exc ? i.sub : i.grp;
-  let list = ITEMS.filter(i => !i.hidden && !i.durOnly && (S.cat === 'all' ? !i.exc && (!i.pkg || pkgToday(i)) : i.cat === S.cat && (!subs || S.sub === 'all' || subKey(i) === S.sub)));
-  if (S.cat === 'all') list = [...list.filter(i => isTop(i.id)).sort((a, b) => topIdx(a.id) - topIdx(b.id)), ...list.filter(i => !isTop(i.id))];
+  let list = ITEMS.filter(i => !i.hidden && !i.durOnly && (S.cat === 'all' ? (!i.pkg || pkgToday(i)) : i.cat === S.cat && (!subs || S.sub === 'all' || subKey(i) === S.sub)));
+  if (S.cat === 'all') list = [...list.filter(i => isTop(i.id)).sort((a, b) => topIdx(a.id) - topIdx(b.id)), ...list.filter(i => !isTop(i.id) && !i.exc), ...list.filter(i => !isTop(i.id) && i.exc).sort((a, b) => excRank(a.id) - excRank(b.id))];
   if (S.cat === 'excursions') list.sort((a, b) => excRank(a.id) - excRank(b.id));
   // primero lo que alcanza, al final lo gris (se mantiene el orden dentro de cada grupo)
   // Lo que alcanza va primero. Lo que no alcanza se agrupa en una sección plegable al final;
@@ -2996,7 +3014,7 @@ function compareSheet() {
     if (it.kidOf) continue;
     if (it.kid) {
       const k = sp[it.kid] || { lc: 0, cash: 0 }, a = sp[id];
-      rows.push(`<tr><td>${it.name[L]} <small>${paxText(s.qty, kidsOf(it))}</small></td><td>${money(lineRegAll(it, s))}</td><td class="vip">${vipCell({ lc: a.lc + k.lc, cash: a.cash + k.cash })}</td></tr>`);
+      rows.push(`<tr><td>${it.name[L]} <small>${paxText(s.qty, kidsOf(it))}${slotTxt(id)}</small></td><td>${money(lineRegAll(it, s))}</td><td class="vip">${vipCell({ lc: a.lc + k.lc, cash: a.cash + k.cash })}</td></tr>`);
       continue;
     }
     const kind = it.kinds ? ` <small>${kindSummary(it, s)}</small>` : '';
@@ -3417,7 +3435,7 @@ function offerLines() {
   for (const id of S.cart.order) {
     const it = itemById(id), s = S.cart.sel[id];
     if (it.kidOf || (it.vipOnly && S.mode === 'reg')) continue;
-    const sub = id === 'cbd' ? '' : it.kid ? paxText(s.qty, kidsOf(it)) : it.kinds && !it.noKind ? kindSummary(it, s).replace(/<br>/g, ' · ') : '';
+    const sub = id === 'cbd' ? '' : it.kid ? paxText(s.qty, kidsOf(it)) + slotTxt(id) : it.kinds && !it.noKind ? kindSummary(it, s).replace(/<br>/g, ' · ') : '';
     rows.push({ photo: it.photo, name: `${s.qty > 1 && !it.kid ? s.qty + '× ' : ''}${it.name[L]}`, sub, price: money((it.kid ? lineRegAll(it, s) : lineReg(it, s)) - lineCoupon(it, s)), strike: S.mode === 'vip' && hasDiscount(it) });
   }
   return rows;
@@ -3683,7 +3701,7 @@ function snapshot() {
     return { id, qty: sl.qty, kinds: it.kinds ? personKinds(it, sl) : undefined, cbd: it.kinds ? personCbd(it, sl) : undefined, manualOpt: sl.manual ? sl.opt : undefined,
       vipUnits: (v.units[id] || []).map(i => `${it.opts[i].pay}/${it.opts[i].b}`), regular: lineReg(it, sl) }; });
   return {
-    app: 'Gift Studio v30.6', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
+    app: 'Gift Studio v30.7', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
     guestBudget: hasBud() ? S.will : null, vouchers: S.step / VOUCHER, voucherValue: S.step, 
     cert: S.cart.cert, cart: lines, wish: S.wish,
     vip: { guestPays: v.cost, copays: v.pay, budgetUsed: v.used, overflow: v.overflow, left: S.will - v.cost, regularValue: v.value },
