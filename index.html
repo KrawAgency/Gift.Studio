@@ -403,6 +403,8 @@ body.is-vendor .wneg{display:flex}
 .ph-cellar2{background-image:url(img/10.webp)}
 .ph-cellar_hq{background-image:url(img/cellar_hq.webp)}
 .sh-img.main.ph-cellar_hq{aspect-ratio:3/2}
+.ph-cellar_crop{background-image:url(img/cellar_crop.webp);background-position:50% 40%}   /* Nov 2026 · portada de la cava (recorte de la mesa) */
+.sh-img.main.ph-cellar_crop{aspect-ratio:1200/1216}
 .ph-bali_beach{background-image:url(img/11.webp?v=29.10)}
 .ph-bali_act{background-image:url(img/12.webp?v=29.10)}
 .ph-bali_kids{background-image:url(img/13.webp)}
@@ -1409,7 +1411,7 @@ const ITEMS = [
     menu: { en: ['Red berry salad', 'Velvety fresh clam cream soup', 'Beef fillet in Merlot sauce with sautéed lobster tail, rustic mashed potatoes and seasonal vegetables', 'Cheese cream wrapped in red berry jelly'],
             es: ['Ensalada de frutos rojos', 'Crema aterciopelada de almeja fresca', 'Filete de res en salsa Merlot con cola de langosta salteada, puré de papa rústico y vegetales de estación', 'Cremoso de queso envuelto en jalea de frutos rojos'] },
     opts: mkOpts(250, 50) },
-  { id: 'cellar', cat: 'dinner', photo: 'cellar_hq', photo2: 'cellar', gallery: ['cellar2', 'cellar3'], max: 1, reg: 400,
+  { id: 'cellar', cat: 'dinner', photo: 'cellar_crop', photo2: 'cellar_hq', gallery: ['cellar2', 'cellar3'], max: 1, reg: 400,
     name: { en: 'VIP Wine Cellar Experience', es: 'Experiencia VIP en la Cava' },
     sub: { en: 'For two, in the wine cellar', es: 'Para dos, en la cava' },
     desc: { en: 'A private VIP dining experience for two in the resort’s wine cellar.', es: 'Una experiencia VIP privada para dos en la cava del resort.' },
