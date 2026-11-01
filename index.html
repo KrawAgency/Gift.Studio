@@ -3822,7 +3822,13 @@ document.addEventListener('click', e => {
   if (d.pinc) { if (pendFits(d.pinc, S.pend + 1)) S.pend++; else toast(pendWhy(d.pinc)); renderSheet(); return; }
   if (d.addn) { addPending(d.addn); return; }
   if (d.sub) { S.sub = d.sub; render(); return; }
-  if (d.cat) { if (S.tab !== 'catalog') S.tab = 'catalog'; S.cat = d.cat; S.sub = 'all'; render(); return; }
+  if (d.cat) {
+    if (S.tab !== 'catalog') S.tab = 'catalog'; S.cat = d.cat; S.sub = 'all'; render();
+    // Nov 2026 · igual que "Explorar servicios": lleva la vista a las categorías para ver lo que cambió
+    const el = $('chips'), bar = $('appbar').getBoundingClientRect().height;
+    window.scrollTo({ top: Math.max(0, el.getBoundingClientRect().top + window.scrollY - bar - 10), behavior: 'smooth' });
+    return;
+  }
   if (el.hasAttribute('data-dbgcopy')) {
     const ta = $('dbgTxt'); ta.focus(); ta.select();
     const done = () => toast('Copiado');
