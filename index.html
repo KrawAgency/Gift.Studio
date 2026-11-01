@@ -2195,9 +2195,10 @@ function upgradeCart(from = 'massage') {
   const s2 = S.cart.sel[u.to] || { qty: 0, opt: 0, kind: s.kind };
   if (s2.qty >= it2.max) return null;
   if (!it.kinds) return withItem(withItem(S.cart, from, s.qty - 1), u.to, s2.qty + 1);
-  const pk = personKinds(it, s), cb = personCbd(it, s), k = pk[pk.length - 1], c = cb[cb.length - 1];
-  let cart = withItem(S.cart, from, s.qty - 1, { pk: pk.slice(0, -1), cbd: cb.slice(0, -1) });
-  cart = withItem(cart, u.to, s2.qty + 1, { pk: [...personKinds(it2, s2), k], cbd: [...personCbd(it2, s2), c], kind: s2.kind || k });
+  // Nov 2026 · se mueve la unidad completa: en pareja son 2 personas, cada una con su técnica y su CBD (antes solo pasaba 1)
+  const n = it.unit || 1, pk = personKinds(it, s), cb = personCbd(it, s), k = pk.slice(-n), c = cb.slice(-n);
+  let cart = withItem(S.cart, from, s.qty - 1, { pk: pk.slice(0, -n), cbd: cb.slice(0, -n) });
+  cart = withItem(cart, u.to, s2.qty + 1, { pk: [...personKinds(it2, s2), ...k], cbd: [...personCbd(it2, s2), ...c], kind: s2.kind || k[0] });
   return cart;
 }
 // v30.14 · Shopping Tours: el precio regular es el de un taxi por camioneta (1–4 personas $120 · 5–8 $240 · 9–12 $300), no por persona
