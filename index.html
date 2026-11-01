@@ -12,7 +12,7 @@
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <script>(function(){var t;try{t=localStorage.getItem('gs-theme')}catch(e){}if(t!=='light'&&t!=='dark')t=(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';document.documentElement.setAttribute('data-theme',t);})();</script>
-<title>Gift Studio v30.3</title>
+<title>Gift Studio v30.4</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:ital,wght@0,400;0,500;0,600;1,700&display=swap" rel="stylesheet">
@@ -2442,8 +2442,8 @@ function priceBlock(it) {
   if (S.mode !== 'vip') return m < unitReg ? line(money(m), money(unitReg), 'promo') : line(money(m));
   const unitPromo = promoUnit(it), unitCp = Math.max(0, unitReg - couponUnit(it));
   if (m < unitPromo) return line(m ? money(m) : t().free2, money(unitPromo), m ? 'promo' : 'promo lcfree');
-  if (!hasDiscount(it)) return line(money(m));
-  return line(money(m), unitCp > m ? money(unitCp) : '', 'promo');
+  // v30.4 · con VIP nunca se ve peor que sin VIP: si cuesta menos que el regular, se tacha el regular en verde
+  return m < unitReg ? line(money(m), money(unitReg), 'promo') : line(money(m));
 }
 function unitCost(it, s, max = it.max || 99) {
   const kind = { kind: s.kind };
@@ -2883,7 +2883,7 @@ function itemSheet(id) {
   const cpP = Math.max(0, regP - couponUnit(it));
   const pill = S.mode === 'vip'
     ? m < promoP ? `<span><s>${money(promoP)}</s></span><span class="promo">${m ? money(m) : t().free2}</span>`
-      : `${cpP > m ? `<span><s>${money(cpP)}</s></span>` : ''}<span class="${hasDiscount(it) ? 'promo' : ''}">${promoTxt(it, m)}</span>`
+      : m < regP ? `<span><s>${money(regP)}</s></span><span class="promo">${promoTxt(it, m)}</span>` : `<span>${promoTxt(it, m)}</span>`
     : m < regP ? `<span><s>${money(regP)}</s></span><span class="promo">${t().couponShort} ${money(m)}</span>` : `<span>${t().regPrice} ${money(regP)}</span>`;
   return `
     ${sheetTop('')}
@@ -3660,7 +3660,7 @@ function snapshot() {
     return { id, qty: sl.qty, kinds: it.kinds ? personKinds(it, sl) : undefined, cbd: it.kinds ? personCbd(it, sl) : undefined, manualOpt: sl.manual ? sl.opt : undefined,
       vipUnits: (v.units[id] || []).map(i => `${it.opts[i].pay}/${it.opts[i].b}`), regular: lineReg(it, sl) }; });
   return {
-    app: 'Gift Studio v30.3', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
+    app: 'Gift Studio v30.4', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
     guestBudget: hasBud() ? S.will : null, vouchers: S.step / VOUCHER, voucherValue: S.step, 
     cert: S.cart.cert, cart: lines, wish: S.wish,
     vip: { guestPays: v.cost, copays: v.pay, budgetUsed: v.used, overflow: v.overflow, left: S.will - v.cost, regularValue: v.value },
