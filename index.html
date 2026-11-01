@@ -340,6 +340,11 @@ body.is-vendor .wneg{display:flex}
 .vid-play::after{content:'';position:absolute;left:26px;top:20px;border-style:solid;border-width:12px 0 12px 20px;border-color:transparent transparent transparent #fff}
 .vid:active .vid-play{transform:scale(.92)}
 .vid-t{margin:4px 0 -4px;font-weight:600;font-size:14px}
+/* Nov 2026 · capa propia sobre el reproductor: transparente mientras se ve, portada con ▶ en pausa o al terminar */
+.vid-tap{display:none;position:absolute;inset:0;border:0;padding:0;background:transparent;cursor:pointer}
+.vid.live .vid-tap{display:block}
+.vid-tap img,.vid-tap .vid-play{opacity:0;transition:opacity .2s}
+.vid.paused .vid-tap img,.vid.paused .vid-tap .vid-play{opacity:1}
 .gal .sh-img{aspect-ratio:4/3;border-radius:16px}
 .gal .sh-img:first-child{grid-column:1 / -1;aspect-ratio:16/9}
 .gal .sh-img:last-child:nth-child(even){grid-column:1 / -1;aspect-ratio:16/9}   /* sin foto huérfana al final */
@@ -3370,11 +3375,30 @@ $('sheet').addEventListener('touchmove', e => { if (mp.d0 && e.touches.length ==
 $('sheet').addEventListener('touchend', e => { if (e.touches.length < 2) mp.d0 = 0; });
 $('sheet').addEventListener('dblclick', e => { const w = e.target.closest('#mapBox'); if (!w) return; const r = w.getBoundingClientRect(); mapZoom(mapZ > 1.4 ? 1 : 2.5, e.clientX - r.left, e.clientY - r.top); });
 // v29.22 · el reproductor de YouTube solo se carga al tocar la miniatura (la hoja abre igual de rápido y no gasta datos)
+// Nov 2026 · reproductor discreto: sin barra de controles de YouTube (controls=0). Tocar el video lo pausa y encima se pone
+// nuestra propia portada con ▶ (tapa el título, "más videos" y la pantalla final de YouTube). El volumen va con los botones del teléfono.
+const ytCmd = (fr, func) => { try { fr.contentWindow.postMessage(JSON.stringify({ event: 'command', func, args: [] }), '*'); } catch (e) {} };
+const vidCover = (f, on) => f.classList.toggle('paused', on);
 $('sheet').addEventListener('click', e => {
+  const tap = e.target.closest('.vid-tap'); if (tap) { const f = tap.closest('.vid'), fr = f.querySelector('iframe'); if (f.classList.contains('paused')) { ytCmd(fr, 'playVideo'); vidCover(f, false); } else { ytCmd(fr, 'pauseVideo'); vidCover(f, true); } return; }
   const b = e.target.closest('[data-vplay]'); if (!b) return;
-  const f = document.createElement('div'); f.className = 'vid';
-  f.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${b.dataset.vplay}?start=${b.dataset.vstart}&autoplay=1&rel=0&playsinline=1" title="Video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>`;
+  const f = document.createElement('div'); f.className = 'vid live'; f.dataset.vid = b.dataset.vplay;
+  f.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${b.dataset.vplay}?start=${b.dataset.vstart}&autoplay=1&rel=0&playsinline=1&controls=0&iv_load_policy=3&disablekb=1&fs=0&enablejsapi=1&origin=${encodeURIComponent(location.origin)}" title="Video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+    <button class="vid-tap" aria-label="${S.lang === 'es' ? 'Pausar o reproducir' : 'Pause or play'}"><img src="https://i.ytimg.com/vi/${b.dataset.vplay}/hqdefault.jpg" alt="" onerror="this.remove()"><span class="vid-play"></span></button>`;
   b.replaceWith(f);
+  const fr = f.querySelector('iframe');
+  fr.addEventListener('load', () => { try { fr.contentWindow.postMessage(JSON.stringify({ event: 'listening', id: 1, channel: 'widget' }), '*'); } catch (e) {} });
+  // si el teléfono no deja que arranque solo, se quita nuestra capa y queda el botón de YouTube
+  setTimeout(() => { if (!f.dataset.st || f.dataset.st === '-1' || f.dataset.st === '5') f.classList.remove('live'); }, 3500);
+});
+// estado del reproductor (1 = reproduciendo, 2 = pausa, 0 = terminó): al pausar o terminar, nuestra portada tapa lo de YouTube
+window.addEventListener('message', e => {
+  if (!/youtube/.test(e.origin)) return;
+  let d; try { d = typeof e.data === 'string' ? JSON.parse(e.data) : e.data; } catch (x) { return; }
+  const st = d && d.info && d.info.playerState; if (st === undefined) return;
+  const f = [...document.querySelectorAll('.vid.live')].find(x => { const fr = x.querySelector('iframe'); return fr && fr.contentWindow === e.source; }); if (!f) return;
+  f.dataset.st = String(st);
+  if (st === 1) vidCover(f, false); else if (st === 2 || st === 0) vidCover(f, true);
 });
 // al cerrar la hoja se quita el reproductor para que el audio no siga sonando
 $('sheet').addEventListener('close', () => { const vh = document.getElementById('vidHost'); if (vh) vh.remove(); });
