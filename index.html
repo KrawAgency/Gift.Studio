@@ -12,7 +12,7 @@
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <script>(function(){var t;try{t=localStorage.getItem('gs-theme')}catch(e){}if(t!=='light'&&t!=='dark')t=(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';document.documentElement.setAttribute('data-theme',t);})();</script>
-<title>Gift Studio v30.13</title>
+<title>Gift Studio v30.14</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:ital,wght@0,400;0,500;0,600;1,700&display=swap" rel="stylesheet">
@@ -1648,6 +1648,7 @@ for (const [ph, id, sub, nm, tk, reg, promo, kReg, kPromo] of EXC) {
   });
 }
 
+for (const it of ITEMS) if (/^x-shop-(cancun|playa)(-\d)?(-k)?$/.test(it.id)) Object.assign(it, { van: true, max: it.kidOf ? 11 : 12 });
 // v30.8 · Day Pass Dreams Natura: solo con VIP. Adulto 50 LC; niños de 10 años o menos: 2 gratis y desde el 3º 20 LC; adolescentes 20 LC.
 // No tiene precio regular (el valor que se muestra es el mismo que cuesta, para no inventar un ahorro).
 {
@@ -2182,7 +2183,11 @@ function upgradeCart(from = 'massage') {
   cart = withItem(cart, u.to, s2.qty + 1, { pk: [...personKinds(it2, s2), k], cbd: [...personCbd(it2, s2), c], kind: s2.kind || k });
   return cart;
 }
-function lineReg(it, s) { return it.kinds ? personKinds(it, s).reduce((a, k) => a + kindReg(it, k), 0) : it.reg * (it.freeN ? Math.max(0, s.qty - it.freeN) : s.qty); }
+// v30.14 · Shopping Tours: el precio regular es el de un taxi por camioneta (1–4 personas $120 · 5–8 $240 · 9–12 $300), no por persona
+const VAN_FARE = n => n <= 0 ? 0 : n <= 4 ? 120 : n <= 8 ? 240 : 300;
+function lineReg(it, s, cart = S.cart) {
+  if (it.van) { if (it.kidOf) return 0; const k = cart.sel[it.kid] ? cart.sel[it.kid].qty : 0; return VAN_FARE(s.qty + k); }
+  return it.kinds ? personKinds(it, s).reduce((a, k) => a + kindReg(it, k), 0) : it.reg * (it.freeN ? Math.max(0, s.qty - it.freeN) : s.qty); }
 function kindSummary(it, s) {
   if (it.noKind) return '';
   const pk = personKinds(it, s), L = S.lang;
@@ -2233,14 +2238,14 @@ function calcVip(cart, step = S.step) {
   for (const id of cart.order) {
     const it = itemById(id), s = cart.sel[id];
     for (const i of units[id]) { pay += it.opts[i].pay; used += it.opts[i].b; }
-    value += lineReg(it, s);
+    value += lineReg(it, s, cart);
   }
   const overflow = Math.max(0, used - step);
   return { map, units, pay, used, overflow, cost: pay + overflow, value, within: Math.min(used, step) };
 }
 function calcReg(cart) {
   let regular = 0, raw = 0;
-  for (const id of cart.order) { const it = itemById(id), s = cart.sel[id]; if (it.vipOnly) continue; regular += lineReg(it, s); raw += lineCoupon(it, s); }
+  for (const id of cart.order) { const it = itemById(id), s = cart.sel[id]; if (it.vipOnly) continue; regular += lineReg(it, s, cart); raw += lineCoupon(it, s); }
   const coupons = Math.min(COUPON.total, raw);
   return { cost: regular - coupons, regular, coupons, couponsRaw: raw };
 }
@@ -2291,7 +2296,7 @@ function famOf(it) { return it.hidden ? null : it.fam ? it.fam : it.kinds ? 'mas
 function famInCart(f) { return f && S.cart.order.some(id => famOf(itemById(id)) === f); }
 function paxHTML(it) {
   const L = S.lang, a = selOf(it.id).qty, kIt = itemById(it.kid), k = kidsOf(it);
-  const pr = x => it.pax ? `${promoUnit(x)} LC` : S.mode === 'vip' ? `${promoTxt(x, promoUnit(x))}${x.reg > promoUnit(x) ? ` · <s>${money(x.reg)}</s>` : ''}` : money(x.reg);
+  const pr = x => it.van ? (x === it ? (S.mode === 'vip' ? t().free2 : (L === 'es' ? 'Precio por camioneta' : 'Price per van')) : (L === 'es' ? 'Van en la misma camioneta' : 'Ride in the same van')) : it.pax ? `${promoUnit(x)} LC` : S.mode === 'vip' ? `${promoTxt(x, promoUnit(x))}${x.reg > promoUnit(x) ? ` · <s>${money(x.reg)}</s>` : ''}` : money(x.reg);
   const kidOk = a > 0 && canAdd(it.kid), kidOver = a > 0 && !kidOk && k < kIt.max ? overBy(it.kid) : 0;
   const adOk = canAdd(it.id), adOver = !adOk && a < it.max && !(it.vipOnly && S.mode === 'reg') ? overBy(it.id) : 0;
   return `<h4>${t().whoGoes}</h4>
@@ -2305,6 +2310,7 @@ function paxHTML(it) {
       ${it.teen ? (() => { const tIt = itemById(it.teen), tn = teensOf(it), ok = a > 0 && canAdd(it.teen); return `
       <div class="pax-row"><div><b>${it.pax.t[L]}</b><small>${pr(tIt)}</small></div>
         <div class="qty"><button data-dec="${it.teen}" ${tn ? '' : 'disabled'} aria-label="−">−</button><span>${tn}</span><button class="plus" data-inc="${it.teen}" ${a > 0 ? plusAttr(ok) : 'disabled'} aria-label="+">+</button></div></div>`; })() : ''}
+      ${it.van ? `<p class="sub" style="margin:2px 0 0">${L === 'es' ? 'Taxi: 1–4 personas $120 · 5–8 $240 · 9–12 $300' : 'Taxi: 1–4 people $120 · 5–8 $240 · 9–12 $300'}</p>` : ''}
       ${a ? `<p class="pax-tot">${paxOf(it, a)}</p>` : `<p class="pax-tot">${t().paxHint}</p>`}
     </div>`;
 }
@@ -2522,6 +2528,7 @@ function priceBlock(it) {
   const s = selOf(it.id), max = it.max || 99;
   const line = (now, was, cls = '') => `<span class="pc-price"><b${cls ? ` class="${cls}"` : ''}>${now}</b>${was ? ` <s>${was}</s>` : ''}</span>`;
   if (it.vipOnly && S.mode !== 'vip') return line(it.pax ? `${promoUnit(it)} LC` : money(promoUnit(it)));   // v30.8: el Day Pass no tiene precio en dinero
+  if (it.van) { const reg = s.qty ? lineRegAll(it, s) : VAN_FARE(1); return S.mode === 'vip' ? line(t().free2, money(reg), 'promo') : line(money(reg)); }   // v30.14: precio por camioneta
   const m = unitCost(it, s, max), unitReg = regPlain(it, s.kind);
   if (S.mode !== 'vip') return m < unitReg ? line(money(m), money(unitReg), 'promo') : line(money(m));
   const unitPromo = promoUnit(it), unitCp = Math.max(0, unitReg - couponUnit(it));
@@ -3000,7 +3007,8 @@ function itemSheet(id) {
   // v29.21 · la pastilla del precio sigue la misma regla que la tarjeta: lo que cuesta una más (con LC, cupones y tope de cupones)
   const regP = regPlain(it, s.kind), promoP = promoUnit(it), m = it.vipOnly && S.mode !== 'vip' ? promoP : unitCost(it, s);
   const cpP = Math.max(0, regP - couponUnit(it));
-  const pill = S.mode === 'vip'
+  const vanReg = it.van ? (s.qty ? lineRegAll(it, s) : VAN_FARE(1)) : 0;
+  const pill = it.van ? (S.mode === 'vip' ? `<span><s>${money(vanReg)}</s></span><span class="promo">${t().free2}</span>` : `<span>${t().regPrice} ${money(vanReg)}</span>`) : S.mode === 'vip'
     ? m < promoP ? `<span><s>${money(promoP)}</s></span><span class="promo">${m ? money(m) : t().free2}</span>`
       : m < regP ? `<span><s>${money(regP)}</s></span><span class="promo">${promoTxt(it, m)}</span>` : `<span>${promoTxt(it, m)}</span>`
     : m < regP ? `<span><s>${money(regP)}</s></span><span class="promo">${t().couponShort} ${money(m)}</span>` : `<span>${t().regPrice} ${money(regP)}</span>`;
@@ -3779,7 +3787,7 @@ function snapshot() {
     return { id, qty: sl.qty, kinds: it.kinds ? personKinds(it, sl) : undefined, cbd: it.kinds ? personCbd(it, sl) : undefined, manualOpt: sl.manual ? sl.opt : undefined,
       vipUnits: (v.units[id] || []).map(i => `${it.opts[i].pay}/${it.opts[i].b}`), regular: lineReg(it, sl) }; });
   return {
-    app: 'Gift Studio v30.13', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
+    app: 'Gift Studio v30.14', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
     guestBudget: hasBud() ? S.will : null, vouchers: S.step / VOUCHER, voucherValue: S.step, 
     cert: S.cart.cert, cart: lines, wish: S.wish,
     vip: { guestPays: v.cost, copays: v.pay, budgetUsed: v.used, overflow: v.overflow, left: S.will - v.cost, regularValue: v.value },
