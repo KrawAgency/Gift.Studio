@@ -12,7 +12,7 @@
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <script>(function(){var t;try{t=localStorage.getItem('gs-theme')}catch(e){}if(t!=='light'&&t!=='dark')t=(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';document.documentElement.setAttribute('data-theme',t);})();</script>
-<title>Gift Studio v30.9</title>
+<title>Gift Studio v30.10</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:ital,wght@0,400;0,500;0,600;1,700&display=swap" rel="stylesheet">
@@ -1142,6 +1142,9 @@ body.is-vendor .notice.vnote{display:flex}
 .ph-dn_river{background-image:url(img/dn_river.webp)}
 .ph-dn_roll{background-image:url(img/dn_roll.webp)}
 .ph-dn_sunset{background-image:url(img/dn_sunset.webp)}
+.ph-cat_spa{background-image:url(img/cat_spa.webp)}
+.ph-cat_bali{background-image:url(img/cat_bali.webp)}
+.ph-cat_exc{background-image:url(img/cat_exc.webp)}
 /* v30 · mapa del hotel */
 .cv-map{position:absolute;right:16px;bottom:18px;width:48px;height:48px;border-radius:50%;display:grid;place-items:center;color:#fff;background:rgba(30,45,80,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.25)}
 .cv-map svg{width:24px;height:24px}
@@ -1186,6 +1189,7 @@ body.is-vendor .notice.vnote{display:flex}
 .cat[aria-pressed=true] .ci{border-color:var(--gold)}
 .cat[aria-pressed=true]{color:var(--ink);font-weight:700}
 .cat .ci-all{background:var(--card);color:var(--gold-text)}
+.cat .ci{padding:0!important;grid-template-columns:none!important;gap:0!important;text-align:center;min-height:0;border-top-width:2.5px;background-origin:border-box;background-repeat:no-repeat}
 .cat-free .ci{background:linear-gradient(135deg,#2B8273,#1d5c51);color:#fff;font-size:13px;font-weight:800;letter-spacing:.02em}
 .cat-guide .ci{background:linear-gradient(135deg,#e8b04a,#c9782f);font-size:26px}
 .cat:active .ci{transform:scale(.94)}
@@ -2422,7 +2426,7 @@ function resetAll() {
 
 /* ── Catálogo ── */
 // v30 · portada: foto del resort con el texto arriba y un botón que baja a los servicios
-const CAT_PH = { spa: 'stones', bali: 'bali_sea', excursions: 'x30', dinner: 'sunset', extras: 'berries' };   // v30.9: tomas cerradas que se leen en el círculo
+const CAT_PH = { spa: 'cat_spa', bali: 'cat_bali', excursions: 'cat_exc', dinner: 'sunset', extras: 'berries' };   // v30.9: tomas cerradas que se leen en el círculo
 function coverHTML() {
   return `<div class="cv-top"><span class="cv-kick">${t().resortKicker} · Cancún</span><h2>${t().resortTitle}</h2><p>${t().coverLede}</p></div>
     <button class="cv-cta" data-explore>${t().explore} <span aria-hidden="true">↓</span></button>
@@ -3744,7 +3748,7 @@ function snapshot() {
     return { id, qty: sl.qty, kinds: it.kinds ? personKinds(it, sl) : undefined, cbd: it.kinds ? personCbd(it, sl) : undefined, manualOpt: sl.manual ? sl.opt : undefined,
       vipUnits: (v.units[id] || []).map(i => `${it.opts[i].pay}/${it.opts[i].b}`), regular: lineReg(it, sl) }; });
   return {
-    app: 'Gift Studio v30.9', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
+    app: 'Gift Studio v30.10', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
     guestBudget: hasBud() ? S.will : null, vouchers: S.step / VOUCHER, voucherValue: S.step, 
     cert: S.cart.cert, cart: lines, wish: S.wish,
     vip: { guestPays: v.cost, copays: v.pay, budgetUsed: v.used, overflow: v.overflow, left: S.will - v.cost, regularValue: v.value },
