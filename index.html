@@ -12,7 +12,7 @@
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <script>(function(){var t;try{t=localStorage.getItem('gs-theme')}catch(e){}if(t!=='light'&&t!=='dark')t=(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';document.documentElement.setAttribute('data-theme',t);})();</script>
-<title>Gift Studio v30.10</title>
+<title>Gift Studio v30.11</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:ital,wght@0,400;0,500;0,600;1,700&display=swap" rel="stylesheet">
@@ -1190,6 +1190,8 @@ body.is-vendor .notice.vnote{display:flex}
 .cat[aria-pressed=true]{color:var(--ink);font-weight:700}
 .cat .ci-all{background:var(--card);color:var(--gold-text)}
 .cat .ci{padding:0!important;grid-template-columns:none!important;gap:0!important;text-align:center;min-height:0;border-top-width:2.5px;background-origin:border-box;background-repeat:no-repeat}
+.pc-plus.cert-on i{background:var(--orange)}
+.pc-plus.cert-on i svg{width:18px;height:18px}
 .cat-free .ci{background:linear-gradient(135deg,#2B8273,#1d5c51);color:#fff;font-size:13px;font-weight:800;letter-spacing:.02em}
 .cat-guide .ci{background:linear-gradient(135deg,#e8b04a,#c9782f);font-size:26px}
 .cat:active .ci{transform:scale(.94)}
@@ -1289,7 +1291,7 @@ const CATS = [
   { id: 'bali',   name: { en: 'Cabanas',   es: 'Cabañas' } },
   { id: 'excursions', name: { en: 'Excursions', es: 'Excursiones' } },
   { id: 'dinner', name: { en: 'Dinners',   es: 'Cenas' } },
-  { id: 'extras', name: { en: 'Extras',    es: 'Extras' } },
+  { id: 'extras', name: { en: 'Resort extras', es: 'Extras del resort' } },
 ];
 
 const HYDRO_REG = 45;
@@ -2592,6 +2594,22 @@ function cardHTML(it) {
     </div>
   </article>`;
 }
+// v30.11 · el certificado 3 días / 2 noches como tarjeta del catálogo (Todo, Gratis y Extras del resort)
+function certCardHTML() {
+  const L = S.lang, on = S.cart.cert, vip = S.mode === 'vip';
+  const tool = !vip ? `<button class="pill-add vipgo" data-mode="vip"><i>✦</i>VIP</button>`
+    : on ? `<button class="pill-add pc-plus cert-on" data-cert aria-pressed="true" aria-label="${t().remove}"><i>${ICON.check}</i></button>`
+    : `<button class="pill-add pc-plus" data-cert aria-label="${t().add}"><i>+</i></button>`;
+  return `
+  <article class="pc${on && vip ? ' sel' : ''}${vip ? '' : ' off'}">
+    <div class="pc-img ph-pool" data-cert-open>${vip ? `<span class="lock topt">✦ ${L === 'es' ? 'Tu escapada' : 'Your getaway'}</span>` : `<span class="lock newtag">✦ ${t().onlyVip}</span>`}</div>
+    <button class="pc-info" data-cert-open><h3>${L === 'es' ? 'Certificado 3 días, 2 noches' : '3 days, 2 nights certificate'}</h3></button>
+    <div class="pc-foot">
+      <button class="pc-pr" data-cert-open><span class="pc-price"><b class="promo">${t().noCost}</b></span></button>
+      <div class="pc-tools">${tool}</div>
+    </div>
+  </article>`;
+}
 function renderCatalog() {
   $('catGuest').innerHTML = moneyHTML();
   { const gs = $('guideStrip'), html = guideStripHTML();
@@ -2608,7 +2626,7 @@ function renderCatalog() {
   $('hero').innerHTML = ''; $('hero').style.display = 'none';
   $('cover').innerHTML = coverHTML();
   // v30.9 · círculo FREE: con VIP y vouchers, todo lo que entra gratis con el Leisure Cash que queda, junto
-  const freeOn = S.mode === 'vip' && S.step > 0;
+  const freeOn = S.mode === 'vip';   // v30.11: con VIP siempre (aunque no haya vouchers: certificado y Shopping Tours son gratis)
   if (S.cat === 'free' && !freeOn) S.cat = 'all';
   const freeBtn = freeOn ? `<button class="cat cat-free" data-cat="free" aria-pressed="${S.cat === 'free'}"><span class="ci">FREE</span><span>${S.lang === 'es' ? 'Gratis' : 'Free'}</span></button>` : '';
   const catBtn = c => `<button class="cat" data-cat="${c.id}" aria-pressed="${S.cat === c.id}">${CAT_PH[c.id] ? `<span class="ci ph-${CAT_PH[c.id]}"></span>` : '<span class="ci ci-all">✦</span>'}<span>${c.name[S.lang]}</span></button>`;
@@ -2626,7 +2644,8 @@ function renderCatalog() {
   // los "Solo con VIP Services" se quedan a la vista como gancho.
   const folds = i => isOff(i) && !(i.vipOnly && S.mode === 'reg');
   const main = [...list.filter(i => !isOff(i)), ...list.filter(i => isOff(i) && !folds(i))], off = list.filter(folds);
-  $('grid').innerHTML = main.length || S.cat !== 'free' ? main.map(cardHTML).join('') : `<p class="sub" style="grid-column:1 / -1;text-align:center;padding:24px 8px">${S.lang === 'es' ? 'Ya no queda nada gratis con el Leisure Cash que queda. Agrega otro voucher o revisa Todo.' : 'Nothing else is free with the Leisure Cash left. Add another voucher or check All.'}</p>`;
+  const certC = ['all', 'free', 'extras'].includes(S.cat) && (S.mode === 'vip' || S.cat !== 'free') ? certCardHTML() : '';
+  $('grid').innerHTML = main.length || certC || S.cat !== 'free' ? certC + main.map(cardHTML).join('') : `<p class="sub" style="grid-column:1 / -1;text-align:center;padding:24px 8px">${S.lang === 'es' ? 'Ya no queda nada gratis con el Leisure Cash que queda. Agrega otro voucher o revisa Todo.' : 'Nothing else is free with the Leisure Cash left. Add another voucher or check All.'}</p>`;
   const open = S.showOff || !main.length;
   $('offWrap').innerHTML = off.length ? `
     <button class="off-head" data-offtoggle aria-expanded="${open}" aria-controls="gridOff">
@@ -2896,7 +2915,7 @@ function renderTabs() {
 /* ── v11.4 · navegación: Atrás (botón de arriba, gesto o botón del celular, Esc) ── */
 const SIDE_MQ = 'not all';   // v29.1: el regalo ya nunca va a un lado (laptop y tablet = como celular)
 const isWide = () => window.matchMedia(SIDE_MQ).matches;
-const catName = id => id === 'free' ? (S.lang === 'es' ? 'Gratis con tu LC' : 'Free with your LC') : (CATS.find(c => c.id === id) || CATS[0]).name[S.lang];
+const catName = id => id === 'free' ? (S.lang === 'es' ? 'Gratis con VIP' : 'Free with VIP') : (CATS.find(c => c.id === id) || CATS[0]).name[S.lang];
 function screenTitle() {
   if (S.tab === 'cart' && !isWide()) return t().picks;
   if (S.cat !== 'all') return catName(S.cat);
@@ -3748,7 +3767,7 @@ function snapshot() {
     return { id, qty: sl.qty, kinds: it.kinds ? personKinds(it, sl) : undefined, cbd: it.kinds ? personCbd(it, sl) : undefined, manualOpt: sl.manual ? sl.opt : undefined,
       vipUnits: (v.units[id] || []).map(i => `${it.opts[i].pay}/${it.opts[i].b}`), regular: lineReg(it, sl) }; });
   return {
-    app: 'Gift Studio v30.10', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
+    app: 'Gift Studio v30.11', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
     guestBudget: hasBud() ? S.will : null, vouchers: S.step / VOUCHER, voucherValue: S.step, 
     cert: S.cart.cert, cart: lines, wish: S.wish,
     vip: { guestPays: v.cost, copays: v.pay, budgetUsed: v.used, overflow: v.overflow, left: S.will - v.cost, regularValue: v.value },
