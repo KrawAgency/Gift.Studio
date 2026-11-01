@@ -1021,6 +1021,18 @@ body.is-vendor .notice.vnote{display:flex}
   /* v29.3 · fondo más oscuro y un poco desenfocado al abrir una tarjeta */
   dialog.sheet::backdrop{background:rgba(10,10,16,.78);-webkit-backdrop-filter:blur(6px) saturate(.7);backdrop-filter:blur(6px) saturate(.7)}
 }
+/* Nov 2026 · tablet horizontal: ficha más ancha, galería en filas de 3 y fotos con tope de alto para no tener que bajar tanto */
+@media (min-width:1100px) and (min-height:600px) and (orientation:landscape){
+  dialog.sheet{width:min(960px,calc(100vw - 48px))}
+  dialog.sheet .sh-img{max-height:62vh}
+  .gal{grid-template-columns:repeat(6,1fr)}
+  .gal .sh-img,.gal .sh-img:first-child,.gal .sh-img:last-child:nth-child(even){grid-column:span 2;aspect-ratio:4/3}
+  .gal .sh-img:only-child{grid-column:1 / -1;aspect-ratio:16/9}
+  .gal .sh-img:first-child:nth-last-child(2),.gal .sh-img:first-child:nth-last-child(2) ~ .sh-img{grid-column:span 3}   /* 2 fotos: mitad y mitad */
+  .gal .sh-img:first-child:nth-last-child(4){grid-column:1 / -1;aspect-ratio:21/9}                                         /* 4 fotos: 1 ancha + 3 */
+  .gal .sh-img:first-child:nth-last-child(5),.gal .sh-img:first-child:nth-last-child(5) + .sh-img{grid-column:span 3}     /* 5 fotos: 2 + 3 */
+  .gal .ph-sc_teq{grid-column:1 / -1}
+}
 
 /* v29.11 · botón de la tarjeta fuera de la foto: renglón fijo al fondo (precio a la izquierda, acción a la derecha),
    igual en todas las tarjetas sin importar el largo del nombre */
