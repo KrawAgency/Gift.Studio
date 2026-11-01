@@ -2738,14 +2738,18 @@ function moneyVrow() {   // v25.4 · solo la fila de Leisure Cash (misma mecáni
   return `<div class="vrow mrow mrow-v" data-vrow="voucher"><span class="vstack" style="--n:${Math.max(Math.min(n, 8), 1)}">${stack}</span>
     <span class="vtxt">${n ? `<b>${t().vouchers(n)}</b><small>${t().lc(money(S.step))}</small>` : `<b>${t().vipPricing}</b><small>${t().vipPricingSub}</small>`}</span></div>`;
 }
-function moneyHTML() {
-  const bills = hasBud() ? Math.min(10, Math.round(S.will / 50)) : 0;
-  // v29.12: el renglón siempre existe; el toggle solo cambia su contenido (no aparece ni desaparece)
-  let vrow = `
+// Nov 2026 · renglón "precios de promoción de la app" (sin VIP); también va en el carrito para que el toggle solo cambie su forma
+function regVrow() {
+  return `
     <div class="vrow mrow mrow-v mrow-reg" data-vrow="regpricing">
       <span class="vstack" style="--n:1"><span class="vstar reg" aria-hidden="true">%</span></span>
       <span class="vtxt"><b>${t().regPricing}</b><small>${t().regPricingSub}</small></span>
     </div>`;
+}
+function moneyHTML() {
+  const bills = hasBud() ? Math.min(10, Math.round(S.will / 50)) : 0;
+  // v29.12: el renglón siempre existe; el toggle solo cambia su contenido (no aparece ni desaparece)
+  let vrow = regVrow();
   if (S.mode === 'vip') {
     const n = S.step / VOUCHER, v = calcVip(S.cart), usedN = Math.ceil(v.within / VOUCHER);
     const stack = n ? Array.from({ length: Math.min(n, 8) }, (_, i) => `<span class="vch ph-voucher${i < usedN ? ' used' : ''}" style="--i:${i}"></span>`).join('')
@@ -2885,7 +2889,7 @@ function renderCart() {
   $('cartView').innerHTML = `
     <div class="cart">
       <h2>${t().picks}</h2>
-      ${S.mode === 'vip' ? `<div class="cart-lc">${moneyVrow()}</div>` : ''}
+      <div class="cart-lc">${S.mode === 'vip' ? moneyVrow() : regVrow()}</div>
       <p class="later" style="margin:-6px 0 6px;font-weight:600">${S.mode === 'vip' ? '✦ ' + t().modeVip : t().modeReg}</p>
       ${n ? cartItemsHTML(true) : `<p class="empty">${t().emptyPicks}</p>`}
       ${n ? sumsHTML(cta) : ''}
