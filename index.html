@@ -2898,7 +2898,9 @@ function emptyHTML() {
     return out;
   }
   // sin VIP: los más vendidos con precio con cupones contra precio VIP
-  const cmp = pool.map(it => ({ it, reg: nextPrice(it), vip: promoUnit(it) })).filter(x => x.reg > x.vip && !x.it.vipOnly).slice(0, 4);
+  // Nov 2026 · los 4 donde más se ahorra con VIP aun sin Leisure Cash (elegidos por Fernando)
+  const SAVE_IDS = ['couples', 'hydro', 'preferred', 'cellar'];
+  const cmp = SAVE_IDS.map(itemById).filter(it => it && !S.cart.sel[it.id]).map(it => ({ it, reg: nextPrice(it), vip: promoUnit(it) })).filter(x => x.reg > x.vip);
   return (cmp.length ? sec(E.saveH, `<div class="sugg-list">${cmp.map(({ it, reg, vip }) => emptyCard(it, `<s class="em-was">${money(reg)}</s> ${money(vip)}<span class="em-save">${E.save(money(reg - vip))}</span>`)).join('')}</div>`) : '')
     + `<p class="em-coupons">${E.coupons}</p>`;
 }
