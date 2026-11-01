@@ -2658,6 +2658,8 @@ function renderCatalog() {
   let list = ITEMS.filter(i => !i.hidden && !i.durOnly && (S.cat === 'free' ? (!i.pkg || pkgToday(i)) && canAdd(i.id) && unitCost(i, selOf(i.id)) === 0 : S.cat === 'all' ? (!i.pkg || pkgToday(i)) : i.cat === S.cat && (!subs || S.sub === 'all' || subKey(i) === S.sub)));
   if (S.cat === 'all' || S.cat === 'free') list = [...list.filter(i => isTop(i.id)).sort((a, b) => topIdx(a.id) - topIdx(b.id)), ...list.filter(i => !isTop(i.id) && !i.exc), ...list.filter(i => !isTop(i.id) && i.exc).sort((a, b) => excRank(a.id) - excRank(b.id))];
   if (S.cat === 'excursions') list.sort((a, b) => excRank(a.id) - excRank(b.id));
+  // Nov 2026 · en cada categoría los más vendidos van primero
+  if (S.cat !== 'all' && S.cat !== 'free') list = [...list.filter(i => isTop(i.id)).sort((a, b) => topIdx(a.id) - topIdx(b.id)), ...list.filter(i => !isTop(i.id))];
   // primero lo que alcanza, al final lo gris (se mantiene el orden dentro de cada grupo)
   // Lo que alcanza va primero. Lo que no alcanza se agrupa en una sección plegable al final;
   // los "Solo con VIP Services" se quedan a la vista como gancho.
@@ -2668,7 +2670,7 @@ function renderCatalog() {
   let cards = main.map(cardHTML);
   if (certC) {
     let at = main.length;
-    if (S.mode === 'vip') { const lastTop = main.map(i => isTop(i.id)).lastIndexOf(true); at = lastTop >= 0 ? lastTop + 1 : main.filter(i => !isOff(i)).length; }
+    if (S.mode === 'vip') { const lastTop = main.map(i => isTop(i.id)).lastIndexOf(true); at = lastTop >= 0 ? lastTop + 1 : 0; }   // Nov 2026: sin otros más vendidos, el certificado (★) va primero
     else { const firstLocked = main.findIndex(i => isOff(i)); at = firstLocked >= 0 ? firstLocked : main.length; }
     cards.splice(at, 0, certC);
   }
