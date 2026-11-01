@@ -12,7 +12,7 @@
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <script>(function(){var t;try{t=localStorage.getItem('gs-theme')}catch(e){}if(t!=='light'&&t!=='dark')t=(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';document.documentElement.setAttribute('data-theme',t);})();</script>
-<title>Gift Studio v30.0</title>
+<title>Gift Studio v30.1</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:ital,wght@0,400;0,500;0,600;1,700&display=swap" rel="stylesheet">
@@ -1120,6 +1120,15 @@ body.is-vendor .notice.vnote{display:flex}
 .ph-lounge{background-image:url(img/79.webp)}
 .ph-voucher{background-image:url(img/80.webp)}
 
+/* v30 · mapa del hotel */
+.cv-map{position:absolute;right:16px;bottom:18px;width:48px;height:48px;border-radius:50%;display:grid;place-items:center;color:#fff;background:rgba(30,45,80,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.25)}
+.cv-map svg{width:24px;height:24px}
+.cv-map:active{transform:scale(.94)}
+.map-box{position:relative;border-radius:18px;overflow:auto;background:#8fcf5a;max-height:calc(100dvh - 260px);overscroll-behavior:contain;-webkit-overflow-scrolling:touch;cursor:zoom-in}
+.map-box.zoomed{cursor:zoom-out}
+.map-box img{display:block;width:100%;max-width:none;height:auto;user-select:none;-webkit-user-select:none}
+.map-zoom{display:flex;gap:8px;justify-content:center}
+.map-zoom button{min-width:48px;height:44px;padding:0 16px;border-radius:999px;background:var(--soft,var(--line));color:var(--ink);font-weight:700;font-size:calc(16px*var(--fs,1))}
 /* v30 · guía: hoja de altura fija y tarjetas todas del mismo tamaño */
 .sheet.g-full{height:100%}
 .gcard.wide{grid-column:auto}
@@ -1869,7 +1878,7 @@ const T = {
     unlocked: n => n === 1 ? '1 new option unlocked' : `${n} new options unlocked`,
     vipPricing: 'Using VIP Services pricing', vipPricingSub: 'Exclusive promotional prices on every experience',
     regPricing: 'Using in-app promo pricing', regPricingSub: 'Resort coupons and promotional prices on every experience',
-    resortKicker: 'Your resort', explore: 'Explore services', coverLede: 'Spa, cabanas, dinners and tours for your vacation.', guideMe: 'Guide me', resortTitle: 'Dreams Riviera', resortLede: 'Cancún · Spa, cabanas, dinners and tours for your stay.', resortVip: 'See VIP Services',
+    resortKicker: 'Your resort', mapT: 'Resort map', mapHint: 'Tap the map to zoom in, then drag to move around.', mapFit: 'Full map', explore: 'Explore services', coverLede: 'Spa, cabanas, dinners and tours for your vacation.', guideMe: 'Guide me', resortTitle: 'Dreams Riviera', resortLede: 'Cancún · Spa, cabanas, dinners and tours for your stay.', resortVip: 'See VIP Services',
     freeWithMassage: n => n === 1 ? '1 free with your massage' : `${n} free with your massages`,
     lc: n => `${n} Leisure Cash`, vHint: 'Each gift voucher is $50 of Leisure Cash toward your experiences.',
     vTap: 'Tap to adjust', vUsed: (u, n) => `Using ${u} of ${n}`, done: 'Done',
@@ -1945,7 +1954,7 @@ const T = {
     unlocked: n => n === 1 ? 'Se abrió 1 opción nueva' : `Se abrieron ${n} opciones nuevas`,
     vipPricing: 'Con precios de VIP Services', vipPricingSub: 'Precios exclusivos de promoción en cada experiencia',
     regPricing: 'Con precios de promoción de la app', regPricingSub: 'Cupones del resort y precios de promoción en cada experiencia',
-    resortKicker: 'Tu resort', explore: 'Explorar servicios', coverLede: 'Spa, cabañas, cenas y tours para tus vacaciones.', guideMe: 'Guíame', resortTitle: 'Dreams Riviera', resortLede: 'Cancún · Spa, cabañas, cenas y tours para tu estancia.', resortVip: 'Ver VIP Services',
+    resortKicker: 'Tu resort', mapT: 'Mapa del hotel', mapHint: 'Toca el mapa para acercar y arrastra para moverte.', mapFit: 'Mapa completo', explore: 'Explorar servicios', coverLede: 'Spa, cabañas, cenas y tours para tus vacaciones.', guideMe: 'Guíame', resortTitle: 'Dreams Riviera', resortLede: 'Cancún · Spa, cabañas, cenas y tours para tu estancia.', resortVip: 'Ver VIP Services',
     freeWithMassage: n => n === 1 ? '1 gratis con tu masaje' : `${n} gratis con tus masajes`,
     lc: n => `${n} de Leisure Cash`, vHint: 'Cada gift voucher vale $50 de Leisure Cash para tus experiencias.',
     vTap: 'Toca para ajustar', vUsed: (u, n) => `Usas ${u} de ${n}`, done: 'Listo',
@@ -2341,7 +2350,24 @@ function resetAll() {
 const CAT_PH = { spa: 'couples', bali: 'bali_beach', excursions: 'x29', dinner: 'sunset', extras: 'berries' };
 function coverHTML() {
   return `<div class="cv-top"><span class="cv-kick">${t().resortKicker} · Cancún</span><h2>${t().resortTitle}</h2><p>${t().coverLede}</p></div>
-    <button class="cv-cta" data-explore>${t().explore} <span aria-hidden="true">↓</span></button>`;
+    <button class="cv-cta" data-explore>${t().explore} <span aria-hidden="true">↓</span></button>
+    <button class="cv-map" data-map aria-label="${t().mapT}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21.5s-7-6.1-7-11.8a7 7 0 0 1 14 0c0 5.7-7 11.8-7 11.8z"/><circle cx="12" cy="9.7" r="2.6"/></svg></button>`;
+}
+// v30 · mapa del hotel en hoja desplegable; toca el mapa (o + / −) para acercar y arrastra para moverte
+let mapZ = 1;
+function mapSheet() {
+  mapZ = 1;
+  return `${sheetTop('')}<h2>${t().mapT}</h2><p class="sub" style="margin-top:-6px">${t().mapHint}</p>
+    <div class="map-box" id="mapBox"><img src="img/map.webp?v=30" alt="${t().mapT}" id="mapImg" draggable="false"></div>
+    <div class="map-zoom"><button data-mapz="-1" aria-label="−">−</button><button data-mapz="0">${t().mapFit}</button><button data-mapz="1" aria-label="+">+</button></div>`;
+}
+function mapZoom(z, cx, cy) {
+  const box = $('mapBox'), img = $('mapImg'); if (!box || !img) return;
+  z = Math.min(4, Math.max(1, z));
+  const r = box.getBoundingClientRect(); cx = cx ?? r.width / 2; cy = cy ?? r.height / 2;
+  const fx = (box.scrollLeft + cx) / img.offsetWidth, fy = (box.scrollTop + cy) / img.offsetHeight;
+  mapZ = z; img.style.width = (z * 100) + '%'; box.classList.toggle('zoomed', z > 1);
+  box.scrollLeft = fx * img.offsetWidth - cx; box.scrollTop = fy * img.offsetHeight - cy;
 }
 function exploreServices() {
   const el = $('chips'), bar = $('appbar').getBoundingClientRect().height;
@@ -2991,10 +3017,10 @@ function vidThumb(vs) {
 function renderSheet() {
   if (!S.sheet) return;
   const sh = S.sheet, body =
-    sh.kind === 'item' ? itemSheet(sh.id) : sh.kind === 'cert' ? certSheet() :
+    sh.kind === 'item' ? itemSheet(sh.id) : sh.kind === 'map' ? mapSheet() : sh.kind === 'cert' ? certSheet() :
     sh.kind === 'guide' ? guideSheet() : sh.kind === 'share' ? shareSheet() : sh.kind === 'vdata' ? vdataSheet() : sh.kind === 'dbg' ? dbgSheet() : sh.kind === 'compare' ? (count() ? compareSheet() : '') : sh.kind === 'summary' ? (count() ? summarySheet() : '') : doneSheet();
   if (!body) { closeSheet(); return; }
-  $('sheet').classList.toggle('g-full', sh.kind === 'guide');   // v30 · la guía siempre a la misma altura que la ficha de un producto
+  $('sheet').classList.toggle('g-full', sh.kind === 'guide' || sh.kind === 'map');   // v30 · la guía siempre a la misma altura que la ficha de un producto
   const keep = $('sheet').scrollTop, tEl = document.getElementById('toast'), tIn = tEl && tEl.parentNode === $('sheet');
   // v29.22 · si la hoja trae video, se pinta en 3 partes y al repintar (+/−, opciones) solo cambian las de arriba y abajo,
   // así el reproductor no se reinicia ni se detiene
@@ -3064,6 +3090,14 @@ function endPull() {
 }
 ['touchend', 'touchcancel'].forEach(ev => $('sheet').addEventListener(ev, endPull));
 $('sheet').addEventListener('click', e => { if (e.target === $('sheet')) closeSheet(); });
+// v30 · tocar el mapa acerca en ese punto; otro toque regresa al mapa completo (si se arrastró, no cuenta como toque)
+let mapDown = null;
+$('sheet').addEventListener('pointerdown', e => { if (e.target.id === 'mapImg') mapDown = { x: e.clientX, y: e.clientY }; });
+$('sheet').addEventListener('click', e => {
+  if (e.target.id !== 'mapImg' || !mapDown) return;
+  const moved = Math.hypot(e.clientX - mapDown.x, e.clientY - mapDown.y) > 8; mapDown = null; if (moved) return;
+  const r = $('mapBox').getBoundingClientRect(); mapZoom(mapZ > 1 ? 1 : 2.5, e.clientX - r.left, e.clientY - r.top);
+});
 // v29.22 · el reproductor de YouTube solo se carga al tocar la miniatura (la hoja abre igual de rápido y no gasta datos)
 $('sheet').addEventListener('click', e => {
   const b = e.target.closest('[data-vplay]'); if (!b) return;
@@ -3521,6 +3555,8 @@ document.addEventListener('click', e => {
   if (d.tab) { switchTab(d.tab); return; }
   if (d.mode) { setMode(d.mode); return; }
   if (el.hasAttribute('data-explore')) { exploreServices(); return; }
+  if (el.hasAttribute('data-map')) { openSheet('map'); return; }
+  if (d.mapz !== undefined) { mapZoom(d.mapz === '0' ? 1 : mapZ + Number(d.mapz)); return; }
   if (el.hasAttribute('data-guide')) { openGuide(); return; }
   if (el.hasAttribute('data-cert-open')) { openSheet('cert'); return; }
   if (el.hasAttribute('data-cert')) { if (S.mode !== 'vip') S.mode = 'vip'; S.cart.cert = !S.cart.cert; render(); return; }
@@ -3622,7 +3658,7 @@ function snapshot() {
     return { id, qty: sl.qty, kinds: it.kinds ? personKinds(it, sl) : undefined, cbd: it.kinds ? personCbd(it, sl) : undefined, manualOpt: sl.manual ? sl.opt : undefined,
       vipUnits: (v.units[id] || []).map(i => `${it.opts[i].pay}/${it.opts[i].b}`), regular: lineReg(it, sl) }; });
   return {
-    app: 'Gift Studio v30.0', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
+    app: 'Gift Studio v30.1', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
     guestBudget: hasBud() ? S.will : null, vouchers: S.step / VOUCHER, voucherValue: S.step, 
     cert: S.cart.cert, cart: lines, wish: S.wish,
     vip: { guestPays: v.cost, copays: v.pay, budgetUsed: v.used, overflow: v.overflow, left: S.will - v.cost, regularValue: v.value },
