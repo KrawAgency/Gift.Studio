@@ -12,7 +12,7 @@
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <script>(function(){var t;try{t=localStorage.getItem('gs-theme')}catch(e){}if(t!=='light'&&t!=='dark')t=(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';document.documentElement.setAttribute('data-theme',t);})();</script>
-<title>Gift Studio v30.12</title>
+<title>Gift Studio v30.13</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:ital,wght@0,400;0,500;0,600;1,700&display=swap" rel="stylesheet">
@@ -1625,8 +1625,12 @@ for (const [base, slots] of Object.entries(SHOP_SLOTS)) {
   slots.forEach((sl, k) => {
     const id = k ? `${base}-${k + 1}` : base;
     if (k) { EXC.push([row[0], id, ...row.slice(2)]); EXC_ES[id] = EXC_ES[base]; if (EXC_VIDEO[base]) EXC_VIDEO[id] = EXC_VIDEO[base]; }
-    EXC_DESC[id] = { ...d, inc: { es: d.inc.es.map(x => /^Todos los días/.test(x) ? 'Horario: ' + sl : x), en: d.inc.en.map(x => /^Every day/.test(x) ? 'Schedule: ' + sl : x) } };
-    SLOT_OF['x-' + id] = sl;
+    // v30.13 · la opción muestra solo la hora de recogida; la duración aproximada va en "Qué incluye"
+    const pick = sl.split(' – ')[0];
+    EXC_DESC[id] = { ...d, inc: {
+      es: d.inc.es.flatMap(x => /^Todos los días/.test(x) ? ['Hora de recogida: ' + pick, 'Duración aproximada: 5 horas (depende del tráfico)'] : [x]),
+      en: d.inc.en.flatMap(x => /^Every day/.test(x) ? ['Pick-up time: ' + pick, 'Approx. duration: 5 hours (depends on traffic)'] : [x]) } };
+    SLOT_OF['x-' + id] = pick;
   });
 }
 for (const [ph, id, sub, nm, tk, reg, promo, kReg, kPromo] of EXC) {
@@ -1885,7 +1889,7 @@ const VAR_LBL = { 'x-chichen-deluxe': { en: 'Deluxe', es: 'Deluxe' }, 'x-chichen
   'x-primax': { en: 'Primax', es: 'Primax' }, 'x-interax': { en: 'Interax', es: 'Interax' }, 'x-harmony': { en: 'Harmony', es: 'Harmony' } };
 const VAR_HEAD = { 'x-chichen-deluxe': { en: 'Tour type', es: 'Tipo de tour' }, 'x-tulum-mayan': { en: 'Tour type', es: 'Tipo de tour' }, 'bali-south': { en: 'Beach', es: 'Playa' }, 'x-primax': { en: 'Program', es: 'Programa' } };
 for (const id in SLOT_OF) VAR_LBL[id] = { en: SLOT_OF[id], es: SLOT_OF[id] };
-VAR_HEAD['x-shop-cancun'] = VAR_HEAD['x-shop-playa'] = { en: 'Schedule', es: 'Horario' };
+VAR_HEAD['x-shop-cancun'] = VAR_HEAD['x-shop-playa'] = { en: 'Pick-up time', es: 'Hora de recogida' };
 const varLbl = id => DUR_MIN[id] ? `${DUR_MIN[id]} min` : VAR_LBL[id] ? VAR_LBL[id][S.lang] : itemById(id).name[S.lang];
 for (const id of DUR_ONLY) { const it = ITEMS.find(i => i.id === id); if (it) it.durOnly = true; }
 const durGroup = id => DURS.find(g => g.includes(id));
@@ -2152,8 +2156,8 @@ function durHTML(it) {
     const x = itemById(id), on = id === it.id;
     const pr = S.mode === 'vip' ? promoUnit(x) : couponPrice(x);
     let extra = '';
-    if (cur && !on) { const c = durSwap(it.id, id), d = costIn(S.mode, c) - costIn(S.mode, S.cart); extra = d > 0 ? `+${money(d)}` : d < 0 ? `−${money(-d)}` : t().free2; }
-    return `<button class="sc dur" data-dur="${it.id}" data-to="${id}" aria-pressed="${on}">${varLbl(id)}<span class="vt2">${cur && !on ? extra : money(pr)}</span></button>`;
+    if (cur && !on) { const c = durSwap(it.id, id), d = costIn(S.mode, c) - costIn(S.mode, S.cart); extra = d > 0 ? `+${money(d)}` : d < 0 ? `−${money(-d)}` : SLOT_OF[id] ? (pr ? money(pr) : t().free2) : t().free2; }   // v30.13: en horarios, mismo precio = misma etiqueta
+    return `<button class="sc dur" data-dur="${it.id}" data-to="${id}" aria-pressed="${on}">${varLbl(id)}<span class="vt2">${cur && !on ? extra : pr ? money(pr) : t().free2}</span></button>`;
   }).join('')}</div>`;
 }
 const UPGRADES = [
@@ -3775,7 +3779,7 @@ function snapshot() {
     return { id, qty: sl.qty, kinds: it.kinds ? personKinds(it, sl) : undefined, cbd: it.kinds ? personCbd(it, sl) : undefined, manualOpt: sl.manual ? sl.opt : undefined,
       vipUnits: (v.units[id] || []).map(i => `${it.opts[i].pay}/${it.opts[i].b}`), regular: lineReg(it, sl) }; });
   return {
-    app: 'Gift Studio v30.12', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
+    app: 'Gift Studio v30.13', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
     guestBudget: hasBud() ? S.will : null, vouchers: S.step / VOUCHER, voucherValue: S.step, 
     cert: S.cart.cert, cart: lines, wish: S.wish,
     vip: { guestPays: v.cost, copays: v.pay, budgetUsed: v.used, overflow: v.overflow, left: S.will - v.cost, regularValue: v.value },
