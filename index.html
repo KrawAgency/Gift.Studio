@@ -1261,6 +1261,10 @@ body.is-vendor .notice.vnote{display:flex}
   .gcards.text .gc-body b{font-size:calc(20px*var(--fs,1))}
   dialog.sheet.g-full h2{font-size:calc(26px*var(--fs,1))}
 }
+/* Nov 2026 · botón "Ver con VIP Services": azul del toggle VIP con un pulso suave para que llame la atención */
+@keyframes vipPulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--gold) 55%,transparent)}70%{box-shadow:0 0 0 12px color-mix(in srgb,var(--gold) 0%,transparent)}100%{box-shadow:0 0 0 0 transparent}}
+.cta.vipgo{background:var(--gold);color:#fff;animation:vipPulse 1.8s ease-out infinite}
+@media (prefers-reduced-motion:reduce){.cta.vipgo{animation:none}}
 </style>
 
 </head>
@@ -2970,7 +2974,7 @@ function renderCart() {
   if (wasEmpty && n) { const cv = $('cartView'); cv.classList.remove('cart-in'); void cv.offsetWidth; cv.classList.add('cart-in'); }
   wasEmpty = !n;
   const cta = S.mode === 'reg'
-    ? `<button class="cta" data-mode="vip" style="background:var(--navy);color:var(--gold-text)">✦ ${n && calcReg(S.cart).cost > v.cost ? t().vipSave(money(calcReg(S.cart).cost - v.cost)) : t().seeVip}</button>`
+    ? `<button class="cta vipgo" data-mode="vip">✦ ${n && calcReg(S.cart).cost > v.cost ? t().vipSave(money(calcReg(S.cart).cost - v.cost)) : t().seeVip}</button>`
     : `<button class="cta" data-book ${n ? '' : 'disabled'}>${t().book}${n ? ` <span class="cta-amt">· ${money(v.cost)}</span>` : ''}</button>`;
   $('cartView').innerHTML = `
     <div class="cart">
@@ -3670,7 +3674,7 @@ function gItemHTML(p) {
     <p class="desc">${esc(it.desc[L])}</p>
     ${!fits && !blocked ? `<div class="force"><div class="force-txt"><b>${g.overMsg(money(Math.max(0, over)))}</b></div></div>` : ''}
     <div class="sh-foot stack">
-      ${blocked ? `<button class="cta" data-mode="vip" style="background:var(--navy);color:var(--gold-text)">✦ ${t().seeVip}</button>`
+      ${blocked ? `<button class="cta vipgo" data-mode="vip">✦ ${t().seeVip}</button>`
         : fits ? `<button class="cta" data-gadd>${g.add}</button>`
         : `<button class="cta" data-graise>${t().raiseTo(money(raiseTarget(p.id, p.kind, n)))}</button>`}
       ${it.exc || it.kid ? `<button class="cta ghost-cta" data-gdetail>${g.details}</button>` : `<button class="ghost" data-gdetail>${g.details}</button>`}
