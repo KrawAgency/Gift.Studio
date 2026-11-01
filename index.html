@@ -12,7 +12,7 @@
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <script>(function(){var t;try{t=localStorage.getItem('gs-theme')}catch(e){}if(t!=='light'&&t!=='dark')t=(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';document.documentElement.setAttribute('data-theme',t);})();</script>
-<title>Gift Studio v30.5</title>
+<title>Gift Studio v30.6</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:ital,wght@0,400;0,500;0,600;1,700&display=swap" rel="stylesheet">
@@ -1128,6 +1128,12 @@ body.is-vendor .notice.vnote{display:flex}
 .ph-sc_tacos{background-image:url(img/sc_tacos.webp)}
 .ph-sc_crafts{background-image:url(img/sc_crafts.webp)}
 .ph-sc_bags{background-image:url(img/sc_bags.webp)}
+.ph-pc_5ta{background-image:url(img/pc_5ta.webp);aspect-ratio:3/2}
+.ph-pc_5ta_sq{background-image:url(img/pc_5ta_sq.webp);aspect-ratio:1/1}
+.ph-pc_toys{background-image:url(img/pc_toys.webp)}
+.ph-pc_jeweler{background-image:url(img/pc_jeweler.webp)}
+.ph-pc_eagle{background-image:url(img/pc_eagle.webp)}
+.ph-pc_matises{background-image:url(img/pc_matises.webp)}
 /* v30 · mapa del hotel */
 .cv-map{position:absolute;right:16px;bottom:18px;width:48px;height:48px;border-radius:50%;display:grid;place-items:center;color:#fff;background:rgba(30,45,80,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.25)}
 .cv-map svg{width:24px;height:24px}
@@ -1590,8 +1596,8 @@ const EXC_DESC = {
   'shop-playa': {
     es: 'Tour de compras de cortesía a Playa del Carmen: visita a un centro joyero, degustación de tequila gratis, tienda de recuerdos mexicanos y 2.5 horas libres para recorrer la Quinta Avenida. Solo se reserva el horario.',
     en: 'A courtesy shopping tour to Playa del Carmen: visit a jewelry center, a free tequila tasting, a Mexican souvenir store and 2.5 hours of free time on Fifth Avenue. Just reserve your time slot.',
-    inc: { es: ['Transporte redondo', 'Degustación de tequila gratis', 'Centro joyero y tienda de recuerdos mexicanos', '2.5 horas libres en la Quinta Avenida', 'Todos los días: 10 am – 3 pm, 12 – 5 pm o 2 – 7 pm', 'Requiere reservación'],
-           en: ['Round-trip transportation', 'Free tequila tasting', 'Jewelry center and Mexican souvenir store', '2.5 hours of free time on Fifth Avenue', 'Every day: 10 am – 3 pm, 12 – 5 pm or 2 – 7 pm', 'Reservation required'] },
+    inc: { es: ['Transporte redondo', 'Degustación de tequila gratis', 'Centro joyero Matises & Co. y tienda de recuerdos mexicanos', 'Crédito de $75 USD en compras de joyería desde $200', '2.5 horas libres en la Quinta Avenida', 'Todos los días: 10 am – 3 pm, 12 – 5 pm o 2 – 7 pm', 'Requiere reservación'],
+           en: ['Round-trip transportation', 'Free tequila tasting', 'Matises & Co. jewelry center and Mexican souvenir store', '$75 USD credit on jewelry purchases of $200+', '2.5 hours of free time on Fifth Avenue', 'Every day: 10 am – 3 pm, 12 – 5 pm or 2 – 7 pm', 'Reservation required'] },
   },
 };
 // Cada tour es una sola tarjeta; los niños son un boleto ligado (oculto) que se controla desde adentro.
@@ -1805,7 +1811,9 @@ for (const [id, ph, ph2] of [['mani50', 'mani'], ['mani80', 'mani2'], ['pedi50',
   const it = ITEMS.find(i => i.id === id); if (it) { it.photo = ph; if (ph2) it.photo2 = ph2; }
 }
 // v30.5 · Shopping Tour Cancún: letras de Cancún de portada, galería del recorrido, la joyería ancha y el logo de International Jewelry
-Object.assign(ITEMS.find(i => i.id === 'x-shop-cancun'), { photo: 'sc_cun_sq', sheetPhoto: 'sc_cun', photo2: 'sc_ij', gallery: ['sc_teq', 'sc_tacos', 'sc_crafts', 'sc_bags'], logo: 'img/ij_logo.webp', logoSheet: true });   // el logo solo en la ficha (en la tarjeta no se alcanza a leer)
+Object.assign(ITEMS.find(i => i.id === 'x-shop-cancun'), { photo: 'sc_cun_sq', sheetPhoto: 'sc_cun', photo2: 'sc_ij', gallery: ['sc_teq', 'sc_tacos', 'sc_crafts', 'sc_bags'], logo: 'img/ij_logo.webp', logoSheet: true });
+// v30.6 · Shopping Tour Playa del Carmen: Quinta Avenida, galería, la tienda de Matises & Co. y su logo sobre su rosa de marca
+Object.assign(ITEMS.find(i => i.id === 'x-shop-playa'), { photo: 'pc_5ta_sq', sheetPhoto: 'pc_5ta', photo2: 'pc_matises', gallery: ['pc_toys', 'pc_jeweler', 'pc_eagle'], logo: 'img/matises_logo.webp', logoSheet: true, logoBg: '#EB4DA4' });   // el logo solo en la ficha (en la tarjeta no se alcanza a leer)
 // Duraciones: una sola tarjeta por tratamiento en el catálogo; las demás duraciones viven dentro de la tarjeta
 // (el masaje de 80 min y el masaje en pareja de 80 min se quedan como tarjetas propias)
 const DURS = [
@@ -2903,7 +2911,7 @@ function itemSheet(id) {
   return `
     ${sheetTop('')}
     <div class="sh-img main ph-${it.sheetPhoto || it.photo}" style="${off ? 'filter:grayscale(1)' : ''}"><div class="anchor-pill">${pill}</div></div>
-    ${it.logo ? `<div class="sh-title"><h2>${it.name[L]}</h2><span class="sh-logo${it.logoLt ? ' lt' : ''}"><img src="${it.logo}" alt=""></span></div>` : `<h2>${it.name[L]}</h2>`}
+    ${it.logo ? `<div class="sh-title"><h2>${it.name[L]}</h2><span class="sh-logo${it.logoLt ? ' lt' : ''}"${it.logoBg ? ` style="background:${it.logoBg}"` : ''}><img src="${it.logo}" alt=""></span></div>` : `<h2>${it.name[L]}</h2>`}
     <p class="sub">${subOf(it)}</p>
     ${it.prefOnly ? `<div class="pref-note"><span class="pref-logo"><img src="${PREF_LOGO}" alt="Preferred Club"></span><span>${S.lang === 'es' ? 'Exclusiva para huéspedes Preferred Club' : 'Exclusive to Preferred Club guests'}</span></div>` : ''}
     ${pkgInfoHTML(it)}
@@ -3675,7 +3683,7 @@ function snapshot() {
     return { id, qty: sl.qty, kinds: it.kinds ? personKinds(it, sl) : undefined, cbd: it.kinds ? personCbd(it, sl) : undefined, manualOpt: sl.manual ? sl.opt : undefined,
       vipUnits: (v.units[id] || []).map(i => `${it.opts[i].pay}/${it.opts[i].b}`), regular: lineReg(it, sl) }; });
   return {
-    app: 'Gift Studio v30.5', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
+    app: 'Gift Studio v30.6', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
     guestBudget: hasBud() ? S.will : null, vouchers: S.step / VOUCHER, voucherValue: S.step, 
     cert: S.cart.cert, cart: lines, wish: S.wish,
     vip: { guestPays: v.cost, copays: v.pay, budgetUsed: v.used, overflow: v.overflow, left: S.will - v.cost, regularValue: v.value },
