@@ -2104,7 +2104,7 @@ const S = {
 };
 if (!T[S.lang]) S.lang = 'en';
 const kindMemo = {};
-const pkMemo = {};   // Nov 2026 · técnica por persona elegida antes de agregar (masaje en pareja)
+const pkMemo = {}, cbdMemo = {};   // Nov 2026 · técnica por persona elegida antes de agregar (masaje en pareja)
 let prevOff = {};
 
 const $ = id => document.getElementById(id);
@@ -2147,7 +2147,8 @@ function syncCbd() {
 }
 function cartWithCbd(delta) { const q = (S.cart.sel.cbd ? S.cart.sel.cbd.qty : 0) + delta; return withItem(S.cart, 'cbd', q); }
 function toggleCbd(id, n) {
-  const it = itemById(id), sl = S.cart.sel[id]; if (!sl) return;
+  const it = itemById(id), sl = S.cart.sel[id];
+  if (!sl) { const a = [...(cbdMemo[id] || [])]; a[n] = !a[n]; cbdMemo[id] = a; render(); return; }   // antes de agregar: se recuerda
   const cb = personCbd(it, sl);
   if (!cb[n]) { const c = costIn(S.mode, cartWithCbd(1)); if (c > S.will) { toast(t().overBy2(money(c - S.will))); return; } }
   cb[n] = !cb[n]; sl.cbd = cb; render();
@@ -2268,7 +2269,7 @@ function calcReg(cart) {
 function costIn(mode, cart, step = S.step) { return mode === 'reg' ? calcReg(cart).cost : calcVip(cart, step).cost; }
 function withItem(cart, id, qty, extra = {}) {
   const sel = { ...cart.sel }, order = [...cart.order];
-  const cur = cart.sel[id] || { qty: 0, opt: 0, kind: kindMemo[id] || 'relax', ...(pkMemo[id] ? { pk: [...pkMemo[id]] } : {}) };
+  const cur = cart.sel[id] || { qty: 0, opt: 0, kind: kindMemo[id] || 'relax', ...(pkMemo[id] ? { pk: [...pkMemo[id]] } : {}), ...(cbdMemo[id] ? { cbd: [...cbdMemo[id]] } : {}) };
   if (qty <= 0) { delete sel[id]; return { sel, order: order.filter(x => x !== id), cert: cart.cert }; }
   sel[id] = { ...cur, ...extra, qty };
   if (!order.includes(id)) order.push(id);
@@ -3019,12 +3020,14 @@ function itemSheet(id) {
   const cs = cardState(it), off = !isSel && cs.st !== 'on' && cs.st !== 'max' && !upgradeInto(id), ok = cs.st === 'on';
   // Nov 2026 · en pareja el desglose por persona se ve desde antes de agregar (misma ficha siempre)
   const persons = !it.kinds ? [] : isSel ? personKinds(it, s) : (it.unit > 1 && !it.noKind) ? personKinds(it, { ...s, qty: 1, pk: pkMemo[id] }) : [];
-  const kinds = !it.kinds ? '' : it.noKind ? (persons.length > 1 ? `<h4>${t().addon}</h4>${persons.map((pk, n) => `<div class="pk-row"><span>${t().person(n + 1)}</span><div class="seg-chips"><button class="sc cbdsc" data-cbd="${id}" data-n="${n}" aria-pressed="${personCbd(it, s)[n]}">+ CBD $35</button></div></div>`).join('')}` : '') : persons.length > 1
-    ? `<h4>${t().techEach}</h4>${persons.map((pk, n) => `<div class="pk-row"><span>${t().person(n + 1)}</span><div class="seg-chips">${MASSAGE_KINDS.map(k => `<button class="sc" data-pk="${id}" data-n="${n}" data-k="${k.id}" aria-pressed="${pk === k.id}">${k.name[L]}</button>`).join('')}${isSel ? `<button class="sc cbdsc" data-cbd="${id}" data-n="${n}" aria-pressed="${personCbd(it, s)[n]}">+ CBD $35</button>` : ''}</div></div>`).join('')}`
-    : `<h4>${t().type}</h4><div class="seg-chips">${MASSAGE_KINDS.map(k => `<button class="sc" data-kind="${id}" data-k="${k.id}" aria-pressed="${(persons[0] || s.kind) === k.id}">${k.name[L]}</button>`).join('')}</div>`;
-  const opts = !it.kinds ? '' : (isSel && persons.length === 1)
-    ? `<h4>${t().addon}</h4><div class="seg-chips"><button class="sc cbdsc" data-cbd="${id}" data-n="0" aria-pressed="${personCbd(it, s)[0]}">${t().cbdBtn}</button></div>`
-    : isSel ? '' : `<p class="sub" style="margin:0">${t().cbdNote}</p>`;
+  // Nov 2026 · misma ficha antes y después de agregar: técnica y CBD por persona; el costo extra va abajo, como en la duración
+  const cbdOn = isSel ? personCbd(it, s) : (cbdMemo[id] || []);
+  const cbdB = n => `<button class="sc cbdsc" data-cbd="${id}" data-n="${n}" aria-pressed="${!!cbdOn[n]}">CBD<span class="vt2">+$35</span></button>`;
+  const kXtra = k => { const d = kindReg(it, k.id) - kindReg(it, 'relax'); return S.mode !== 'vip' && d > 0 ? `<span class="vt2">+${money(d)}</span>` : ''; };   // sin VIP el profundo cuesta más; con VIP es el mismo precio
+  const kinds = !it.kinds ? '' : it.noKind ? (persons.length > 1 ? `<h4>${t().addon}</h4>${persons.map((pk, n) => `<div class="pk-row"><span>${t().person(n + 1)}</span><div class="seg-chips">${cbdB(n)}</div></div>`).join('')}` : '') : persons.length > 1
+    ? `<h4>${t().techEach}</h4>${persons.map((pk, n) => `<div class="pk-row"><span>${t().person(n + 1)}</span><div class="seg-chips">${MASSAGE_KINDS.map(k => `<button class="sc" data-pk="${id}" data-n="${n}" data-k="${k.id}" aria-pressed="${pk === k.id}">${k.name[L]}${kXtra(k)}</button>`).join('')}${cbdB(n)}</div></div>`).join('')}`
+    : `<h4>${t().type}</h4><div class="seg-chips">${MASSAGE_KINDS.map(k => `<button class="sc" data-kind="${id}" data-k="${k.id}" aria-pressed="${(persons[0] || s.kind) === k.id}">${k.name[L]}${kXtra(k)}</button>`).join('')}</div>`;
+  const opts = !it.kinds || persons.length > 1 ? '' : `<h4>${t().addon}</h4><div class="seg-chips">${cbdB(0)}</div>`;
   // v29.21 · la pastilla del precio sigue la misma regla que la tarjeta: lo que cuesta una más (con LC, cupones y tope de cupones)
   const regP = persons.length > 1 && !it.noKind ? persons.slice(0, it.unit).reduce((a, k) => a + kindReg(it, k), 0) : regPlain(it, s.kind), promoP = promoUnit(it), m = it.vipOnly && S.mode !== 'vip' ? promoP : unitCost(it, s);
   const cpP = Math.max(0, regP - couponUnit(it));
@@ -3171,6 +3174,9 @@ function addPending(id) {
   let added = 0;
   for (let k = 0; k < S.pend; k++) { if (!canAdd(id)) break; S.cart = withItem(S.cart, id, selOf(id).qty + 1); added++; }
   if (added < S.pend) toast(whyNot(id));
+  // Nov 2026 · si el CBD elegido antes de agregar rebasa el presupuesto, el masaje entra sin CBD
+  if (added && cbdMemo[id] && S.cart.sel[id]) { syncCbd(); const c = costIn(S.mode, S.cart); if (c > S.will) { S.cart.sel[id].cbd = []; toast(t().overBy2(money(c - S.will))); } }
+  if (added) { delete cbdMemo[id]; delete pkMemo[id]; }
   S.pend = 1; render();
 }
 function certSheet() {
@@ -3848,7 +3854,7 @@ document.addEventListener('click', e => {
       const c = durSwap(from, to), over = costIn(S.mode, c) - S.will;
       if (over > 0 && costIn(S.mode, c) > costIn(S.mode, S.cart)) { toast(t().overBudget(money(over))); return; }
       S.cart = c; render(); toast(DUR_MIN[to] ? t().durChanged(DUR_MIN[to]) : (S.lang === 'es' ? 'Se cambió a ' : 'Changed to ') + varLbl(to));
-    } else { if (pkMemo[from]) pkMemo[to] = [...pkMemo[from]]; if (kindMemo[from]) kindMemo[to] = kindMemo[from]; }   // Nov 2026 · la técnica elegida sigue al cambiar de duración
+    } else { if (pkMemo[from]) pkMemo[to] = [...pkMemo[from]]; if (cbdMemo[from]) cbdMemo[to] = [...cbdMemo[from]]; if (kindMemo[from]) kindMemo[to] = kindMemo[from]; }   // Nov 2026 · la técnica elegida sigue al cambiar de duración
     openSheet('item', to, S.sheetPrev); return;
   }
   if (d.cbd) { toggleCbd(d.cbd, Number(d.n)); return; }
