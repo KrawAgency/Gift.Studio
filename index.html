@@ -237,6 +237,7 @@ body.mode-reg .hero .hero-lock{filter:grayscale(0)}
 .rel{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:4px;scrollbar-width:none}
 .rel::-webkit-scrollbar{display:none}
 .rel .sg{flex:0 0 40%;max-width:220px;scroll-snap-align:start;cursor:pointer}
+.rel .rel-hl{font-size:calc(12px*var(--fs,1));color:var(--muted);line-height:1.3;margin-bottom:2px}
 .rel .sg b{font-size:calc(13.5px*var(--fs,1));font-weight:600;line-height:1.25}
 .sg{position:relative;background:var(--card);border-radius:16px;padding:6px 6px 10px;display:flex;flex-direction:column;gap:2px;min-width:0}
 .sg.fresh{box-shadow:0 0 0 2px var(--gold)}
@@ -397,6 +398,8 @@ body.is-vendor .wneg{display:flex}
 .ph-shrimp{background-image:url(img/8.webp)}
 .ph-lobsterplate{background-image:url(img/9.webp)}
 .ph-cellar2{background-image:url(img/10.webp)}
+.ph-cellar_hq{background-image:url(img/cellar_hq.webp)}
+.sh-img.main.ph-cellar_hq{aspect-ratio:3/2}
 .ph-bali_beach{background-image:url(img/11.webp?v=29.10)}
 .ph-bali_act{background-image:url(img/12.webp?v=29.10)}
 .ph-bali_kids{background-image:url(img/13.webp)}
@@ -1403,7 +1406,7 @@ const ITEMS = [
     menu: { en: ['Red berry salad', 'Velvety fresh clam cream soup', 'Beef fillet in Merlot sauce with sautéed lobster tail, rustic mashed potatoes and seasonal vegetables', 'Cheese cream wrapped in red berry jelly'],
             es: ['Ensalada de frutos rojos', 'Crema aterciopelada de almeja fresca', 'Filete de res en salsa Merlot con cola de langosta salteada, puré de papa rústico y vegetales de estación', 'Cremoso de queso envuelto en jalea de frutos rojos'] },
     opts: mkOpts(250, 50) },
-  { id: 'cellar', cat: 'dinner', photo: 'cellar2', photo2: 'cellar', gallery: ['cellar3'], max: 1, reg: 400,
+  { id: 'cellar', cat: 'dinner', photo: 'cellar_hq', photo2: 'cellar', gallery: ['cellar2', 'cellar3'], max: 1, reg: 400,
     name: { en: 'VIP Wine Cellar Experience', es: 'Experiencia VIP en la Cava' },
     sub: { en: 'For two, in the wine cellar', es: 'Para dos, en la cava' },
     desc: { en: 'A private VIP dining experience for two in the resort’s wine cellar.', es: 'Una experiencia VIP privada para dos en la cava del resort.' },
@@ -3048,6 +3051,76 @@ function itemSheet(id) {
 }
 // Nov 2026 · "También te puede gustar": parecidos al final de la ficha, antes de agregar.
 // Orden: su escalera de mejoras (UPGRADES) → mismo grupo → misma categoría
+// Nov 2026 · lo que incluye, en dos puntos, para las tarjetas de "También te puede gustar" (si falta, usa el subtítulo)
+const HL = {
+  'massage25': { es: 'Relajante o profundo · 25 min', en: 'Relax or deep · 25 min' },
+  'massage': { es: 'Relajante o profundo · 1 persona', en: 'Relax or deep · 1 person' },
+  'couples': { es: 'Lado a lado · Relajante o profundo', en: 'Side by side · Relax or deep' },
+  'couples80': { es: 'Lado a lado · 80 min', en: 'Side by side · 80 min' },
+  'massage80': { es: 'Relajante o profundo · 80 min', en: 'Relax or deep · 80 min' },
+  'hotstones': { es: 'Piedras calientes · 80 min', en: 'Hot stones · 80 min' },
+  'hydro': { es: 'Sauna, vapor e hidromasaje', en: 'Sauna, steam and hydromassage' },
+  'hydro80': { es: 'Sauna, vapor e hidromasaje · 80 min', en: 'Sauna, steam and hydromassage · 80 min' },
+  'neck25': { es: 'Cuello, espalda y hombros · 25 min', en: 'Neck, back and shoulders · 25 min' },
+  'neck50': { es: 'Cuello, espalda y hombros · 50 min', en: 'Neck, back and shoulders · 50 min' },
+  'foot25': { es: 'Reflexología · 25 min', en: 'Reflexology · 25 min' },
+  'foot50': { es: 'Reflexología · 50 min', en: 'Reflexology · 50 min' },
+  'scalp25': { es: 'Masaje de cabeza · 25 min', en: 'Head massage · 25 min' },
+  'scalp50': { es: 'Masaje de cabeza · 50 min', en: 'Head massage · 50 min' },
+  'pedi50': { es: 'Clásico · 50 min', en: 'Classic · 50 min' },
+  'pedi80': { es: 'Spa · 80 min', en: 'Spa · 80 min' },
+  'mani50': { es: 'Clásico · 50 min', en: 'Classic · 50 min' },
+  'mani80': { es: 'Spa · 80 min', en: 'Spa · 80 min' },
+  'fish': { es: 'Exfoliación natural · Pies', en: 'Natural exfoliation · Feet' },
+  'wrap': { es: 'Envoltura de chocolate · Cuerpo completo', en: 'Chocolate wrap · Full body' },
+  'minifacial': { es: 'Facial exprés · 25 min', en: 'Express facial · 25 min' },
+  'facial-stress': { es: 'Antiestrés · Piel sensible', en: 'De-stress · Sensitive skin' },
+  'facial-revital': { es: 'Revitalizante · Piel sensible', en: 'Revitalizing · Sensitive skin' },
+  'facial-anti': { es: 'Antiedad · Lumafirm®', en: 'Anti-aging · Lumafirm®' },
+  'x-xplor-day': { es: 'Tirolesas y ríos subterráneos · Buffet y bebidas', en: 'Ziplines and underground rivers · Buffet and drinks' },
+  'x-xplor-fuego': { es: 'De noche · Tirolesas y buffet', en: 'At night · Ziplines and buffet' },
+  'x-xenotes': { es: 'Cenotes con kayak y rappel · Picnic', en: 'Cenotes with kayak and rappel · Picnic' },
+  'x-atvs': { es: 'Cuatrimoto · Cenote con snorkel', en: 'ATV · Cenote with snorkel' },
+  'x-zip': { es: '11 tirolesas · Nado en cenote', en: '11 ziplines · Cenote swim' },
+  'x-jungle': { es: 'Lancha que tú manejas · Snorkel en arrecife', en: 'Drive your own boat · Reef snorkel' },
+  'x-jetski': { es: 'Moto acuática · Con guía', en: 'Jet ski · With guide' },
+  'x-xelha': { es: 'Snorkel y faro · Buffet y barra libre', en: 'Snorkel and lighthouse · Buffet and open bar' },
+  'x-isla': { es: 'Catamarán de lujo · Barra libre y snorkel', en: 'Luxury catamaran · Open bar and snorkel' },
+  'x-primax': { es: 'Beso, abrazo y foot push · 45 min', en: 'Kiss, hug and foot push · 45 min' },
+  'x-mayan': { es: 'Tirolesas y rappel · Cenote y buffet', en: 'Ziplines and rappel · Cenote and buffet' },
+  'x-interax': { es: '30 min con delfines · Hasta 6 por grupo', en: '30 min with dolphins · Up to 6 per group' },
+  'x-turtles': { es: 'Snorkel con tortugas · Akumal', en: 'Snorkel with turtles · Akumal' },
+  'x-harmony': { es: '20 min con delfines · Parque y buffet', en: '20 min with dolphins · Park and buffet' },
+  'x-snorkel': { es: 'Arrecife · 1 h de snorkel guiado', en: 'Reef · 1 h guided snorkel' },
+  'x-xcaret': { es: 'Ríos y +50 atracciones · Show nocturno', en: 'Rivers and 50+ attractions · Night show' },
+  'x-chichen-deluxe': { es: 'Transporte de lujo · Cenote y buffet', en: 'Luxury transport · Cenote and buffet' },
+  'x-chichen': { es: 'Recorrido guiado · Cenote y buffet', en: 'Guided tour · Cenote and buffet' },
+  'x-tulum-mayan': { es: 'Ruinas de Tulum · Aventura y cenote', en: 'Tulum ruins · Adventure and cenote' },
+  'x-tulum-half': { es: 'Ruinas de Tulum · Medio día', en: 'Tulum ruins · Half day' },
+  'x-shop-cancun': { es: 'Tequila gratis · Tacos con crédito', en: 'Free tequila · Tacos with credit' },
+  'x-shop-cancun-2': { es: 'Tequila gratis · Tacos con crédito', en: 'Free tequila · Tacos with credit' },
+  'x-shop-playa': { es: 'Tequila gratis · $75 en joyería', en: 'Free tequila · $75 jewelry credit' },
+  'x-shop-playa-2': { es: 'Tequila gratis · $75 en joyería', en: 'Free tequila · $75 jewelry credit' },
+  'x-shop-playa-3': { es: 'Tequila gratis · $75 en joyería', en: 'Free tequila · $75 jewelry credit' },
+  'x-natura': { es: 'Todo incluido · Parque acuático', en: 'All-inclusive · Water park' },
+  'bali-seaside': { es: 'Espumoso Paax · Seaside', en: 'Paax sparkling · Seaside' },
+  'bali-activities': { es: 'Anna Ice · Área de actividades', en: 'Anna Ice · Activities area' },
+  'bali-kids': { es: 'Pétalo Moscato · Alberca infantil', en: 'Pétalo Moscato · Kids’ pool' },
+  'bali-north': { es: 'Espumoso Berselli · Playa Norte', en: 'Berselli sparkling · North Beach' },
+  'bali-south': { es: 'Espumoso Berselli · Playa Sur', en: 'Berselli sparkling · South Beach' },
+  'bali-infinity': { es: 'Konrat o Don Julio 70 · Alberca infinity', en: 'Konrat or Don Julio 70 · Infinity pool' },
+  'cabana6': { es: 'Konrat + Don Julio 70 · 2 a 6 personas', en: 'Konrat + Don Julio 70 · 2 to 6 people' },
+  'cabana10': { es: 'Clase Azul + Konrat · 7 a 10 personas', en: 'Clase Azul + Konrat · 7 to 10 people' },
+  'cabana15': { es: 'Don Ramón + 2 Veuve Clicquot · 11 a 15', en: 'Don Ramón + 2 Veuve Clicquot · 11 to 15' },
+  'dinner': { es: 'En la playa con velas · Sirloin o pollo', en: 'Candlelit on the beach · Sirloin or chicken' },
+  'dinner-dream': { es: 'Carpa iluminada · Rib eye o salmón', en: 'Lit tent · Rib eye or salmon' },
+  'dinner-lobster': { es: 'Langosta y filete · Palapa frente al mar', en: 'Lobster and filet · Palapa by the sea' },
+  'cellar': { es: 'Privada para dos · En la cava', en: 'Private for two · In the wine cellar' },
+  'lupita': { es: 'Proyecciones en la mesa · Hasta 4 personas', en: 'Table projections · Up to 4 people' },
+  'preferred': { es: 'Check-in privado · Lounge y playa Preferred', en: 'Private check-in · Preferred lounge and beach' },
+  'bubbly': { es: 'Espumoso · A tu habitación', en: 'Sparkling wine · To your room' },
+  'berries': { es: 'Fresas con chocolate · A tu habitación', en: 'Chocolate strawberries · To your room' }
+};
 function relatedIds(id) {
   const it = itemById(id), lad = new Set([id]);
   for (let grow = true; grow;) { grow = false; for (const u of UPGRADES) { if (lad.has(u.from) !== lad.has(u.to)) { lad.add(u.from); lad.add(u.to); grow = true; } } }
@@ -3060,7 +3133,7 @@ function relatedHTML(it) {
   const ids = relatedIds(it.id); if (!ids.length) return '';
   const L = S.lang;
   return `<h4>${L === 'es' ? 'También te puede gustar' : 'You may also like'}</h4><div class="rel">${ids.map(id => { const r = itemById(id); return `
-    <div class="sg" data-rel="${id}"><div class="sg-img ph-${r.photo}">${topBadge(id) ? `<span class="lock topt">★ ${t().topSeller}</span>` : ''}</div><b>${r.name[L]}</b>${priceBlock(r)}</div>`; }).join('')}</div>`;
+    <div class="sg" data-rel="${id}"><div class="sg-img ph-${r.photo}">${topBadge(id) ? `<span class="lock topt">★ ${t().topSeller}</span>` : ''}</div><b>${r.name[L]}</b><small class="rel-hl">${HL[id] ? HL[id][L] : r.sub ? r.sub[L] : ''}</small>${priceBlock(r)}</div>`; }).join('')}</div>`;
 }
 // Antes de agregar, la hoja arranca en 1 y suma sobre esa cantidad; ya en el regalo, edita el carrito directo
 function pendFits(id, q) { const it = itemById(id); return q <= it.max && costIn(S.mode, withItem(S.cart, id, q)) <= S.will; }
