@@ -1145,6 +1145,8 @@ body.is-vendor .notice.vnote{display:flex}
 .ph-cat_spa{background-image:url(img/cat_spa.webp)}
 .ph-cat_bali{background-image:url(img/cat_bali.webp)}
 .ph-cat_exc{background-image:url(img/cat_exc.webp)}
+.ph-cat_dinner{background-image:url(img/cat_dinner.webp)}
+.ph-cat_extras{background-image:url(img/cat_extras.webp)}
 /* v30 · mapa del hotel */
 .cv-map{position:absolute;right:16px;bottom:18px;width:48px;height:48px;border-radius:50%;display:grid;place-items:center;color:#fff;background:rgba(30,45,80,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.25)}
 .cv-map svg{width:24px;height:24px}
@@ -2438,7 +2440,7 @@ function resetAll() {
 
 /* ── Catálogo ── */
 // v30 · portada: foto del resort con el texto arriba y un botón que baja a los servicios
-const CAT_PH = { spa: 'cat_spa', bali: 'cat_bali', excursions: 'cat_exc', dinner: 'sunset', extras: 'berries' };   // v30.9: tomas cerradas que se leen en el círculo
+const CAT_PH = { spa: 'cat_spa', bali: 'cat_bali', excursions: 'cat_exc', dinner: 'cat_dinner', extras: 'cat_extras' };   // v30.9: tomas cerradas que se leen en el círculo
 function coverHTML() {
   return `<div class="cv-top"><span class="cv-kick">${t().resortKicker} · Cancún</span><h2>${t().resortTitle}</h2><p>${t().coverLede}</p></div>
     <button class="cv-cta" data-explore>${t().explore} <span aria-hidden="true">↓</span></button>
