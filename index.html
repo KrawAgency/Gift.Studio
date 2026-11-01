@@ -1313,8 +1313,8 @@ function zoneHTML(it) {
 }
 const TOP_SELLERS = ['couples', 'massage', 'hydro', 'dinner', 'bali-kids', 'x-isla'];
 const isTop = id => TOP_SELLERS.includes(id);
-// v18: la etiqueta solo la lleva el más vendido #1 de cada categoría (si todos dicen 'más vendido', ninguno lo es)
-const topBadge = id => isTop(id) && TOP_SELLERS.find(x => itemById(x).cat === itemById(id).cat) === id;
+// Nov 2026: todos los más vendidos llevan la etiqueta (antes solo el #1 de cada categoría)
+const topBadge = id => isTop(id);
 const topIdx = id => { const i = TOP_SELLERS.indexOf(id); return i < 0 ? 99 : i; };
 // Bubbles Festival: la bebida incluida cambia seguido, por eso no se muestra en foto
 const baliDesc = n => ({
