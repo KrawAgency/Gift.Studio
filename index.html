@@ -12,7 +12,7 @@
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <script>(function(){var t;try{t=localStorage.getItem('gs-theme')}catch(e){}if(t!=='light'&&t!=='dark')t=(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';document.documentElement.setAttribute('data-theme',t);})();</script>
-<title>Gift Studio v30.8</title>
+<title>Gift Studio v30.9</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:ital,wght@0,400;0,500;0,600;1,700&display=swap" rel="stylesheet">
@@ -1186,6 +1186,7 @@ body.is-vendor .notice.vnote{display:flex}
 .cat[aria-pressed=true] .ci{border-color:var(--gold)}
 .cat[aria-pressed=true]{color:var(--ink);font-weight:700}
 .cat .ci-all{background:var(--card);color:var(--gold-text)}
+.cat-free .ci{background:linear-gradient(135deg,#2B8273,#1d5c51);color:#fff;font-size:13px;font-weight:800;letter-spacing:.02em}
 .cat-guide .ci{background:linear-gradient(135deg,#e8b04a,#c9782f);font-size:26px}
 .cat:active .ci{transform:scale(.94)}
 #catGuest:empty{display:none}
@@ -2421,7 +2422,7 @@ function resetAll() {
 
 /* ── Catálogo ── */
 // v30 · portada: foto del resort con el texto arriba y un botón que baja a los servicios
-const CAT_PH = { spa: 'couples', bali: 'bali_beach', excursions: 'x29', dinner: 'sunset', extras: 'berries' };
+const CAT_PH = { spa: 'stones', bali: 'bali_sea', excursions: 'x30', dinner: 'sunset', extras: 'berries' };   // v30.9: tomas cerradas que se leen en el círculo
 function coverHTML() {
   return `<div class="cv-top"><span class="cv-kick">${t().resortKicker} · Cancún</span><h2>${t().resortTitle}</h2><p>${t().coverLede}</p></div>
     <button class="cv-cta" data-explore>${t().explore} <span aria-hidden="true">↓</span></button>
@@ -2602,21 +2603,26 @@ function renderCatalog() {
   // v30.2 · la tarjeta del certificado ya no va en el catálogo (está en la pestaña Escapada)
   $('hero').innerHTML = ''; $('hero').style.display = 'none';
   $('cover').innerHTML = coverHTML();
+  // v30.9 · círculo FREE: con VIP y vouchers, todo lo que entra gratis con el Leisure Cash que queda, junto
+  const freeOn = S.mode === 'vip' && S.step > 0;
+  if (S.cat === 'free' && !freeOn) S.cat = 'all';
+  const freeBtn = freeOn ? `<button class="cat cat-free" data-cat="free" aria-pressed="${S.cat === 'free'}"><span class="ci">FREE</span><span>${S.lang === 'es' ? 'Gratis' : 'Free'}</span></button>` : '';
+  const catBtn = c => `<button class="cat" data-cat="${c.id}" aria-pressed="${S.cat === c.id}">${CAT_PH[c.id] ? `<span class="ci ph-${CAT_PH[c.id]}"></span>` : '<span class="ci ci-all">✦</span>'}<span>${c.name[S.lang]}</span></button>`;
   $('chips').innerHTML = `<button class="cat cat-guide" data-guide><span class="ci">✨</span><span>${t().guideMe}</span></button>`
-    + CATS.map(c => `<button class="cat" data-cat="${c.id}" aria-pressed="${S.cat === c.id}">${CAT_PH[c.id] ? `<span class="ci ph-${CAT_PH[c.id]}"></span>` : '<span class="ci ci-all">✦</span>'}<span>${c.name[S.lang]}</span></button>`).join('');
+    + catBtn(CATS[0]) + freeBtn + CATS.slice(1).map(catBtn).join('');
   const subs = S.cat === 'excursions' ? EXC_SUBS : S.cat === 'spa' ? SPA_SUBS : null;
   $('subchips').innerHTML = subs ? subs.map(c => `<button class="chip" data-sub="${c.id}" aria-pressed="${S.sub === c.id}">${c.name[S.lang]}</button>`).join('') : '';
   $('subchips').style.display = subs ? '' : 'none';
   const subKey = i => i.exc ? i.sub : i.grp;
-  let list = ITEMS.filter(i => !i.hidden && !i.durOnly && (S.cat === 'all' ? (!i.pkg || pkgToday(i)) : i.cat === S.cat && (!subs || S.sub === 'all' || subKey(i) === S.sub)));
-  if (S.cat === 'all') list = [...list.filter(i => isTop(i.id)).sort((a, b) => topIdx(a.id) - topIdx(b.id)), ...list.filter(i => !isTop(i.id) && !i.exc), ...list.filter(i => !isTop(i.id) && i.exc).sort((a, b) => excRank(a.id) - excRank(b.id))];
+  let list = ITEMS.filter(i => !i.hidden && !i.durOnly && (S.cat === 'free' ? (!i.pkg || pkgToday(i)) && canAdd(i.id) && unitCost(i, selOf(i.id)) === 0 : S.cat === 'all' ? (!i.pkg || pkgToday(i)) : i.cat === S.cat && (!subs || S.sub === 'all' || subKey(i) === S.sub)));
+  if (S.cat === 'all' || S.cat === 'free') list = [...list.filter(i => isTop(i.id)).sort((a, b) => topIdx(a.id) - topIdx(b.id)), ...list.filter(i => !isTop(i.id) && !i.exc), ...list.filter(i => !isTop(i.id) && i.exc).sort((a, b) => excRank(a.id) - excRank(b.id))];
   if (S.cat === 'excursions') list.sort((a, b) => excRank(a.id) - excRank(b.id));
   // primero lo que alcanza, al final lo gris (se mantiene el orden dentro de cada grupo)
   // Lo que alcanza va primero. Lo que no alcanza se agrupa en una sección plegable al final;
   // los "Solo con VIP Services" se quedan a la vista como gancho.
   const folds = i => isOff(i) && !(i.vipOnly && S.mode === 'reg');
   const main = [...list.filter(i => !isOff(i)), ...list.filter(i => isOff(i) && !folds(i))], off = list.filter(folds);
-  $('grid').innerHTML = main.map(cardHTML).join('');
+  $('grid').innerHTML = main.length || S.cat !== 'free' ? main.map(cardHTML).join('') : `<p class="sub" style="grid-column:1 / -1;text-align:center;padding:24px 8px">${S.lang === 'es' ? 'Ya no queda nada gratis con el Leisure Cash que queda. Agrega otro voucher o revisa Todo.' : 'Nothing else is free with the Leisure Cash left. Add another voucher or check All.'}</p>`;
   const open = S.showOff || !main.length;
   $('offWrap').innerHTML = off.length ? `
     <button class="off-head" data-offtoggle aria-expanded="${open}" aria-controls="gridOff">
@@ -2886,7 +2892,7 @@ function renderTabs() {
 /* ── v11.4 · navegación: Atrás (botón de arriba, gesto o botón del celular, Esc) ── */
 const SIDE_MQ = 'not all';   // v29.1: el regalo ya nunca va a un lado (laptop y tablet = como celular)
 const isWide = () => window.matchMedia(SIDE_MQ).matches;
-const catName = id => (CATS.find(c => c.id === id) || CATS[0]).name[S.lang];
+const catName = id => id === 'free' ? (S.lang === 'es' ? 'Gratis con tu LC' : 'Free with your LC') : (CATS.find(c => c.id === id) || CATS[0]).name[S.lang];
 function screenTitle() {
   if (S.tab === 'cart' && !isWide()) return t().picks;
   if (S.cat !== 'all') return catName(S.cat);
@@ -3738,7 +3744,7 @@ function snapshot() {
     return { id, qty: sl.qty, kinds: it.kinds ? personKinds(it, sl) : undefined, cbd: it.kinds ? personCbd(it, sl) : undefined, manualOpt: sl.manual ? sl.opt : undefined,
       vipUnits: (v.units[id] || []).map(i => `${it.opts[i].pay}/${it.opts[i].b}`), regular: lineReg(it, sl) }; });
   return {
-    app: 'Gift Studio v30.8', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
+    app: 'Gift Studio v30.9', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
     guestBudget: hasBud() ? S.will : null, vouchers: S.step / VOUCHER, voucherValue: S.step, 
     cert: S.cart.cert, cart: lines, wish: S.wish,
     vip: { guestPays: v.cost, copays: v.pay, budgetUsed: v.used, overflow: v.overflow, left: S.will - v.cost, regularValue: v.value },
