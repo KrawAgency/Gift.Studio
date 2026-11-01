@@ -12,7 +12,7 @@
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <script>(function(){var t;try{t=localStorage.getItem('gs-theme')}catch(e){}if(t!=='light'&&t!=='dark')t=(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';document.documentElement.setAttribute('data-theme',t);})();</script>
-<title>Gift Studio v30.1</title>
+<title>Gift Studio v30.2</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:ital,wght@0,400;0,500;0,600;1,700&display=swap" rel="stylesheet">
@@ -1165,7 +1165,8 @@ body.is-vendor .notice.vnote{display:flex}
 .cat-guide .ci{background:linear-gradient(135deg,#e8b04a,#c9782f);font-size:26px}
 .cat:active .ci{transform:scale(.94)}
 #catGuest:empty{display:none}
-.money.solo-v{grid-template-columns:minmax(0,1fr);margin-top:14px}
+.money.solo-v{grid-template-columns:minmax(0,1fr);margin-top:14px;min-height:76px;align-content:center}
+.money.solo-v .vrow{min-height:73px}
 #hero{margin-top:14px}
 .subchips{margin-top:10px!important}
 #grid{margin-top:14px}
@@ -2523,8 +2524,8 @@ function renderCatalog() {
     <button data-mode="reg" aria-pressed="${S.mode === 'reg'}">${t().modeReg}</button>
     <button data-mode="vip" aria-pressed="${S.mode === 'vip'}"><span class="star">✦</span>${t().modeVip}</button>`;
   // v29.12: las dos versiones viven apiladas en el mismo lugar; el toggle solo cambia cuál se ve (mismo alto siempre)
-  $('hero').innerHTML = S.mode === 'vip' ? heroHTML() : '';
-  $('hero').style.display = S.mode === 'vip' ? '' : 'none';
+  // v30.2 · la tarjeta del certificado ya no va en el catálogo (está en la pestaña Escapada)
+  $('hero').innerHTML = ''; $('hero').style.display = 'none';
   $('cover').innerHTML = coverHTML();
   $('chips').innerHTML = `<button class="cat cat-guide" data-guide><span class="ci">✨</span><span>${t().guideMe}</span></button>`
     + CATS.map(c => `<button class="cat" data-cat="${c.id}" aria-pressed="${S.cat === c.id}">${CAT_PH[c.id] ? `<span class="ci ph-${CAT_PH[c.id]}"></span>` : '<span class="ci ci-all">✦</span>'}<span>${c.name[S.lang]}</span></button>`).join('');
@@ -2614,7 +2615,8 @@ function moneyHTML() {
     </div>`;
   }
   // v30 · se quitó el presupuesto del huésped: solo queda el renglón de vouchers con VIP
-  return S.mode === 'vip' ? `<div class="money solo-v">${vrow}</div>` : '';
+  // v30.2 · el renglón siempre está: sin VIP dice "precios de promoción", con VIP muestra los vouchers (solo cambia, no aparece/desaparece)
+  return `<div class="money solo-v">${vrow}</div>`;
 }
 function suggestHTML() {
   const left = S.will - costIn(S.mode, S.cart);
@@ -3658,7 +3660,7 @@ function snapshot() {
     return { id, qty: sl.qty, kinds: it.kinds ? personKinds(it, sl) : undefined, cbd: it.kinds ? personCbd(it, sl) : undefined, manualOpt: sl.manual ? sl.opt : undefined,
       vipUnits: (v.units[id] || []).map(i => `${it.opts[i].pay}/${it.opts[i].b}`), regular: lineReg(it, sl) }; });
   return {
-    app: 'Gift Studio v30.1', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
+    app: 'Gift Studio v30.2', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
     guestBudget: hasBud() ? S.will : null, vouchers: S.step / VOUCHER, voucherValue: S.step, 
     cert: S.cart.cert, cart: lines, wish: S.wish,
     vip: { guestPays: v.cost, copays: v.pay, budgetUsed: v.used, overflow: v.overflow, left: S.will - v.cost, regularValue: v.value },
