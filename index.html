@@ -236,7 +236,10 @@ body.mode-reg .hero .hero-lock{filter:grayscale(0)}
 .sugg-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 .rel{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:4px;scrollbar-width:none}
 .rel::-webkit-scrollbar{display:none}
-.rel .sg{flex:0 0 40%;max-width:220px;scroll-snap-align:start;cursor:pointer}
+.rel .sg{flex:0 0 40%;max-width:220px;scroll-snap-align:start;cursor:pointer;padding:8px 8px 14px;gap:4px}
+.rel .sg-img{margin-bottom:6px}
+.rel.ups .sg{padding-bottom:52px}
+.rel .ups-d{font-weight:600;color:var(--ok);font-size:calc(15px*var(--fs,1));margin-top:2px}
 .rel .rel-hl{font-size:calc(12px*var(--fs,1));color:var(--muted);line-height:1.3;margin-bottom:2px}
 .rel .sg b{font-size:calc(13.5px*var(--fs,1));font-weight:600;line-height:1.25}
 .sg{position:relative;background:var(--card);border-radius:16px;padding:6px 6px 10px;display:flex;flex-direction:column;gap:2px;min-width:0}
@@ -1159,9 +1162,9 @@ body.is-vendor .notice.vnote{display:flex}
 .cv-map{position:absolute;right:16px;bottom:18px;width:48px;height:48px;border-radius:50%;display:grid;place-items:center;color:#fff;background:rgba(30,45,80,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.25)}
 .cv-map svg{width:24px;height:24px}
 .cv-map:active{transform:scale(.94)}
-.map-box{position:relative;border-radius:18px;overflow:auto;background:#8fcf5a;max-height:calc(100dvh - 260px);overscroll-behavior:contain;-webkit-overflow-scrolling:touch;cursor:zoom-in}
-.map-box.zoomed{cursor:zoom-out}
-.map-box img{display:block;width:100%;max-width:none;height:auto;user-select:none;-webkit-user-select:none}
+.map-box{position:relative;border-radius:18px;overflow:auto;background:#8fcf5a;max-height:calc(100dvh - 260px);overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y;--z:1}
+.map-box img{display:block;width:calc(var(--z) * 100%);max-width:none;height:auto;user-select:none;-webkit-user-select:none;-webkit-user-drag:none}
+.zhint{font-size:calc(12.5px*var(--fs,1));color:var(--muted);text-align:center;margin:6px 0 2px}
 .map-zoom{display:flex;gap:8px;justify-content:center}
 .map-zoom button{min-width:48px;height:44px;padding:0 16px;border-radius:999px;background:var(--soft,var(--line));color:var(--ink);font-weight:700;font-size:calc(16px*var(--fs,1))}
 /* v30 · guía: hoja de altura fija y tarjetas todas del mismo tamaño */
@@ -1970,7 +1973,7 @@ const T = {
     unlocked: n => n === 1 ? '1 new option unlocked' : `${n} new options unlocked`,
     vipPricing: 'Using VIP Services pricing', vipPricingSub: 'Exclusive promotional prices on every experience',
     regPricing: 'Using in-app promo pricing', regPricingSub: 'Resort coupons and promotional prices on every experience',
-    resortKicker: 'Your resort', mapT: 'Resort map', mapHint: 'Tap the map to zoom in, then drag to move around.', mapFit: 'Full map', explore: 'Explore services', coverLede: 'Spa, cabanas, dinners and tours for your vacation.', guideMe: 'Guide me', resortTitle: 'Dreams Riviera', resortLede: 'Cancún · Spa, cabanas, dinners and tours for your stay.', resortVip: 'See VIP Services',
+    resortKicker: 'Your resort', mapT: 'Resort map', mapHint: 'Pinch or double-tap to zoom', mapFit: 'Full map', explore: 'Explore services', coverLede: 'Spa, cabanas, dinners and tours for your vacation.', guideMe: 'Guide me', resortTitle: 'Dreams Riviera', resortLede: 'Cancún · Spa, cabanas, dinners and tours for your stay.', resortVip: 'See VIP Services',
     freeWithMassage: n => n === 1 ? '1 free with your massage' : `${n} free with your massages`,
     lc: n => `${n} Leisure Cash`, vHint: 'Each gift voucher is $50 of Leisure Cash toward your experiences.',
     vTap: 'Tap to adjust', vUsed: (u, n) => `Using ${u} of ${n}`, done: 'Done',
@@ -2046,7 +2049,7 @@ const T = {
     unlocked: n => n === 1 ? 'Se abrió 1 opción nueva' : `Se abrieron ${n} opciones nuevas`,
     vipPricing: 'Con precios de VIP Services', vipPricingSub: 'Precios exclusivos de promoción en cada experiencia',
     regPricing: 'Con precios de promoción de la app', regPricingSub: 'Cupones del resort y precios de promoción en cada experiencia',
-    resortKicker: 'Tu resort', mapT: 'Mapa del hotel', mapHint: 'Toca el mapa para acercar y arrastra para moverte.', mapFit: 'Mapa completo', explore: 'Explorar servicios', coverLede: 'Spa, cabañas, cenas y tours para tus vacaciones.', guideMe: 'Guíame', resortTitle: 'Dreams Riviera', resortLede: 'Cancún · Spa, cabañas, cenas y tours para tu estancia.', resortVip: 'Ver VIP Services',
+    resortKicker: 'Tu resort', mapT: 'Mapa del hotel', mapHint: 'Pellizca o toca dos veces para acercar', mapFit: 'Mapa completo', explore: 'Explorar servicios', coverLede: 'Spa, cabañas, cenas y tours para tus vacaciones.', guideMe: 'Guíame', resortTitle: 'Dreams Riviera', resortLede: 'Cancún · Spa, cabañas, cenas y tours para tu estancia.', resortVip: 'Ver VIP Services',
     freeWithMassage: n => n === 1 ? '1 gratis con tu masaje' : `${n} gratis con tus masajes`,
     lc: n => `${n} de Leisure Cash`, vHint: 'Cada gift voucher vale $50 de Leisure Cash para tus experiencias.',
     vTap: 'Toca para ajustar', vUsed: (u, n) => `Usas ${u} de ${n}`, done: 'Listo',
@@ -2459,17 +2462,19 @@ function coverHTML() {
 let mapZ = 1;
 function mapSheet() {
   mapZ = 1;
-  return `${sheetTop('')}<h2>${t().mapT}</h2><p class="sub" style="margin-top:-6px">${t().mapHint}</p>
+  return `${sheetTop('')}<h2>${t().mapT}</h2>
     <div class="map-box" id="mapBox"><img src="img/map.webp?v=30" alt="${t().mapT}" id="mapImg" draggable="false"></div>
+    <div class="zhint">${t().mapHint}</div>
     <div class="map-zoom"><button data-mapz="-1" aria-label="−">−</button><button data-mapz="0">${t().mapFit}</button><button data-mapz="1" aria-label="+">+</button></div>`;
 }
-function mapZoom(z, cx, cy) {
-  const box = $('mapBox'), img = $('mapImg'); if (!box || !img) return;
-  z = Math.min(4, Math.max(1, z));
-  const r = box.getBoundingClientRect(); cx = cx ?? r.width / 2; cy = cy ?? r.height / 2;
-  const fx = (box.scrollLeft + cx) / img.offsetWidth, fy = (box.scrollTop + cy) / img.offsetHeight;
-  mapZ = z; img.style.width = (z * 100) + '%'; box.classList.toggle('zoomed', z > 1);
-  box.scrollLeft = fx * img.offsetWidth - cx; box.scrollTop = fy * img.offsetHeight - cy;
+// Nov 2026 · mismo zoom que GuestyLIVE: pellizcar o doble toque, acercando en el punto donde están los dedos
+function mapZoom(z, mx, my, anchor) {
+  const w = $('mapBox'); if (!w) return;
+  if (mx == null) { mx = w.clientWidth / 2; my = w.clientHeight / 2; }
+  const cx = anchor ? anchor.cx : (w.scrollLeft + mx) / mapZ, cy = anchor ? anchor.cy : (w.scrollTop + my) / mapZ;
+  mapZ = Math.min(5, Math.max(1, z));
+  w.style.setProperty('--z', mapZ);
+  w.scrollLeft = cx * mapZ - mx; w.scrollTop = cy * mapZ - my;
 }
 function exploreServices() {
   const el = $('chips'), bar = $('appbar').getBoundingClientRect().height;
@@ -3043,7 +3048,7 @@ function itemSheet(id) {
     ${it.video ? VID_MARK : ''}
     ${it.menu ? `<h4>${t().menuT}</h4><ul class="menu">${it.menu[L].map(x => `<li>${x}</li>`).join('')}</ul><p class="sub" style="margin:0">${DINNER_NOTE[L]}</p>` : ''}
     ${it.photo2 ? `<div class="sh-img ph-${it.photo2}" style="aspect-ratio:3/2"></div>` : ''}
-    ${isSel ? '' : relatedHTML(it)}
+    ${isSel ? upsellHTML(it) : relatedHTML(it)}
     <div class="sh-foot">
       ${footQty(it, s, isSel, ok)}
       ${isSel ? `<button class="cta" data-close>${t().cont}</button>` : upgradeInto(id) && !ok ? `<button class="cta" data-upg="${upgradeInto(id).from}">⬆ ${t().upgradeBtn(upgradeInto(id).d)}</button>` : `<button class="cta" data-addn="${id}" ${ok ? '' : 'disabled'}>${t().addGift}</button>`}
@@ -3128,6 +3133,16 @@ function relatedIds(id) {
   const pool = ITEMS.filter(ok);
   const rank = x => lad.has(x.id) ? 0 : it.grp && x.grp === it.grp ? 1 : 2;
   return pool.map((x, i) => ({ x, i })).sort((a, b) => (rank(a.x) - rank(b.x)) || (a.i - b.i)).slice(0, 6).map(o => o.x.id);
+}
+// Nov 2026 · ya agregado: los siguientes niveles de su escalera (UPGRADES), con lo que cuesta de más
+function upsellHTML(it) {
+  const ids = []; for (let cur = it.id, u; (u = UPGRADES.find(x => x.from === cur)); cur = u.to) ids.push(u.to);
+  const L = S.lang, now = costIn(S.mode, S.cart);
+  const cards = ids.map(id => { const c = durSwap(it.id, id); if (!c || (c.sel[id] && c.sel[id].qty > itemById(id).max)) return '';
+    const r = itemById(id), d = Math.max(0, costIn(S.mode, c) - now);
+    return `<div class="sg" data-rel="${id}"><div class="sg-img ph-${r.photo}"></div><b>${r.name[L]}</b><small class="rel-hl">${HL[id] ? HL[id][L] : r.sub ? r.sub[L] : ''}</small>
+      <span class="ups-d">${d ? '+' + money(d) : (L === 'es' ? 'Sin costo extra' : 'No extra cost')}</span><button class="sg-add" data-ups="${id}" aria-label="${t().upgradeTo(r.name[L])}">⬆</button></div>`; }).join('');
+  return cards ? `<h4>${L === 'es' ? 'Súbele de nivel' : 'Take it up a level'}</h4><div class="rel ups">${cards}</div>` : '';
 }
 function relatedHTML(it) {
   const ids = relatedIds(it.id); if (!ids.length) return '';
@@ -3297,7 +3312,7 @@ function endDrag(e) {
 // v24 · seguir "subiendo" cuando la hoja ya está hasta arriba la cierra (como bajar la barra)
 let pull = null;
 $('sheet').addEventListener('touchstart', e => {
-  if (e.touches.length !== 1 || e.target.closest('.sh-bar')) { pull = null; return; }
+  if (e.touches.length !== 1 || e.target.closest('.sh-bar') || e.target.closest('#mapBox')) { pull = null; return; }
   pull = { y0: e.touches[0].clientY, start: null, dy: 0 };
 }, { passive: true });
 $('sheet').addEventListener('touchmove', e => {
@@ -3319,14 +3334,25 @@ function endPull() {
 }
 ['touchend', 'touchcancel'].forEach(ev => $('sheet').addEventListener(ev, endPull));
 $('sheet').addEventListener('click', e => { if (e.target === $('sheet')) closeSheet(); });
-// v30 · tocar el mapa acerca en ese punto; otro toque regresa al mapa completo (si se arrastró, no cuenta como toque)
-let mapDown = null;
-$('sheet').addEventListener('pointerdown', e => { if (e.target.id === 'mapImg') mapDown = { x: e.clientX, y: e.clientY }; });
-$('sheet').addEventListener('click', e => {
-  if (e.target.id !== 'mapImg' || !mapDown) return;
-  const moved = Math.hypot(e.clientX - mapDown.x, e.clientY - mapDown.y) > 8; mapDown = null; if (moved) return;
-  const r = $('mapBox').getBoundingClientRect(); mapZoom(mapZ > 1 ? 1 : 2.5, e.clientX - r.left, e.clientY - r.top);
-});
+// Nov 2026 · mapa: pellizcar para acercar/alejar y doble toque para acercar o regresar (como GuestyLIVE)
+const mp = { d0: 0, z0: 1, anchor: null, last: 0 };
+const tDist = t => Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
+$('sheet').addEventListener('touchstart', e => {
+  const w = e.target.closest('#mapBox'); if (!w) return;
+  const r = w.getBoundingClientRect();
+  if (e.touches.length === 2) {
+    mp.d0 = tDist(e.touches); mp.z0 = mapZ;
+    const mx = (e.touches[0].clientX + e.touches[1].clientX) / 2 - r.left, my = (e.touches[0].clientY + e.touches[1].clientY) / 2 - r.top;
+    mp.anchor = { mx, my, cx: (w.scrollLeft + mx) / mapZ, cy: (w.scrollTop + my) / mapZ };
+  } else if (e.touches.length === 1) {
+    const now = Date.now();
+    if (now - mp.last < 280) { e.preventDefault(); mapZoom(mapZ > 1.4 ? 1 : 2.5, e.touches[0].clientX - r.left, e.touches[0].clientY - r.top); mp.last = 0; }
+    else mp.last = now;
+  }
+}, { passive: false });
+$('sheet').addEventListener('touchmove', e => { if (mp.d0 && e.touches.length === 2 && e.target.closest('#mapBox')) { e.preventDefault(); mapZoom(mp.z0 * tDist(e.touches) / mp.d0, mp.anchor.mx, mp.anchor.my, mp.anchor); } }, { passive: false });
+$('sheet').addEventListener('touchend', e => { if (e.touches.length < 2) mp.d0 = 0; });
+$('sheet').addEventListener('dblclick', e => { const w = e.target.closest('#mapBox'); if (!w) return; const r = w.getBoundingClientRect(); mapZoom(mapZ > 1.4 ? 1 : 2.5, e.clientX - r.left, e.clientY - r.top); });
 // v29.22 · el reproductor de YouTube solo se carga al tocar la miniatura (la hoja abre igual de rápido y no gasta datos)
 $('sheet').addEventListener('click', e => {
   const b = e.target.closest('[data-vplay]'); if (!b) return;
@@ -3785,7 +3811,7 @@ document.addEventListener('click', e => {
   if (d.mode) { setMode(d.mode); return; }
   if (el.hasAttribute('data-explore')) { exploreServices(); return; }
   if (el.hasAttribute('data-map')) { openSheet('map'); return; }
-  if (d.mapz !== undefined) { mapZoom(d.mapz === '0' ? 1 : mapZ + Number(d.mapz)); return; }
+  if (d.mapz !== undefined) { mapZoom(d.mapz === '0' ? 1 : d.mapz === '1' ? mapZ * 1.5 : mapZ / 1.5); return; }
   if (el.hasAttribute('data-guide')) { openGuide(); return; }
   if (el.hasAttribute('data-cert-open')) { openSheet('cert'); return; }
   if (el.hasAttribute('data-cert')) { if (S.mode !== 'vip') S.mode = 'vip'; S.cart.cert = !S.cart.cert; render(); return; }
@@ -3828,6 +3854,13 @@ document.addEventListener('click', e => {
     const it = itemById(d.pk), sl = S.cart.sel[d.pk]; if (!sl) return;
     const pk = personKinds(it, sl), n = Number(d.n);
     pk[n] = d.k || (pk[n] === 'relax' ? 'deep' : 'relax'); sl.pk = pk; render(); return;
+  }
+  if (d.ups) {
+    const from = S.sheet && S.sheet.id, c = from && durSwap(from, d.ups); if (!c) return;
+    const over = costIn(S.mode, c) - S.will;
+    if (over > 0 && costIn(S.mode, c) > costIn(S.mode, S.cart)) { toast(t().overBudget(money(over))); return; }
+    S.cart = c; render(); toast(t().upgradedTo(itemById(d.ups).name[S.lang]));
+    openSheet('item', d.ups, S.sheetPrev); $('sheet').scrollTop = 0; return;
   }
   if (d.rel) { openSheet('item', d.rel, S.sheetPrev); $('sheet').scrollTop = 0; return; }
   if (d.open) { openSheet('item', d.open); return; }
