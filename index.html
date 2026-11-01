@@ -12,7 +12,7 @@
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <script>(function(){var t;try{t=localStorage.getItem('gs-theme')}catch(e){}if(t!=='light'&&t!=='dark')t=(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';document.documentElement.setAttribute('data-theme',t);})();</script>
-<title>Gift Studio v30.4</title>
+<title>Gift Studio v30.5</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:ital,wght@0,400;0,500;0,600;1,700&display=swap" rel="stylesheet">
@@ -1120,6 +1120,14 @@ body.is-vendor .notice.vnote{display:flex}
 .ph-lounge{background-image:url(img/79.webp)}
 .ph-voucher{background-image:url(img/80.webp)}
 
+/* v30.5 · fotos del Shopping Tour Cancún */
+.ph-sc_cun{background-image:url(img/sc_cun.webp);aspect-ratio:3/2}
+.ph-sc_cun_sq{background-image:url(img/sc_cun_sq.webp);aspect-ratio:1/1}
+.ph-sc_ij{background-image:url(img/sc_ij.webp)}
+.ph-sc_teq{background-image:url(img/sc_teq.webp)}
+.ph-sc_tacos{background-image:url(img/sc_tacos.webp)}
+.ph-sc_crafts{background-image:url(img/sc_crafts.webp)}
+.ph-sc_bags{background-image:url(img/sc_bags.webp)}
 /* v30 · mapa del hotel */
 .cv-map{position:absolute;right:16px;bottom:18px;width:48px;height:48px;border-radius:50%;display:grid;place-items:center;color:#fff;background:rgba(30,45,80,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.25)}
 .cv-map svg{width:24px;height:24px}
@@ -1141,7 +1149,9 @@ body.is-vendor .notice.vnote{display:flex}
 .ab-set{position:relative;flex-shrink:0}
 .ab-back:not([hidden]) ~ .ab-set{display:none}
 .appbar .ab-back[hidden]{display:none}
-.appbar .wrap{gap:8px}
+.appbar .wrap{gap:6px}
+.appbar .ab-cart{width:40px;height:40px;min-width:0;min-height:0}
+.appbar .ab-vip .vs-lbl{font-size:calc(14px*var(--fs,1))}
 .ab-gear{width:38px!important;height:38px!important;min-width:0!important;min-height:0!important;padding:0!important;display:grid;place-items:center}
 .ab-gear svg{width:19px;height:19px}
 .ab-pop{position:absolute;top:calc(100% + 8px);left:0;z-index:60;display:flex;flex-direction:column;gap:8px;padding:10px;border-radius:18px;background:var(--card);border:1.5px solid var(--line);box-shadow:0 14px 30px -12px rgba(0,0,0,.5)}
@@ -1794,6 +1804,8 @@ for (const [id, ph, ph2] of [['mani50', 'mani'], ['mani80', 'mani2'], ['pedi50',
   ['x-shop-cancun', 'x41', 'shop_cun'], ['x-shop-playa', 'x42', 'shop_pdc']]) {
   const it = ITEMS.find(i => i.id === id); if (it) { it.photo = ph; if (ph2) it.photo2 = ph2; }
 }
+// v30.5 · Shopping Tour Cancún: letras de Cancún de portada, galería del recorrido, la joyería ancha y el logo de International Jewelry
+Object.assign(ITEMS.find(i => i.id === 'x-shop-cancun'), { photo: 'sc_cun_sq', sheetPhoto: 'sc_cun', photo2: 'sc_ij', gallery: ['sc_teq', 'sc_tacos', 'sc_crafts', 'sc_bags'], logo: 'img/ij_logo.webp', logoSheet: true });   // el logo solo en la ficha (en la tarjeta no se alcanza a leer)
 // Duraciones: una sola tarjeta por tratamiento en el catálogo; las demás duraciones viven dentro de la tarjeta
 // (el masaje de 80 min y el masaje en pareja de 80 min se quedan como tarjetas propias)
 const DURS = [
@@ -2501,7 +2513,7 @@ function cardHTML(it) {
     <div class="pc-img ph-${it.photo}" data-open="${it.id}">
       ${vo ? `<span class="lock newtag">✦ ${t().onlyVip}</span>` : off ? `<span class="lock over">${t().overBy2(money(over))}</span>` : dayTagHTML(it) || (top ? `<span class="lock topt">★ ${t().topSeller}</span>` : '')}
       ${vtag}
-      ${it.logo ? `<span class="pc-logo${it.logoLt ? ' lt' : ''}"><img src="${it.logo}" alt=""></span>` : ''}
+      ${it.logo && !it.logoSheet ? `<span class="pc-logo${it.logoLt ? ' lt' : ''}"><img src="${it.logo}" alt=""></span>` : ''}
     </div>
     <button class="pc-info" data-open="${it.id}">
       <h3>${it.name[L]}</h3>
@@ -2765,9 +2777,12 @@ function fitTitle() {
   const h = $('appTitle'); h.style.fontSize = '';
   if (h.scrollWidth <= h.clientWidth) return;
   const fs = parseFloat(getComputedStyle(h).fontSize);
-  h.style.fontSize = Math.max(16, Math.floor(fs * h.clientWidth / h.scrollWidth * 10) / 10 - .5) + 'px';
+  h.style.fontSize = Math.max(15, Math.floor(fs * h.clientWidth / h.scrollWidth * 10) / 10 - .5) + 'px';
 }
 window.addEventListener('resize', () => fitTitle());
+// v30.5 · la letra Poppins llega después; si el título se ajustó antes, se cortaba en el celular
+try { document.fonts && document.fonts.ready.then(() => fitTitle()); document.fonts && document.fonts.addEventListener('loadingdone', () => fitTitle()); } catch (e) {}
+try { new ResizeObserver(() => fitTitle()).observe($('brand')); } catch (e) {}
 function setCompact(on) {
   if (on === abCompact) return; abCompact = on;
   const bar = $('appbar'), h = $('appTitle'), a = h.getBoundingClientRect(), fa = parseFloat(getComputedStyle(h).fontSize);
@@ -3660,7 +3675,7 @@ function snapshot() {
     return { id, qty: sl.qty, kinds: it.kinds ? personKinds(it, sl) : undefined, cbd: it.kinds ? personCbd(it, sl) : undefined, manualOpt: sl.manual ? sl.opt : undefined,
       vipUnits: (v.units[id] || []).map(i => `${it.opts[i].pay}/${it.opts[i].b}`), regular: lineReg(it, sl) }; });
   return {
-    app: 'Gift Studio v30.4', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
+    app: 'Gift Studio v30.5', time: new Date().toISOString(), lang: S.lang, mode: S.mode,
     guestBudget: hasBud() ? S.will : null, vouchers: S.step / VOUCHER, voucherValue: S.step, 
     cert: S.cart.cert, cart: lines, wish: S.wish,
     vip: { guestPays: v.cost, copays: v.pay, budgetUsed: v.used, overflow: v.overflow, left: S.will - v.cost, regularValue: v.value },
