@@ -244,6 +244,11 @@ body.mode-reg .hero .hero-lock{filter:grayscale(0)}
 .rel .sg b{font-size:calc(13.5px*var(--fs,1));font-weight:600;line-height:1.25}
 .sg{position:relative;background:var(--card);border-radius:16px;padding:6px 6px 10px;display:flex;flex-direction:column;gap:2px;min-width:0}
 .sg.fresh{box-shadow:0 0 0 2px var(--gold)}
+.sg.wide{grid-column:1 / -1}.sg.wide .sg-img{aspect-ratio:16/7}.sg.wide b{font-size:calc(15px*var(--fs,1))}
+.em-sec{margin-top:14px}
+.em-was{color:var(--muted);font-weight:500;margin-right:2px}
+.em-save{display:block;margin-top:2px;color:var(--ok);font-weight:700}
+.em-coupons{margin:14px 2px 0;font-size:calc(13px*var(--fs,1));color:var(--muted);line-height:1.4}
 .sg-img{position:relative;aspect-ratio:16/10;border-radius:12px;background-size:cover;background-position:center;margin-bottom:4px;cursor:pointer}
 .sg-img span{position:absolute;left:6px;top:6px;background:var(--navy);color:var(--gold-text);font-size:calc(10.5px*var(--fs,1));font-weight:600;border-radius:999px;padding:2px 8px}
 .sg b{font-size:calc(12.5px*var(--fs,1));font-weight:600;line-height:1.25;padding:0 4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
@@ -2856,6 +2861,47 @@ function suggestHTML() {
       </div>`).join('')}</div>
   </div>`;
 }
+// Nov 2026 · regalo vacío: en vez de dejar la pantalla en blanco, se usa para vender
+// VIP: escapada 3/2 arriba → lo que el Leisure Cash cubre gratis → más vendidos. Sin VIP: cuánto ahorra con VIP + cupones del resort.
+const EMPTY_T = {
+  en: { certH: 'Start with your getaway', certS: 'Doesn\'t use your budget', freeH: 'Free with your Leisure Cash', addH: 'You can add', saveH: 'What VIP Services saves you', save: n => `Save ${n}`,
+        coupons: 'You have up to $200 in Resort Coupons. They\'re already applied to the prices you see without VIP Services.' },
+  es: { certH: 'Empieza con tu escapada', certS: 'No usa tu presupuesto', freeH: 'Gratis con tu Leisure Cash', addH: 'Puedes agregar', saveH: 'Lo que te ahorras con VIP Services', save: n => `Ahorras ${n}`,
+        coupons: 'Tienes hasta $200 en cupones del resort. Ya están aplicados en los precios que ves sin VIP Services.' },
+};
+function emptyCard(it, small) {
+  return `<div class="sg">
+        <div class="sg-img ph-${it.photo}" data-open="${it.id}"></div>
+        <b>${it.name[S.lang]}</b>
+        <small>${small}</small>
+        <button class="sg-add" data-inc="${it.id}" aria-label="${t().add}">+</button>
+      </div>`;
+}
+function emptyHTML() {
+  const E = EMPTY_T[S.lang];
+  const pool = addable().filter(id => { const it = itemById(id); return !it.pkg || pkgToday(it); })
+    .map(id => itemById(id)).filter((it, i, arr) => { const f = famOf(it); return !f || arr.findIndex(y => famOf(y) === f) === i; })   // una por familia
+    .sort((a, b) => (topIdx(a.id) - topIdx(b.id)) || ((a.exc ? 1 : 0) - (b.exc ? 1 : 0)) || (regPlain(b) - regPlain(a)));
+  const sec = (h, body) => `<div class="sugg em-sec"><div class="sugg-head"><b>${h}</b></div>${body}</div>`;
+  if (S.mode === 'vip') {
+    let out = '';
+    if (!S.cart.cert) out += sec(E.certH, `<div class="sugg-list"><div class="sg fresh wide">
+        <div class="sg-img ph-pool" data-cert-open><span>✦ ${t().free2}</span></div>
+        <b>${t().certTitle}</b>
+        <small>${E.certS}</small>
+        <button class="sg-add" data-cert aria-label="${t().add}">+</button>
+      </div></div>`);
+    const free = S.step > 0 ? pool.filter(it => promoUnit(it) > 0 && nextPrice(it) === 0).slice(0, 6) : [];   // lo que ya es gratis con VIP (tours de compras) no cuenta como Leisure Cash
+    if (free.length) out += sec(E.freeH, `<div class="sugg-list">${free.map(it => emptyCard(it, `<s class="em-was">${money(promoUnit(it))}</s> ${t().free2}`)).join('')}</div>`);
+    const rest = pool.filter(it => !free.includes(it)).slice(0, 6);
+    if (rest.length) out += sec(E.addH, `<div class="sugg-list">${rest.map(it => { const p = nextPrice(it), r = regPlain(it); return emptyCard(it, `${r > p ? `<s class="em-was">${money(r)}</s> ` : ''}${p ? money(p) : t().free2}`); }).join('')}</div>`);
+    return out;
+  }
+  // sin VIP: los más vendidos con precio con cupones contra precio VIP
+  const cmp = pool.map(it => ({ it, reg: nextPrice(it), vip: promoUnit(it) })).filter(x => x.reg > x.vip && !x.it.vipOnly).slice(0, 4);
+  return (cmp.length ? sec(E.saveH, `<div class="sugg-list">${cmp.map(({ it, reg, vip }) => emptyCard(it, `<s class="em-was">${money(reg)}</s> ${money(vip)}<span class="em-save">${E.save(money(reg - vip))}</span>`)).join('')}</div>`) : '')
+    + `<p class="em-coupons">${E.coupons}</p>`;
+}
 function budgetLine(cost) {
   if (!hasBud()) return '';
   const over = cost - S.will;
@@ -2935,6 +2981,7 @@ function renderCart() {
       ${n ? `<div class="cart-reset"><button class="ghost" data-compare>${t().compare}</button><button class="ghost" data-reset>${t().reset}</button></div>` : ''}
       ${n ? suggestHTML() : ''}   <!-- v18.1: con el regalo vacío no se repite el catálogo en el panel -->
       ${n ? '' : `<div class="cta-bar">${cta}</div>`}   <!-- v29.19: con regalo, el botón vive fijo dentro de la cuenta -->
+      ${n ? '' : emptyHTML()}   <!-- Nov 2026 · el regalo vacío también vende -->
     </div>`;
   bumpBadges(n);
 }
